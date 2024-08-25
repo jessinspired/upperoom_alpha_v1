@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # user defined apps
     'core.apps.CoreConfig',
-    # 'users.apps.UsersConfig',
+    'users.apps.UsersConfig',
     # 'services.apps.ServicesConfig',
     # 'search.apps.SearchConfig',
     # 'auths.apps.AuthsConfig',
@@ -65,7 +65,12 @@ ROOT_URLCONF = '_base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+
+        # project level template organization
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,3 +137,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# custom settings
+# custom auth model
+AUTH_USER_MODEL = "users.User"
