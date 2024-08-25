@@ -1,1 +1,17 @@
 <p>Login html</p>
+
+<form
+class="registration-form"
+action="#"
+hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+>
+    <h1>Login</h1>
+
+    <fieldset>
+        {{form}}
+    </fieldset>
+
+    <button>
+        Continue
+    </button>
+</form>

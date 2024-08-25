@@ -13,8 +13,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import find_dotenv, load_dotenv
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# load environment vars
+load_dotenv(find_dotenv())
 
 
 # Quick-start development settings - unsuitable for production
@@ -24,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#a9jhxfs6rc_q$u%hdlp1=&ye2b0z_0^fw&4fuy_@n59%q@$cv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -38,11 +45,15 @@ INSTALLED_APPS = [
     # 'services.apps.ServicesConfig',
     # 'search.apps.SearchConfig',
     'auths.apps.AuthsConfig',
+    'messaging.apps.MessagingConfig',
     # 'bookings.apps.BookingsConfig',
 
 
+    # third party apps
+    # 'django_htmx',
 
 
+    # built in apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +70,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # third party middle ware
+    # "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = '_base.urls'
@@ -153,6 +167,18 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = 'login'
 
+# celery settings
+CELERY_BROKER_URL = os.getenv('REDIS_URL')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL')
+
+# Email Creds
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # or 465 if using SSL
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
 ##### Modify progressively #####
 # redirects users to login for routes with login required
 """ LOGIN_URL = "login"
@@ -161,9 +187,7 @@ LOGIN_REDIRECT_URL = "get_customer_dashboard_fragment"
 
 # LOGOUT_REDIRECT_URL = 'login'
 
-# celery settings
-CELERY_BROKER_URL = os.getenv('REDIS_URL')
-CELERY_RESULT_BACKEND = os.getenv('REDIS_URL')
+
 
 # Google Creds
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
@@ -192,13 +216,6 @@ AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
-# Email Creds
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587  # or 465 if using SSL
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # STRIPE
 STRIPE_PUBLIC_KEY_TEST = os.getenv('STRIPE_PUBLIC_KEY_TEST')
