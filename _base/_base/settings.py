@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,7 +37,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     # 'services.apps.ServicesConfig',
     # 'search.apps.SearchConfig',
-    # 'auths.apps.AuthsConfig',
+    'auths.apps.AuthsConfig',
     # 'bookings.apps.BookingsConfig',
 
 
@@ -139,6 +140,68 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# custom settings
+# ---> custom settings <---
+
 # custom auth model
 AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = [
+    # added for email based auth
+    'auths.backends.EmailBackend'
+]
+
+##### Modify progressively #####
+# redirects users to login for routes with login required
+""" LOGIN_URL = "login"
+
+LOGIN_REDIRECT_URL = "get_customer_dashboard_fragment"
+
+# LOGOUT_REDIRECT_URL = 'login'
+
+# celery settings
+CELERY_BROKER_URL = os.getenv('REDIS_URL')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL')
+
+# Google Creds
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+
+# Facebbok creds
+FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')
+FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
+FB_AUTHORIZATION_BASE_URL = "https://www.facebook.com/dialog/oauth"
+FB_TOKEN_URL = "https://graph.facebook.com/oauth/access_token"
+FB_SCOPE = ['email']
+
+# AWS S3 settings
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = "prbucket01"
+AWS_S3_REGION_NAME = 'eu-west-2'
+AWS_QUERYSTRING_AUTH = False
+
+# S3 static settings
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+
+# S3 media settings
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+
+# Email Creds
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # or 465 if using SSL
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# STRIPE
+STRIPE_PUBLIC_KEY_TEST = os.getenv('STRIPE_PUBLIC_KEY_TEST')
+STRIPE_SECRET_KEY_TEST = os.getenv('STRIPE_SECRET_KEY_TEST')
+STRIPE_WEBHOOK_SECRET_TEST = os.getenv('STRIPE_WEBHOOK_SECRET_KEY_TEST')
+
+REDIRECT_DOMAIN = os.getenv('HOME_URL')
+
+ """
