@@ -150,6 +150,9 @@ AUTHENTICATION_BACKENDS = [
     'auths.backends.EmailBackend'
 ]
 
+LOGIN_URL = "login"
+LOGOUT_REDIRECT_URL = 'login'
+
 ##### Modify progressively #####
 # redirects users to login for routes with login required
 """ LOGIN_URL = "login"
