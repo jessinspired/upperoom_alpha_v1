@@ -1,0 +1,7 @@
+db.sqlite3
+.env
+*.rdb
+*/migrations/
+*.json
+prdatabase
+buf.py
