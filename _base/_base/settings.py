@@ -181,7 +181,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 ##### Modify progressively #####
 # redirects users to login for routes with login required
-""" LOGIN_URL = "login"
+"""
 
 LOGIN_REDIRECT_URL = "get_customer_dashboard_fragment"
 

@@ -70,12 +70,7 @@ class ClientRegistrationForm(UserCreationForm):
         required=True
     )
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.label_suffix = ""
-    #     initial_email = kwargs.pop('initial_email', None)
-    #     if initial_email:
-    #         self.initial['email'] = initial_email
+    # usable_password = None
 
     class Meta:
         '''defines meta data for form
@@ -89,6 +84,7 @@ class ClientRegistrationForm(UserCreationForm):
             'first_name',
             'last_name',
             'password1',
+
         ]
 
     def save(self, commit=True):
