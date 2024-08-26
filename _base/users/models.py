@@ -57,11 +57,11 @@ class CreatorManager(BaseUserManager):
             Creator: creator objects from user table
         '''
         results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.STUDENT)
+        return results.filter(role=User.Role.CREATOR)
 
 
 class Creator(User):
-    '''Defines the stuent proxy model
+    '''Defines the creator proxy model
     Args:
         User (User): Custom AUTH_USER_MODEL
     Returns:

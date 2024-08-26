@@ -72,7 +72,8 @@ class School(BaseModel):
 
     subscribed_clients = models.ManyToManyField(
         Client,
-        related_name='subscribed_schools'
+        related_name='subscribed_schools',
+        blank=True
     )
 
     def __str__(self):
@@ -99,7 +100,8 @@ class Area(BaseModel):
 
     subscribed_clients = models.ManyToManyField(
         Client,
-        related_name='subscribed_areas'
+        related_name='subscribed_areas',
+        blank=True
     )
 
     def __str__(self):
@@ -134,7 +136,8 @@ class Landmark(BaseModel):
 
     subscribed_clients = models.ManyToManyField(
         Client,
-        related_name='subscribed_landmarks'
+        related_name='subscribed_landmarks',
+        blank=True
     )
 
     def __str__(self):
