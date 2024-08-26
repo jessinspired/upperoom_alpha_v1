@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # user defined apps
     'core.apps.CoreConfig',
     'users.apps.UsersConfig',
+    'listings.apps.ListingsConfig',
     # 'services.apps.ServicesConfig',
     # 'search.apps.SearchConfig',
     'auths.apps.AuthsConfig',
