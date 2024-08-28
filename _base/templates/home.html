@@ -1,1 +1,11 @@
-<p>Home page</p>
+<h1>Home page</h1>
+
+<h2>School Wide Subscription</h2>
+<select name="schools" id="schools-dropdown">
+    <option value="None">------</option>
+{% for school in schools %}
+    <option value="{{school.abbr}}">{{school.name}}</option>
+{% endfor %}
+</select>
+
+<h2>Area Wide Subscription</h2>

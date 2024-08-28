@@ -9,6 +9,11 @@ class LodgeInline(admin.TabularInline):
     model = Lodge
 
 
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'first_name',
+                    'last_name')
+
+
 class CreatorProfileInline(admin.TabularInline):
     model = CreatorProfile
 
@@ -24,6 +29,10 @@ class CreatorAdmin(admin.ModelAdmin):
     inlines = [LodgeInline, CreatorProfileInline]
 
 
+class ClientProfileInline(admin.TabularInline):
+    model = ClientProfile
+
+
 class ClientAdmin(admin.ModelAdmin):
     '''adds Client details to admin panel
     Args:
@@ -32,6 +41,4 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'first_name',
                     'last_name')
 
-
-class ClientProfileInline(admin.TabularInline):
-    model = ClientProfile
+    inlines = [ClientProfileInline]

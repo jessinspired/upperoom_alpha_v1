@@ -45,10 +45,11 @@ class User(BaseModel, AbstractUser):
     )
 
 
+# creator models
 class CreatorManager(BaseUserManager):
     '''manager for creator proxy table
     Args:
-        BaseUserManager (BaseUserManager): Client manager
+        BaseUserManager (BaseUserManager): Creator manager
     '''
 
     def get_queryset(self, *args, **kwargs):
@@ -100,9 +101,9 @@ class CreatorProfile(BaseModel):
     '''defines attributes and methods for creator profile
     '''
     user = models.OneToOneField(
-        User,
+        Creator,
         on_delete=models.CASCADE,
-        related_name='profile'
+        related_name='creator_profile'
     )
 
     phone_number = models.CharField(
@@ -110,8 +111,6 @@ class CreatorProfile(BaseModel):
         null=True,
         blank=False
     )
-
-    # add more client profile data
 
     def __str__(self):
         return f"{self.user.username} profile"
@@ -169,7 +168,11 @@ class Client(User):
 class ClientProfile(BaseModel):
     '''defines methods and attributes for Client
     '''
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='client_profile'
+    )
     phone_number = models.CharField(
         max_length=50,
         null=True,

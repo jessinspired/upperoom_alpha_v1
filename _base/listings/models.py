@@ -256,7 +256,7 @@ class RoomProfile(BaseModel):
         'listings.RoomType',
         on_delete=models.CASCADE,
         related_name='room_profiles',
-        default=None
+        null=False
     )
 
     lodge = models.ForeignKey(

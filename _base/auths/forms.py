@@ -8,7 +8,7 @@ from django.contrib.auth.forms import (
     SetPasswordForm
 )
 
-from users.models import User, Client, Creator
+from users.models import Client, Creator
 
 
 class EmailBasedLoginForm(AuthenticationForm):
@@ -115,11 +115,11 @@ class CreatorRegistrationForm(UserCreationForm):
         widget=forms.TextInput(attrs={'readonly': 'readonly'})
     )
 
-    # phone_number = forms.CharField(
-    #     label='Phone Number',
-    #     max_length=20,
-    #     required=True
-    # )
+    phone_number = forms.CharField(
+        label='Phone Number',
+        max_length=20,
+        required=True
+    )
 
     password1 = forms.CharField(
         label='Password',
