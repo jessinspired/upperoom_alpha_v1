@@ -7,7 +7,7 @@ from datetime import datetime
 @shared_task
 def send_email_verification_mail(user_email, uuid):
     try:
-        home_url = os.getenv('HOME_URL')
+        home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
         url = f"{home_url}/auth/verify_email/{uuid}"
         print(url)
         html_message = f'''
