@@ -92,14 +92,14 @@ def send_email_verification_mail(user_email, uuid):
         </body>
         </html>
         '''
-        send_mail(
-            'Upperoom Account Verification',
-            '',
-            'no-reply@upperoom.com',
-            [user_email],
-            html_message=html_message,
-            fail_silently=False
-        )
+        # send_mail(
+        #     'Upperoom Account Verification',
+        #     '',
+        #     'no-reply@upperoom.com',
+        #     [user_email],
+        #     html_message=html_message,
+        #     fail_silently=False
+        # )
         print('email sent')
     except Exception as e:
         print(f"Failed to send email: {e}")

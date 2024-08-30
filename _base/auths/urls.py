@@ -3,7 +3,8 @@ from .views import (
     CustomLoginView,
     CustomLogoutView,
     init_email_auth,
-    verify_email
+    verify_email,
+    finish_email_auth
 )
 from .forms import EmailBasedLoginForm
 
@@ -32,4 +33,9 @@ urlpatterns = [
         verify_email,
         name='verify_email'
     ),
+    path(
+        'finish_email_auth/',
+        finish_email_auth,
+        name='finish_email_auth'
+    )
 ]

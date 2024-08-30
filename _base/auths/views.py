@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
@@ -9,7 +9,7 @@ from .forms import (
     CreatorRegistrationForm
 )
 from django.contrib.auth import get_user_model, login, logout
-from users.models import User
+from users.models import User, CreatorProfile, ClientProfile
 from messaging.tasks import send_email_verification_mail
 from .models import EmailVerificationToken
 from django.views.decorators.http import require_http_methods
@@ -110,20 +110,91 @@ def verify_email(request, uuid_code):
 
         messages.error(
             request, 'Verification status is invalid or has expired. Try again')
-        if request.GET.get('is_fragment', None):
-            return render(request, 'auths/html_fragments/register-customer-fragment.html', {'form': form})
-        return render(request, 'auths/register_customer.html', {'form': form})
+        return render(request, 'auths/register.html', {'form': form})
+
+
+@require_http_methods(['POST', 'GET'])
+def finish_email_auth(request):
+    role = request.GET.get('role')
+    form = None
+    if role not in ['creator', 'client']:
+        return render(request, 'error_pages/400-bad-request.html', status=400)
+
+    if request.method == 'POST':
+        modified_post_data = request.POST.copy()
+        modified_post_data['password2'] = modified_post_data.get('password1')
+        if role == 'creator':
+            form = CreatorRegistrationForm(modified_post_data)
+        elif role == 'client':
+            form = ClientRegistrationForm(modified_post_data)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            if not user:
+                messages.error(
+                    request, "Encountered an error while creating Account.")
+                return redirect('init_email_auth')
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            phone = form.cleaned_data.get('phone_number')
+            email = form.cleaned_data.get('email')
+
+            token = EmailVerificationToken.objects.get(email=email)
+            if not token.is_verified:
+                messages.error("Your email address must be verified.")
+                return redirect('init_email_auth')
+
+            import random
+            while True:
+                random_number = str(random.randint(1000000, 9999999))
+                username = f'{first_name}{last_name}{random_number}'
+
+                if not UserModel.objects.filter(username=username):
+                    user.username = username
+                    user.authentication_means = 'EMAIL'
+                    user = form.save()
+                    break
+
+            if role == 'creator':
+                profile = CreatorProfile.objects.get(user=user)
+            elif role == 'client':
+                profile = ClientProfile.objects.get(user=user)
+
+            profile.phone_number = form.cleaned_data.get('phone_number')
+            profile.save()
+
+            login(request, user, BACKEND)
+
+            if role == 'creator':
+                return redirect('get_creator')
+            elif role == 'client':
+                return redirect('get_client')
+        else:
+            error_feedback = []
+            for field, errors in form.errors.items():
+                for error in errors:
+                    error_feedback.append(f"{error}")
+            context = {
+                'form': form,
+                'error_feedback': error_feedback,
+                'role': role
+            }
+            return render(
+                request,
+                'auths/register.html',
+                context
+            )
+    else:
+        if role == 'creator':
+            form = CreatorRegistrationForm()
+        elif role == 'client':
+            form = ClientRegistrationForm()
+
+        return render(request, 'auths/register.html', {'form': form})
 
 
 class CustomLoginView(LoginView):
     """Used to render either full or partial html with htmx"""
-
-    # def get_template_names(self):
-    #     template_name = super().get_template_names()
-    #     if self.request.GET.get('is_fragment') == 'true':
-    #         return ['auths/html_fragments/login-fragment.html']
-    #     else:
-    #         return ['auths/login.html']
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         # Store the request in an instance variable to use it later in get_template_names
@@ -142,7 +213,7 @@ class CustomLoginView(LoginView):
 
         return render(
             self.request,
-            'auths/html_fragments/login-fragment.html',
+            'auths/login.html',
             context
         )
 
@@ -151,10 +222,10 @@ class CustomLoginView(LoginView):
         Returns the URL to redirect to after login.
         Redirects based on the user's role.
         """
-        if self.request.user.role == 'CUSTOMER':
-            return reverse_lazy('get_customer_dashboard_fragment')
-        elif self.request.user.role == 'BUSINESS':
-            return reverse_lazy('get_business_dashboard_fragment')
+        if self.request.user.role == 'CREATOR':
+            return reverse_lazy('get_creator')
+        elif self.request.user.role == 'CLIENT':
+            return reverse_lazy('get_client')
 
 
 class CustomLogoutView(LogoutView):

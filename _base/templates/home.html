@@ -1,5 +1,7 @@
 <h1>Home page</h1>
+<a href="{% url 'init_email_auth' %}">Account</a>
 
+<h3>Select school to get started!</h3>
 <select name="schools" id="schools-dropdown">
     <option value="None">------</option>
 {% for school in schools %}
@@ -7,4 +9,4 @@
 {% endfor %}
 </select>
 
-<h2>Area Wide Subscription</h2>
+<h4>Select a region</h4>

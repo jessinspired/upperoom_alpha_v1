@@ -1,0 +1,6 @@
+<p>Creator dashboard</p>
+
+<form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button>logout</button>
+</form>

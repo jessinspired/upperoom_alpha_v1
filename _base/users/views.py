@@ -7,4 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def get_creator(request):
-    return render(request, 'users/creator_dashboard.html')
+    return render(request, 'users/creator.html')
+
+
+@login_required
+def get_client(request):
+    return render(request, 'users/client.html')
