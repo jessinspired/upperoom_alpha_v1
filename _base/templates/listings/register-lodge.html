@@ -1,0 +1,6 @@
+<form action="{% url 'register_lodge' %}" method="post">
+    {% csrf_token %}
+    {{form}}
+
+    <button>submit</button>
+</form>

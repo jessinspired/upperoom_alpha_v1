@@ -11,7 +11,7 @@ def role_required(required_roles):
             if not request.user.is_authenticated:
                 return render(request, 'error_pages/401.html', status=401)
 
-            VALID_ROLES = {'CUSTOMER', 'RIDER', 'BUSINESS'}
+            VALID_ROLES = {'CREATOR', 'CLIENT'}
 
             # Normalize required_roles to a list
             if isinstance(required_roles, str):
