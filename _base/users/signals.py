@@ -7,20 +7,20 @@ from django.dispatch import receiver
 from django.db import transaction
 
 from users.models import (
-    # Client,
-    # ClientProfile,
+    Client,
+    ClientProfile,
     Creator,
     CreatorProfile,
 )
 
 
-# @receiver(post_save, sender=Client)
-# def create_client_profile(sender, instance, created, **kwargs):
-#     '''creates client profile when customer user is saved'''
-#     if created and instance.role == 'CLIENT':
-#         with transaction.atomic():
-#             ClientProfile.objects.create(user=instance)
-#             instance.save()
+@receiver(post_save, sender=Client)
+def create_client_profile(sender, instance, created, **kwargs):
+    '''creates client profile when customer user is saved'''
+    if created and instance.role == 'CLIENT':
+        with transaction.atomic():
+            ClientProfile.objects.create(user=instance)
+            instance.save()
 
 
 @receiver(post_save, sender=Creator)
