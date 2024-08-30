@@ -3,14 +3,14 @@
 from django.contrib import admin
 from .models import (
     Landmark,
-    Area,
+    Region,
     School,
     RoomProfile
 )
 
 
-class AreaInline(admin.TabularInline):
-    model = Area
+class RegionInline(admin.TabularInline):
+    model = Region
 
 
 class LandmarkInline(admin.TabularInline):
@@ -19,7 +19,7 @@ class LandmarkInline(admin.TabularInline):
 
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('name', 'state')
-    inlines = [AreaInline, LandmarkInline]
+    inlines = [RegionInline, LandmarkInline]
 
 
 class SchoolInline(admin.TabularInline):
@@ -27,7 +27,7 @@ class SchoolInline(admin.TabularInline):
 
 
 class StateAdmin(admin.ModelAdmin):
-    inlines = [SchoolInline, AreaInline, LandmarkInline]
+    inlines = [SchoolInline, RegionInline, LandmarkInline]
 
 
 class RoomProfileInline(admin.TabularInline):
@@ -35,7 +35,7 @@ class RoomProfileInline(admin.TabularInline):
 
 
 class LodgeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'creator', 'state', 'school', 'area')
+    list_display = ('name', 'creator', 'state', 'school', 'region')
     filter_horizontal = ('room_types',)
     inlines = [RoomProfileInline]
 
@@ -51,9 +51,9 @@ class RoomProfileAdmin(admin.ModelAdmin):
 
 
 class LandmarkAdmin(admin.ModelAdmin):
-    list_display = ('name', 'area', 'state', 'school')
+    list_display = ('name', 'region', 'state', 'school')
 
 
-class AreaAdmin(admin.ModelAdmin):
+class RegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'state', 'school')
     inlines = [LandmarkInline]

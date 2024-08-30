@@ -80,27 +80,27 @@ class School(BaseModel):
         return self.name
 
 
-class Area(BaseModel):
+class Region(BaseModel):
     name = models.CharField(max_length=150)
 
     state = models.ForeignKey(
         State,
         on_delete=models.CASCADE,
-        related_name='areas',
+        related_name='regions',
         default=None
     )
 
     school = models.ForeignKey(
         School,
         on_delete=models.CASCADE,
-        related_name='areas',
+        related_name='regions',
         null=True,
         blank=True
     )
 
     subscribed_clients = models.ManyToManyField(
         Client,
-        related_name='subscribed_areas',
+        related_name='subscribed_regions',
         blank=True
     )
 
@@ -111,8 +111,8 @@ class Area(BaseModel):
 class Landmark(BaseModel):
     name = models.CharField(max_length=150)
 
-    area = models.ForeignKey(
-        Area,
+    region = models.ForeignKey(
+        Region,
         on_delete=models.CASCADE,
         related_name='landmarks',
         default=None
@@ -177,8 +177,8 @@ class Lodge(BaseModel):
         blank=True
     )
 
-    area = models.ForeignKey(
-        Area,
+    region = models.ForeignKey(
+        Region,
         on_delete=models.CASCADE,
         related_name='lodges',
         default=None

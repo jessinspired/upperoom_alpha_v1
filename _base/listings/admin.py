@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     State,
-    Area,
+    Region,
     Landmark,
     School,
     Lodge,
@@ -12,7 +12,7 @@ from .models import (
 
 from .admin_models import (
     StateAdmin,
-    AreaAdmin,
+    RegionAdmin,
     LandmarkAdmin,
     SchoolAdmin,
     LodgeAdmin,
@@ -20,7 +20,7 @@ from .admin_models import (
 )
 
 admin.site.register(State, StateAdmin)
-admin.site.register(Area, AreaAdmin)
+admin.site.register(Region, RegionAdmin)
 admin.site.register(Landmark, LandmarkAdmin)
 admin.site.register(School, SchoolAdmin)
 

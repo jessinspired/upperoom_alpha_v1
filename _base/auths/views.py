@@ -20,7 +20,7 @@ UserModel = get_user_model()
 BACKEND = 'auths.backends.EmailBackend'
 
 
-def initiate_email_verification(request):
+def init_email_auth(request):
     if request.method != 'POST':
         form = EmailVerificationForm()
         context = {

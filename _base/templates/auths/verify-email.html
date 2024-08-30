@@ -1,6 +1,6 @@
 <form
 method="post"
-action="{% url 'initiate_email_verification' %}"
+action="{% url 'init_email_auth' %}"
 >
     {% csrf_token %}
     {{form}}

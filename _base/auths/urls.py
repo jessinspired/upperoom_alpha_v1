@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     CustomLoginView,
     CustomLogoutView,
-    initiate_email_verification,
+    init_email_auth,
     verify_email
 )
 from .forms import EmailBasedLoginForm
@@ -23,9 +23,9 @@ urlpatterns = [
         name='logout'
     ),
     path(
-        'initiate_email_verification/',
-        initiate_email_verification,
-        name='initiate_email_verification'
+        'init_email_auth/',
+        init_email_auth,
+        name='init_email_auth'
     ),
     path(
         'verify_email/<str:uuid_code>',
