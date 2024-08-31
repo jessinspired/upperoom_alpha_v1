@@ -8,16 +8,24 @@
 {% endif %}
 
 <h3>Select school to get started!</h3>
-<select name="schools" id="schools-dropdown">
-    <option value="" disabled selected>schools</option>
-{% for school in schools %}
-    <option value="{{school.abbr}}">{{school.name}}</option>
-{% endfor %}
-</select>
-<br><br>
 
-<div>
-    <select name="region-select" id="region-select" disabled="disabled">
-        <option value="">regions</option>
+<form action="#" method="post">
+    {% csrf_token %}
+    <select name="schools" id="schools-dropdown">
+        <option value="" disabled selected>schools</option>
+    {% for school in schools %}
+        <option value="{{school.abbr}}">{{school.name}}</option>
+    {% endfor %}
     </select>
-</div>
+    <br><br>
+
+    <div>
+        <select name="region-select" id="region-select" disabled="disabled">
+            <option value="">regions</option>
+        </select>
+    </div>
+    <br>
+
+    <button>proceed</button>
+
+</form>
