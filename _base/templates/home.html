@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block base %}
 <h1>Home page</h1>
 {% if not user.is_authenticated %}
 <a href="{% url 'init_email_auth' %}">Account</a>
@@ -11,21 +14,31 @@
 
 <form action="#" method="post">
     {% csrf_token %}
-    <select name="schools" id="schools-dropdown">
+    <select
+    name="schools"
+    id="schools-dropdown"
+    hx-get="{% url 'get_regions' %}"
+    hx-target="#regions-checkboxes"
+    hx-trigger="change"
+    hx-swap="outerHTML"
+    >
         <option value="" disabled selected>schools</option>
     {% for school in schools %}
-        <option value="{{school.abbr}}">{{school.name}}</option>
+        <option value="{{school.pk}}">{{school.name}}</option>
     {% endfor %}
     </select>
     <br><br>
 
-    <div>
-        <select name="region-select" id="region-select" disabled="disabled">
-            <option value="">regions</option>
-        </select>
+    <div id="regions-checkboxes">
+        <label>
+            <input type="checkbox" name="regions" value="#" disabled="disabled">
+            <span style="color:lightslategray">Regions</span>
+        </label>
     </div>
+
     <br>
 
-    <button>proceed</button>
+    <button id="proceed-btn" disabled>proceed</button>
 
 </form>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% if regions %}
+<div id="regions-checkboxes">
+    {% for region in regions %}
+    <label>
+        <input type="checkbox" name="regions" value="{{ region.pk }}">
+        {{ region.name }}
+    </label><br>
+    {% endfor %}
+</div>
+
+<button id="proceed-btn" hx-swap-oob="true">Proceed</button>
+{% else %}
+<p id="regions-checkboxes">Regions unavailable</p>
+
+<button id="proceed-btn" hx-swap-oob="true" disabled>Proceed</button>
+
+{% endif %}
+
+
