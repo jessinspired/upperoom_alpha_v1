@@ -33,9 +33,8 @@ SECRET_KEY = 'django-insecure-#a9jhxfs6rc_q$u%hdlp1=&ye2b0z_0^fw&4fuy_@n59%q@$cv
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = [
-    'jessinspired.pythonanywhere.com'
-]
+ALLOWED_HOSTS = ['*']
+
 DEBUG = True
 
 
@@ -153,6 +152,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# added for file pythonanywhere deployment
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
