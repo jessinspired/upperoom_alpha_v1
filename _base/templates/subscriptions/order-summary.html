@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<p>Order summary</p>
+
+&#8358; {{fee}}
+
+<ul>
+{% for region in regions %}
+    <li>{{region}}</li>
+{% endfor %}
+</ul>
+
+<button>Proceed to payment</button>
+
+
+{% endblock %}

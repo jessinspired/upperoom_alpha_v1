@@ -1,5 +1,6 @@
-from django.shortcuts import render
-from listings.models import School
+from django.shortcuts import render, redirect
+from listings.models import School, Region
+from django.views.decorators.http import require_http_methods
 
 
 def get_regions(request):
@@ -17,3 +18,27 @@ def get_regions(request):
         'subscriptions/regions-partial.html',
         context
     )
+
+
+def get_order_summary(request):
+    if request.method != 'POST':
+        return redirect('get_home')
+    regions_pk_list = request.POST.getlist('regions')
+
+    if not regions_pk_list:
+        return  # bad request
+
+    try:
+        regions = []
+        for pk in regions_pk_list:
+            region = Region.objects.get(pk=pk)
+            regions.append(region)
+    except:
+        pass
+
+    context = {
+        'regions': regions,
+        'fee': 1500 * len(regions)
+    }
+
+    return render(request, 'subscriptions/order-summary.html', context)
