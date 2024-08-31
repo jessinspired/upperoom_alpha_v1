@@ -1,17 +1,25 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<p>Order summary</p>
+<form
+id="payment-form"
+hx-post="{% url 'initialize_transaction' %}"
+hx-trigger="click"
+hx-target="#response-message"
+hx-swap="outerHTML"
+>
+    {% csrf_token %}
+    <p>Order summary</p>
 
-&#8358; {{fee}}
+    &#8358; {{ amount }}
 
-<ul>
-{% for region in regions %}
-    <li>{{region}}</li>
-{% endfor %}
-</ul>
+    <ul>
+    {% for region in regions %}
+        <li>{{ region }}</li>
+        <input type="hidden" name="region" value="{{ region.pk }}">
+    {% endfor %}
+    </ul>
 
-<button>Proceed to payment</button>
-
-
+    <button type="submit">Proceed to payment</button>
+</form>
 {% endblock %}

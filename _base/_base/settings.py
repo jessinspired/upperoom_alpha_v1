@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
 
     # third party apps
-    # 'django_htmx',
+    'django_htmx',
 
 
     # built in apps
@@ -75,7 +75,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # third party middle ware
-    # "django_htmx.middleware.HtmxMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = '_base.urls'

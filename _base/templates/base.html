@@ -8,11 +8,17 @@
     <script hx-preserve="true" src="{% static 'core/jsLibraries/htmx.min.js' %}" defer></script>
     <script hx-preserve="true" src="{% static 'core/jsLibraries/htmxHeadExtension.js' %}" defer></script>
 
+    <!-- paystack integration -->
+    <script hx-preserve="true" src="{% static 'subscriptions/libraries/paystack.js' %}" defer></script>
+    <script hx-preserve="true" src="{% static 'subscriptions/scripts/completeTransaction.js' %}" defer></script>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upperoom</title>
 </head>
 <body>
+    <div id="response-message"></div>
 
     {% block main %}
     {% endblock %}
