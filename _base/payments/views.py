@@ -17,7 +17,7 @@ from .models import Transaction
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 
-@role_required(['CLIENT'])
+# @role_required(['CLIENT'])
 @require_http_methods(['POST'])
 def initialize_transaction(request):
     """
@@ -107,6 +107,8 @@ def webhook_view(request):
         return JsonResponse({'status': 'unauthorized'}, status=401)
 
     payload = json.loads(body)
+
+    print('payload :', payload)
 
     # handle payment success case
     if payload.get('event') == 'charge.success':
