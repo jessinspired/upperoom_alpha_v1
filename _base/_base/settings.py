@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'listings.apps.ListingsConfig',
     'subscriptions.apps.SubscriptionsConfig',
+    'payments.apps.PaymentsConfig',
     # 'services.apps.ServicesConfig',
     # 'search.apps.SearchConfig',
     'auths.apps.AuthsConfig',

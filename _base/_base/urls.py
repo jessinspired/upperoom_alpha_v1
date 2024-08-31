@@ -25,6 +25,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('listings/', include('listings.urls')),
     path('subscriptions/', include('subscriptions.urls')),
+    path('payments/', include('payments.urls')),
     # path('tasks/', include('tasks_manager.urls')),
     # path('payments/', include('payments.urls')),
     # path('integration/', include('integration.urls')),
