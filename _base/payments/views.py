@@ -48,6 +48,8 @@ def initialize_transaction(request):
         }
 
         response = requests.post(url, headers=headers, json=data)
+
+        print(response.json())  # debug
         if response.status_code == 200:
             json_response = response.json()
             print(json_response)
@@ -69,7 +71,7 @@ def initialize_transaction(request):
                 {'access_code': json_response.get('data').get('access_code')}
             )
         else:
-            return HttpResponse('<p id="response-message">An error occured!<br>Please try again</p>')
+            return HttpResponse('<p id="response-message">An error occured!<br>Response not 200</p>')
     except Exception as e:
         print(e)
         pass

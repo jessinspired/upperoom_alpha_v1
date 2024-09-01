@@ -1,24 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {{role}}
-    <form action="{% url 'finish_email_auth' %}?role={{role}}" method="post">
-        {% csrf_token %}
-        {% for field in form %}
-            {% if field.name != 'password2' %}
-                <div>
-                    {{ field.name}}
-                    {{ field }}
-                </div>
-            {% endif %}
-        {% endfor %}
+{% extends 'base.html' %}
 
-        <button>Register</button>
-    </form>
-</body>
-</html>
+{% block main %}
+{{role}}
+<form action="{% url 'finish_email_auth' %}?role={{role}}" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        {% if field.name != 'password2' %}
+            <div>
+                {{ field.name}}
+                {{ field }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <button>Register</button>
+</form>
+{% endblock %}

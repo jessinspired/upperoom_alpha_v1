@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block main %}
 <form
 method="post"
 action="{% url 'init_email_auth' %}"
@@ -16,3 +19,4 @@ action="{% url 'init_email_auth' %}"
     </div>
     <button style="margin-top: 1rem">Submit</button>
 </form>
+{% endblock %}
