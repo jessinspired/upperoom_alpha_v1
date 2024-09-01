@@ -17,6 +17,7 @@ from .models import Transaction
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 
+@role_required(['CLIENT'])
 @require_http_methods(['POST'])
 def initialize_transaction(request):
     """
@@ -54,9 +55,15 @@ def initialize_transaction(request):
             if not json_response.get('status'):
                 return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
 
-            transaction = Transaction.objects.create(
+            #
+            if hasattr(request.user, 'transaction'):
+                request.user.transaction.delete()
+
+            Transaction.objects.create(
                 amount=amount,
-                reference=reference
+                reference=reference,
+                client=request.user
+
             )
 
             http_response = HttpResponse(
@@ -109,7 +116,10 @@ def webhook_view(request):
 
     # handle payment success case
     if payload.get('event') == 'charge.success':
-        pass
+        remote_reference = payload.get('data').get('reference')
+        local_reference = request.user.transaction.reference
+
+        print(remote_reference, local_reference)
 
         # confirm price
 
