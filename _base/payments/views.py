@@ -98,16 +98,14 @@ def webhook_view(request):
     # auth 2: Signature Validation
     secret = os.getenv('PAYSTACK_TEST_KEY')
     body = request.body
+    payload = json.loads(body)
+    print('payload :', payload)
 
     hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
     signature = request.headers.get('X-Paystack-Signature')
 
     if hash != signature:
         return JsonResponse({'status': 'unauthorized'}, status=401)
-
-    payload = json.loads(body)
-
-    print('payload :', payload)
 
     # handle payment success case
     if payload.get('event') == 'charge.success':
