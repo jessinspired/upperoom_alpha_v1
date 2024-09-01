@@ -5,10 +5,14 @@ from users.models import Client
 
 class Transaction(BaseModel):
     """
-    Holds record of current transaction for vacancy
-    subscription before payment is confirmed
+    Keeps track of transaction
+    Associates transaction with subscription
     """
-    amount = models.CharField(max_length=20, null=False)
+    amount = models.DecimalField(
+        max_digits=10,
+        null=False,
+        decimal_places=2
+    )
     reference = models.CharField(max_length=50, null=False)
 
     client = models.ForeignKey(
@@ -16,4 +20,14 @@ class Transaction(BaseModel):
         on_delete=models.CASCADE,
         related_name='transactions',
         default=None
+    )
+
+    paystack_id = models.IntegerField(
+        null=True,
+        default=None,
+    )
+
+    is_fully_paid = models.BooleanField(
+        null=False,
+        default=False
     )

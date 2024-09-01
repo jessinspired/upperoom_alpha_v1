@@ -13,6 +13,7 @@ import hashlib
 from .utils import generate_unique_reference
 from .models import Transaction
 from django.db import transaction as db_transaction
+from subscriptions.models import Subscription
 
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
@@ -129,16 +130,23 @@ def webhook_view(request):
                 reference=remote_reference)
         except Transaction.DoesNotExist:
             current_transaction = None
+            # log missing transaction
+            return JsonResponse({'status': 'not found'}, status=404)
 
+        # debug --> remove in production
         if current_transaction:
             print(remote_reference, current_transaction.reference)
 
-        response_amount = payload.get('data').get('amount')
-        response_amount = response_amount / 100
+        current_transaction.paystack_id = payload.get('data').get('id')
 
-        print(response_amount, current_transaction.amount)
+        paid_amount = payload.get('data').get('amount')
+        paid_amount = paid_amount / 100
 
-        # confirm price
+        print(paid_amount, current_transaction.amount)
+        if paid_amount == current_transaction.amount:
+            subscription = Subscription.objects.create(
+                transaction=current_transaction
+            )
 
     return JsonResponse({'status': 'success'}, status=200)
 
