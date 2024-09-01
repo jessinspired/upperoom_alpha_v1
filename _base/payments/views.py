@@ -89,11 +89,11 @@ def webhook_view(request):
     """
 
     # auth 1: IP Whitelisting
-    whitelist = ['52.31.139.75', '52.49.173.169', '52.214.14.220']
-    client_ip = request.META.get('REMOTE_ADDR')
+    # whitelist = ['52.31.139.75', '52.49.173.169', '52.214.14.220']
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    if client_ip not in whitelist:
-        return JsonResponse({'status': 'forbidden'}, status=400)
+    # if client_ip not in whitelist:
+    #     return JsonResponse({'status': 'forbidden'}, status=400)
 
     # auth 2: Signature Validation
     secret = os.getenv('PAYSTACK_TEST_KEY')
