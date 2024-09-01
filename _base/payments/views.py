@@ -48,9 +48,9 @@ def initialize_transaction(request):
 
         response = requests.post(url, headers=headers, json=data)
         if not response:
-            response = 'No response'
+            message = 'No response'
         else:
-            response = 'Response available'
+            message = 'Response available'
 
         if response.status_code == 200:
             json_response = response.json()
@@ -78,7 +78,7 @@ def initialize_transaction(request):
         print(e)
         pass
 
-    return HttpResponse(f'<p id="response-message">An error occured!<br>{response}</p>')
+    return HttpResponse(f'<p id="response-message">An error occured!<br>{message}</p>')
 
 
 @csrf_exempt
