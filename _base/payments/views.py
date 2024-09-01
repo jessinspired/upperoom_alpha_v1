@@ -101,7 +101,7 @@ def webhook_view(request):
 
     # auth 1: IP Whitelisting
     whitelist = ['52.31.139.75', '52.49.173.169', '52.214.14.220']
-    client_ip = request.META.get('REMOTE_ADDR')
+    client_ip = request.headers.get('X-Real-Ip')
     print('client ip: ', client_ip)
 
     if client_ip not in whitelist:
