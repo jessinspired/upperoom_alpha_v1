@@ -17,7 +17,6 @@ from .models import Transaction
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 
-# @role_required(['CLIENT'])
 @require_http_methods(['POST'])
 def initialize_transaction(request):
     """
