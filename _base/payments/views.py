@@ -50,7 +50,6 @@ def initialize_transaction(request):
 
         if response.status_code == 200:
             json_response = response.json()
-            print(json_response)
 
             if not json_response.get('status'):
                 return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')

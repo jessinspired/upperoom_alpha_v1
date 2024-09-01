@@ -14,6 +14,7 @@ from messaging.tasks import send_email_verification_mail
 from .models import EmailVerificationToken
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+import os
 
 
 UserModel = get_user_model()
@@ -71,9 +72,12 @@ def init_email_auth(request):
     # Generate and save the verification token
     token = EmailVerificationToken.create_token(email, role)
 
-    send_email_verification_mail(email, token.uuid_code)
+    uuid = token.uuid_code  # debug
+    send_email_verification_mail(email, uuid)
 
-    return HttpResponse('<p>Check Mail</p>')
+    home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
+    url = f"{home_url}/auth/verify_email/{uuid}"
+    return HttpResponse(f'<a href="{url}">Click link</a>')
 
 
 @require_http_methods(['GET'])
