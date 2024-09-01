@@ -112,11 +112,11 @@ def webhook_view(request):
     payload = json.loads(body)
     print('payload :', payload)
 
-    # hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
-    # signature = request.headers.get('X-Paystack-Signature')
+    hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
+    signature = request.headers.get('X-Paystack-Signature')
 
-    # if hash != signature:
-    #     return JsonResponse({'status': 'unauthorized'}, status=401)
+    if hash != signature:
+        return JsonResponse({'status': 'unauthorized'}, status=401)
 
     # handle payment success case
     if payload.get('event') == 'charge.success':
