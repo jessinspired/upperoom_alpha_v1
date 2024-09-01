@@ -111,6 +111,7 @@ def webhook_view(request):
     body = request.body
     payload = json.loads(body)
     print('payload :', payload)
+    print('headers: ', request.headers)
 
     hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
     signature = request.headers.get('X-Paystack-Signature')
@@ -134,7 +135,7 @@ def webhook_view(request):
         response_amount = payload.get('data').get('amount')
         response_amount = response_amount / 100
 
-        print(response_amount)
+        print(response_amount, current_transaction.amount)
 
         # confirm price
 
