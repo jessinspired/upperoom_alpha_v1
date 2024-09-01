@@ -76,7 +76,7 @@ def initialize_transaction(request):
         print(e)
         pass
 
-    return HttpResponse('<p id="response-message">An error occured!<br>Please try again</p>')
+    return HttpResponse('<p id="response-message">An error occured!<br>Got to end</p>')
 
 
 @csrf_exempt
