@@ -99,11 +99,11 @@ def webhook_view(request):
     secret = os.getenv('PAYSTACK_TEST_KEY')
     body = request.body
 
-    hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
-    signature = request.headers.get('X-Paystack-Signature')
+    # hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
+    # signature = request.headers.get('X-Paystack-Signature')
 
-    if hash != signature:
-        return JsonResponse({'status': 'unauthorized'}, status=401)
+    # if hash != signature:
+    #     return JsonResponse({'status': 'unauthorized'}, status=401)
 
     payload = json.loads(body)
 
