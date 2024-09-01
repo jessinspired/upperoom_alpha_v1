@@ -11,9 +11,9 @@ class Transaction(BaseModel):
     amount = models.CharField(max_length=20, null=False)
     reference = models.CharField(max_length=50, null=False)
 
-    client = models.OneToOneField(
+    client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
-        related_name='transaction',
+        related_name='transactions',
         default=None
     )

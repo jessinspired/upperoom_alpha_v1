@@ -12,6 +12,7 @@ import hmac
 import hashlib
 from .utils import generate_unique_reference
 from .models import Transaction
+from django.db import transaction as db_transaction
 
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
@@ -55,16 +56,19 @@ def initialize_transaction(request):
             if not json_response.get('status'):
                 return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
 
-            #
-            if hasattr(request.user, 'transaction'):
-                request.user.transaction.delete()
+            # handle transaction object
+            with db_transaction.atomic():
+                existing_transaction = Transaction.objects.filter(
+                    reference=reference, client=request.user).first()
 
-            Transaction.objects.create(
-                amount=amount,
-                reference=reference,
-                client=request.user
+                if existing_transaction:
+                    existing_transaction.delete()
 
-            )
+                new_transaction = Transaction.objects.create(
+                    amount=amount,
+                    reference=reference,
+                    client=request.user
+                )
 
             http_response = HttpResponse(
                 '<p id="response-message"></p>'
@@ -108,17 +112,29 @@ def webhook_view(request):
     payload = json.loads(body)
     print('payload :', payload)
 
+    # hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
+    # signature = request.headers.get('X-Paystack-Signature')
+
+    # if hash != signature:
+    #     return JsonResponse({'status': 'unauthorized'}, status=401)
+
     # handle payment success case
     if payload.get('event') == 'charge.success':
         remote_reference = payload.get('data').get('reference')
-        local_reference = request.user.transaction.reference
 
-        print(remote_reference, local_reference)
+        try:
+            current_transaction = Transaction.objects.get(
+                reference=remote_reference)
+        except Transaction.DoesNotExist:
+            current_transaction = None
+
+        if current_transaction:
+            print(remote_reference, current_transaction.reference)
 
         response_amount = payload.get('data').get('amount')
         response_amount = response_amount / 100
 
-        print(response_amount, request.user.transaction.amount)
+        print(response_amount)
 
         # confirm price
 
