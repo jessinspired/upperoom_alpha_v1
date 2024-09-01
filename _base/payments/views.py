@@ -121,6 +121,11 @@ def webhook_view(request):
 
         print(remote_reference, local_reference)
 
+        response_amount = payload.get('data').get('amount')
+        response_amount = response_amount / 100
+
+        print(response_amount, request.user.transaction.amount)
+
         # confirm price
 
     return JsonResponse({'status': 'success'}, status=200)
