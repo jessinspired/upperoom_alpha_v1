@@ -144,13 +144,14 @@ def webhook_view(request):
 
         print(paid_amount, transaction.amount)
         if paid_amount != transaction.amount:
-            return JsonResponse({'status': 'bad request'}, status=400)
+            # notify client of incomplete payment
             # log transaction
+            return JsonResponse({'status': 'bad request'}, status=400)
 
         transaction.is_fully_paid = True
         transaction.save()
 
-        subscribed_rooms = subscribe_for_listing(transaction)
+        subscribed_rooms = subscribe_for_listing(request.user, transaction)
 
         print('subscription for listing added')
 
