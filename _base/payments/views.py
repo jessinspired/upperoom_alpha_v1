@@ -14,6 +14,7 @@ from .utils import generate_unique_reference
 from .models import Transaction
 from django.db import transaction as db_transaction
 from subscriptions.models import Subscription
+from subscriptions.views import subscribe_for_listing
 
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
@@ -125,34 +126,33 @@ def webhook_view(request):
         remote_reference = payload.get('data').get('reference')
 
         try:
-            current_transaction = Transaction.objects.get(
+            transaction = Transaction.objects.get(
                 reference=remote_reference)
         except Transaction.DoesNotExist:
-            current_transaction = None
+            transaction = None
             # log missing transaction
             return JsonResponse({'status': 'not found'}, status=404)
 
         # debug --> remove in production
-        if current_transaction:
-            print(remote_reference, current_transaction.reference)
+        if transaction:
+            print(remote_reference, transaction.reference)
 
-        current_transaction.paystack_id = payload.get('data').get('id')
+        transaction.paystack_id = payload.get('data').get('id')
 
         paid_amount = payload.get('data').get('amount')
         paid_amount = paid_amount / 100
 
-        print(paid_amount, current_transaction.amount)
-        if paid_amount != current_transaction.amount:
+        print(paid_amount, transaction.amount)
+        if paid_amount != transaction.amount:
             return JsonResponse({'status': 'bad request'}, status=400)
             # log transaction
 
-        current_transaction.is_fully_paid = True
-        current_transaction.save()
+        transaction.is_fully_paid = True
+        transaction.save()
 
-        subscription = Subscription.objects.create(
-            transaction=current_transaction
-        )
-        print('subscription created')
+        subscribed_rooms = subscribe_for_listing(transaction)
+
+        print('subscription for listing added')
 
     return JsonResponse({'status': 'success'}, status=200)
 

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from listings.models import School, Region
+from listings.models import School, Region, RoomProfile, Lodge
 from django.views.decorators.http import require_http_methods
+from .models import Subscription
 
 
 @require_http_methods(['GET'])
@@ -45,3 +46,31 @@ def get_order_summary(request):
     }
 
     return render(request, 'subscriptions/order-summary.html', context)
+
+
+def subscribe_for_listing(transaction):
+    subscription = Subscription.objects.create(
+        transaction=transaction
+    )
+
+    regions = transaction.regions.all()
+
+    lodges = Lodge.objects.filter(region__in=regions)
+
+    subscribed_rooms = subscription_algorithm(lodges)
+
+    subscription.subscribed_rooms.set(subscribed_rooms)
+    return subscribed_rooms
+
+
+def subscription_algorithm(lodges):
+    """
+    Algorithm to select rooms, using basic randomization for now.
+    This function limits the selection to a maximum of 20 randomly chosen rooms.
+    """
+    vacant_rooms = RoomProfile.objects.filter(
+        lodge__in=lodges,
+        vacancy=0
+    ).order_by('?')[:20]
+
+    return vacant_rooms
