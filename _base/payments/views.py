@@ -149,6 +149,7 @@ def webhook_view(request):
         subscription = Subscription.objects.create(
             transaction=current_transaction
         )
+        print('subscription created')
 
     return JsonResponse({'status': 'success'}, status=200)
 
