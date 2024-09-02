@@ -14,7 +14,7 @@ from .utils import generate_unique_reference
 from .models import Transaction
 from django.db import transaction as db_transaction
 from subscriptions.views import subscribe_for_listing
-from users.models import Client
+from messaging.tasks import send_initial_subscribed_listings
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
@@ -149,18 +149,11 @@ def webhook_view(request):
         transaction.is_fully_paid = True
         transaction.save()
 
-        subscribed_rooms = subscribe_for_listing(transaction)
+        subscription, subscribed_rooms = subscribe_for_listing(transaction)
+
+        if subscribed_rooms.exists():
+            send_initial_subscribed_listings(subscription)
 
         print('subscription for listing added with algorithm')
 
     return JsonResponse({'status': 'success'}, status=200)
-
-
-def verify_payment(request, reference):
-    """
-    - Second way of verifying payments on paystack
-    - Don't use this in production
-    - Works by making a GET request to the Verify Transaction API endpoint
-    from your server using your transaction reference.
-    """
-    pass

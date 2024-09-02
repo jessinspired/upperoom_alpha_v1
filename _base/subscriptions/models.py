@@ -3,10 +3,16 @@ from core.models import BaseModel
 from payments.models import Transaction
 from listings.models import Lodge, RoomProfile
 from users.models import Client
+from django.core.validators import MaxValueValidator
 
 
 class Subscription(BaseModel):
     is_expired = models.BooleanField(null=False, default=False)
+
+    number_of_listings_sent = models.PositiveIntegerField(
+        default=0,
+        validators=[MaxValueValidator(20)]
+    )
 
     client = models.ForeignKey(
         Client,

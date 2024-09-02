@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from listings.models import School, Region, RoomProfile, Lodge
 from django.views.decorators.http import require_http_methods
 from .models import Subscription
+from core.views import handle_http_errors
 
 
 @require_http_methods(['GET'])
@@ -61,7 +62,7 @@ def subscribe_for_listing(transaction):
     subscribed_rooms = subscription_algorithm(lodges)
 
     subscription.subscribed_rooms.set(subscribed_rooms)
-    return subscribed_rooms
+    return subscription, subscribed_rooms
 
 
 def subscription_algorithm(lodges):
@@ -75,3 +76,27 @@ def subscription_algorithm(lodges):
     ).order_by('?')[:20]
 
     return vacant_rooms
+
+
+def get_subscribed_listings(request, pk):
+    """
+    Get all listings client subscribed for
+    The link sent to the client is handled by this function
+
+    Return: A html page containing all the listings for current subscription
+    """
+    try:
+        subscription = Subscription.objects.get(pk=pk)
+    except Subscription.DoesNotExist:
+        return handle_http_errors(request, 404)
+
+    subscribed_rooms = subscription.subscribed_rooms
+    context = {
+        'subscribed_rooms': subscribed_rooms
+    }
+
+    return render(
+        request,
+        'subscriptions/subscribed-listings.html',
+        context
+    )
