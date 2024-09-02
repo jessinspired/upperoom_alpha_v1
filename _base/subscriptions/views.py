@@ -71,7 +71,7 @@ def subscription_algorithm(lodges):
     """
     vacant_rooms = RoomProfile.objects.filter(
         lodge__in=lodges,
-        vacancy=0
+        vacancy__gt=0
     ).order_by('?')[:20]
 
     return vacant_rooms
