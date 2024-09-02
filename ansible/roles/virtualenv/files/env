@@ -1,9 +1,9 @@
-REDIS_URL="redis://localhost:6379"
+REDIS_URL = "redis://localhost:6379"
 
-HOME_URL="ec2-50-17-117-96.compute-1.amazonaws.com"
+HOME_URL = "http://ec2-50-17-117-96.compute-1.amazonaws.com"
 
 # Django
-DEBUG=True
+DEBUG = True
 
 
 # Email Creds
