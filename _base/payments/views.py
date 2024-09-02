@@ -13,9 +13,8 @@ import hashlib
 from .utils import generate_unique_reference
 from .models import Transaction
 from django.db import transaction as db_transaction
-from subscriptions.models import Subscription
 from subscriptions.views import subscribe_for_listing
-
+from users.models import Client
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
@@ -122,7 +121,7 @@ def webhook_view(request):
         return JsonResponse({'status': 'unauthorized'}, status=401)
 
     # handle payment success case
-    if payload.get('event') == 'charge.success':
+    if payload.get('event') == 'charge.success' and request.user.role == 'CLIENT':
         remote_reference = payload.get('data').get('reference')
 
         try:
@@ -151,9 +150,11 @@ def webhook_view(request):
         transaction.is_fully_paid = True
         transaction.save()
 
-        subscribed_rooms = subscribe_for_listing(request.user, transaction)
+        client = Client.objects.get(pk=request.user.pk)
 
-        print('subscription for listing added')
+        subscribed_rooms = subscribe_for_listing(client, transaction)
+
+        print('subscription for listing added with algorithm')
 
     return JsonResponse({'status': 'success'}, status=200)
 
