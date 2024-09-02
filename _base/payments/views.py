@@ -65,11 +65,14 @@ def initialize_transaction(request):
             if existing_transaction:
                 existing_transaction.delete()
 
-            new_transaction = Transaction.objects.create(
+            transaction = Transaction.objects.create(
                 amount=amount,
                 reference=reference,
                 client=request.user
             )
+
+            transaction.regions.set(regions)
+            transaction.save()
 
         http_response = HttpResponse(
             '<p id="response-message"></p>'

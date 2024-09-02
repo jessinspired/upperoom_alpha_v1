@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import BaseModel
 from users.models import Client
+from listings.models import Region
 
 
 class Transaction(BaseModel):
@@ -25,6 +26,11 @@ class Transaction(BaseModel):
     paystack_id = models.IntegerField(
         null=True,
         default=None,
+    )
+
+    regions = models.ManyToManyField(
+        Region,
+        related_name='transactions'
     )
 
     is_fully_paid = models.BooleanField(
