@@ -1,0 +1,35 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+
+- name: Allow SSH and Nginx Full with UFW
+  community.general.ufw:
+    name: "{{ item }}"
+    rule: allow
+  loop:
+    - OpenSSH
+    - Nginx Full
+
+- name: Enable UFW
+  community.general.ufw:
+    state: reloaded
+
+- name: Copy server block configuration file to server
+  ansible.builtin.copy:
+    src: "{{ nginx_config }}"
+    dest: /etc/nginx/sites-available/upperoom-requests
+    owner: ubuntu
+    group: ubuntu
+    mode: '0777'
+
+- name: Create a symlink between sites-available and sites-enabled directories
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/upperoom-requests
+    dest: /etc/nginx/sites-enabled/upperoom-requests
+    state: link
+
+- name: Start nginx
+  systemd:
+    name: nginx
+    state: restarted

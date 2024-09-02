@@ -1,0 +1,10 @@
+---
+# roles/database/tasks/main.yml
+
+- name: Make database migrations
+  become_user: "{{ new_user }}"
+  command: "/home/{{ new_user }}/.pyenv/versions/{{ venv_name }}/bin/python3 {{ remote_project_path }}/_base/manage.py makemigrations users auths listings messaging payments subscriptions"
+
+- name: Apply database migrations
+  become_user: "{{ new_user }}"
+  command: "/home/{{ new_user }}/.pyenv/versions/{{ venv_name }}/bin/python3 {{ remote_project_path }}/_base/manage.py migrate"

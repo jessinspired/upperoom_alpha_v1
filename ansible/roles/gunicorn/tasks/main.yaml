@@ -1,0 +1,48 @@
+---
+# roles/gunicorn/tasks/main.yml
+
+- name: Ensure Gunicorn log directory exists
+  file:
+    path: /var/log/gunicorn
+    state: directory
+    owner: ubuntu
+    group: www-data
+    mode: '0755'
+  # Only create if not already present
+
+- name: Ensure Gunicorn log files exist
+  file:
+    path: "/var/log/gunicorn/{{ item }}"
+    state: touch
+    owner: ubuntu
+    group: www-data
+    mode: '0644'
+  loop:
+    - access.log
+    - error.log
+    - gunicorn.log
+  # Only create if not already present
+
+- name: Copy Gunicorn service file with owner and permissions to server
+  copy:
+    src: "{{ service_file }}"
+    dest: /etc/systemd/system/
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'  # Use 0644 to restrict permissions
+
+- name: Reload systemd to recognize new service file
+  systemd:
+    daemon_reload: yes
+
+- name: Start gunicorn service
+  systemd:
+    name: "{{ service_name }}"
+    state: restarted
+    daemon_reload: yes
+
+- name: Enable gunicorn service
+  systemd:
+    name: "{{ service_name }}"
+    enabled: true
+

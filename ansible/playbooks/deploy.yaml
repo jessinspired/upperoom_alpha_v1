@@ -1,0 +1,11 @@
+- name: Deploy application to production environment
+  hosts: prod
+  become: true
+  vars_files:
+    - "../inventory/production/group_vars/all.yml"
+  roles:
+    - common
+    - pyenv
+    - redis
+    - app
+    - nginx

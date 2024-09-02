@@ -1,0 +1,36 @@
+name: Configure Ansible Environment
+
+on:
+  push:
+    branches: [main] # Adjust branch(es) to trigger the workflow
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update package lists
+        run: sudo apt update -y
+
+      - name: Install software-properties-common
+        run: sudo apt install -y software-properties-common
+
+      - name: Add Ansible repository
+        run: |
+          sudo add-apt-repository --yes --update ppa:ansible/ansible  # Official Ansible PPA
+
+      - name: Install Ansible
+        run: sudo apt install -y ansible
+
+      - name: Set permissions for secrets file (if needed)
+        # Uncomment and adjust path if you have a secrets file
+        run: sudo chmod 400 ./ansible/secrets/devops.pem && ls -l ./ansible/secrets/devops.pem
+
+      - name: Set Ansible configuration path
+        env:
+          ANSIBLE_CONFIG: ./ansible.cfg # Adjust path if needed
+        run: echo $ANSIBLE_CONFIG
+
+      - name: Run Ansible playbook (replace with your actual command)
+        run: ansible-playbook -i ansible/inventory/production/hosts ansible/playbooks/update.yaml

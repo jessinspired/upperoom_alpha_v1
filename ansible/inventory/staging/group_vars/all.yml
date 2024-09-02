@@ -1,0 +1,10 @@
+venv_name: upperoom
+new_user: ubuntu
+python_version: 3.11.3
+git_repo: 'https://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@github.com/jessinspired/upperoom_alpha_v1.git'
+remote_project_path: /home/ubuntu/upperoom
+env_path: "files/env"
+service_file: "files/upperoom.service"
+service_name: upperoom
+nginx_config: "files/upperoom-requests"
+ansible_ssh_host_key_checking: False

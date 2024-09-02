@@ -1,0 +1,30 @@
+---
+# roles/app/tasks/main.yml
+
+- name: Include Python setup role
+  import_role:
+    name: python_setup
+
+- name: Include Repository setup role
+  import_role:
+    name: repository
+
+- name: Include Virtualenv setup role
+  import_role:
+    name: virtualenv
+
+- name: Include Static Files setup role
+  import_role:
+    name: static_files
+
+- name: Include Database setup role
+  import_role:
+    name: database
+
+- name: Include Celery setup role
+  import_role:
+    name: celery
+
+- name: Include Gunicorn setup role
+  import_role:
+    name: gunicorn

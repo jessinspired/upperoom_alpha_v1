@@ -1,0 +1,22 @@
+# roles/celery/tasks/main.yml
+
+---
+- name: Create a directory for Celery logs
+  file:
+    path: /var/log/celery
+    state: directory
+    mode: '0755'
+
+- name: Create Celery configuration file
+  template:
+    src: celery.service.j2
+    dest: /etc/systemd/system/celery.service
+  notify:
+    - Reload systemd
+    - Start Celery
+
+- name: Ensure Celery is enabled and started
+  systemd:
+    name: celery
+    state: started
+    enabled: yes

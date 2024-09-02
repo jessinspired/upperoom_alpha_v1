@@ -1,0 +1,8 @@
+# roles/celery/vars/main.yml
+
+---
+celery_user: "ubuntu"
+celery_group: "ubuntu"
+project_directory: "/home/ubuntu/upperoom/_base"
+project_name: "_base"
+python_path: "/home/ubuntu/.pyenv/versions/upperoom/bin/celery"

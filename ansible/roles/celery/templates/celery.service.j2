@@ -1,0 +1,17 @@
+# roles/celery/templates/celery.service.j2
+
+[Unit]
+Description=Celery Service
+After=network.target
+
+[Service]
+User={{ celery_user }}
+Group={{ celery_group }}
+WorkingDirectory={{ project_directory }}
+ExecStart={{ python_path }} -A {{ project_name }} worker --loglevel=info
+Restart=always
+StandardOutput=file:/var/log/celery/worker.log
+StandardError=file:/var/log/celery/worker_error.log
+
+[Install]
+WantedBy=multi-user.target
