@@ -2,11 +2,15 @@ from django.core.mail import send_mail, EmailMessage
 from celery import shared_task
 import os
 from datetime import datetime
+from email.utils import formataddr
 
 
 @shared_task
 def send_email_verification_mail(user_email, uuid):
     try:
+        from_email = formataddr((
+            'Upperoom', 'upperoom.ng@gmail.com'
+        ))
         home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
         url = f"{home_url}/auth/verify_email/{uuid}"
         print(url)
@@ -92,14 +96,14 @@ def send_email_verification_mail(user_email, uuid):
         </body>
         </html>
         '''
-        # send_mail(
-        #     'Upperoom Account Verification',
-        #     '',
-        #     'no-reply@upperoom.com',
-        #     [user_email],
-        #     html_message=html_message,
-        #     fail_silently=False
-        # )
+        send_mail(
+            'Upperoom Account Verification',
+            '',
+            from_email,
+            [user_email],
+            html_message=html_message,
+            fail_silently=False
+        )
         print('email sent')
     except Exception as e:
         print(f"Failed to send email: {e}")

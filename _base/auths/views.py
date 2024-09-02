@@ -72,12 +72,14 @@ def init_email_auth(request):
     # Generate and save the verification token
     token = EmailVerificationToken.create_token(email, role)
 
-    uuid = token.uuid_code  # debug
+    uuid = token.uuid_code
     send_email_verification_mail(email, uuid)
 
-    home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
-    url = f"{home_url}/auth/verify_email/{uuid}"
-    return HttpResponse(f'<a href="{url}">Click link</a>')
+    # home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
+    # url = f"{home_url}/auth/verify_email/{uuid}"
+    # return HttpResponse(f'<a href="{url}">Click link</a>')
+
+    return HttpResponse(f'<p>Click the link sent to your mail for verification</p>')
 
 
 @require_http_methods(['GET'])
