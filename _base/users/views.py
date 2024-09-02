@@ -3,6 +3,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from auths.decorators import role_required
 from listings.models import RoomProfile, Region
+from payments.models import Transaction
 
 # Create your views here.
 
@@ -19,14 +20,13 @@ def get_client(request):
 
     subscriptions = request.user.subscriptions.filter(is_expired=False)
 
-    # Get a queryset of all subscribed rooms across these subscriptions
     subscribed_rooms = RoomProfile.objects.filter(
         subscriptions__in=subscriptions
     ).distinct()
 
+    transactions = Transaction.objects.filter(subscription__in=subscriptions)
     subscribed_regions = Region.objects.filter(
-        lodges__subscriptions__in=subscriptions
-    ).distinct()
+        transactions__in=transactions).distinct()
 
     context = {
         'subscribed_rooms': subscribed_rooms,

@@ -72,7 +72,6 @@ def initialize_transaction(request):
             )
 
             transaction.regions.set(regions)
-            transaction.save()
 
         http_response = HttpResponse(
             '<p id="response-message"></p>'
