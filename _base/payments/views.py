@@ -121,7 +121,7 @@ def webhook_view(request):
         return JsonResponse({'status': 'unauthorized'}, status=401)
 
     # handle payment success case
-    if payload.get('event') == 'charge.success' and request.user.role == 'CLIENT':
+    if payload.get('event') == 'charge.success':
         remote_reference = payload.get('data').get('reference')
 
         try:
@@ -150,9 +150,7 @@ def webhook_view(request):
         transaction.is_fully_paid = True
         transaction.save()
 
-        client = Client.objects.get(pk=request.user.pk)
-
-        subscribed_rooms = subscribe_for_listing(client, transaction)
+        subscribed_rooms = subscribe_for_listing(transaction)
 
         print('subscription for listing added with algorithm')
 

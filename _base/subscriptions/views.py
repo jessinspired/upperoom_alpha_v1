@@ -48,9 +48,9 @@ def get_order_summary(request):
     return render(request, 'subscriptions/order-summary.html', context)
 
 
-def subscribe_for_listing(client, transaction):
+def subscribe_for_listing(transaction):
     subscription = Subscription.objects.create(
-        client=client,
+        client=transaction.client,
         transaction=transaction
     )
 
