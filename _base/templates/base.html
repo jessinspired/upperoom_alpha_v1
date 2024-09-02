@@ -20,6 +20,16 @@
 <body>
     <div id="response-message"></div>
 
+    <a href="{% url 'get_home' %}">Home</a>
+    <br>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'init_email_auth' %}">Account</a>
+    {% elif user.role == 'CLIENT' %}
+    <a href="{% url 'get_client' %}">Account</a>
+    {% elif user.role == 'CREATOR' %}
+    <a href="{% url 'get_creator' %}">Account</a>
+    {% endif %}
+
     {% block main %}
     {% endblock %}
 

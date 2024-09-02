@@ -1,8 +1,25 @@
-<a href="{% url 'get_home' %}">home</a>
+{% extends 'base.html' %}
 
+{% block main %}
 <p>Client Dashboard</p>
+
+<h4>Subscribed Regions</h4>
+{% for region in subscribed_regions %}
+    <ul>
+        <li>{{ region.name }}</li>
+    </ul>
+{% endfor %}
+
+<h4>Subscribed Rooms</h4>
+{% for room in subscribed_rooms %}
+    <ul>
+        <li>{{ room.room_type }} - {{room.lodge}}</li>
+    </ul>
+{% endfor %}
 
 <form action="{% url 'logout' %}" method="post">
     {% csrf_token %}
     <button>logout</button>
 </form>
+
+{% endblock %}
