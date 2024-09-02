@@ -15,7 +15,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name ec2-50-17-117-96.compute-1.amazonaws.com
+    server_name ec2-50-17-117-96.compute-1.amazonaws.com;
 
     # ssl_certificate /etc/letsencrypt/live/www.parcelroyale.com/fullchain.pem;
     # ssl_certificate_key /etc/letsencrypt/live/www.parcelroyale.com/privkey.pem;
