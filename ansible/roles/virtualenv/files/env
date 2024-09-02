@@ -1,6 +1,6 @@
 REDIS_URL = "redis://localhost:6379"
 
-HOME_URL = "http://ec2-50-17-117-96.compute-1.amazonaws.com"
+HOME_URL = "https://upperoom.ng"
 
 # Django
 DEBUG = True
