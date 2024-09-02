@@ -12,22 +12,3 @@ server {
         alias /var/www/static/;
     }
 }
-
-server {
-    listen 443 ssl;
-    server_name ec2-50-17-117-96.compute-1.amazonaws.com;
-
-    # ssl_certificate /etc/letsencrypt/live/www.parcelroyale.com/fullchain.pem;
-    # ssl_certificate_key /etc/letsencrypt/live/www.parcelroyale.com/privkey.pem;
-    # include /etc/letsencrypt/options-ssl-nginx.conf;
-    # ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    location / {
-        include proxy_params;
-        proxy_pass http://127.0.0.1:8000;
-    }
-
-    location /static/ {
-        alias /var/www/static/;
-    }
-}
