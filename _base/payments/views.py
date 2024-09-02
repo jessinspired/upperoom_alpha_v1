@@ -51,41 +51,37 @@ def initialize_transaction(request):
 
         response = requests.post(url, headers=headers, json=data)
 
-        if response.status_code == 200:
-            json_response = response.json()
-
-            if not json_response.get('status'):
-                return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
-
-            # handle transaction object
-            with db_transaction.atomic():
-                existing_transaction = Transaction.objects.filter(
-                    reference=reference, client=request.user).first()
-
-                if existing_transaction:
-                    existing_transaction.delete()
-
-                new_transaction = Transaction.objects.create(
-                    amount=amount,
-                    reference=reference,
-                    client=request.user
-                )
-
-            http_response = HttpResponse(
-                '<p id="response-message"></p>'
-            )
-            return trigger_client_event(
-                http_response,
-                'completeTransaction',
-                {'access_code': json_response.get('data').get('access_code')}
-            )
-        else:
+        if response.status_code != 200:
             return HttpResponse('<p id="response-message">An error occured!<br>Response not 200</p>')
+
+        json_response = response.json()
+        if not json_response.get('status'):
+            return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
+
+        with db_transaction.atomic():
+            existing_transaction = Transaction.objects.filter(
+                reference=reference, client=request.user).first()
+
+            if existing_transaction:
+                existing_transaction.delete()
+
+            new_transaction = Transaction.objects.create(
+                amount=amount,
+                reference=reference,
+                client=request.user
+            )
+
+        http_response = HttpResponse(
+            '<p id="response-message"></p>'
+        )
+        return trigger_client_event(
+            http_response,
+            'completeTransaction',
+            {'access_code': json_response.get('data').get('access_code')}
+        )
     except Exception as e:
         print(e)
         return HttpResponse(f'<p id="response-message">An error occured!<br>Error<b>{e}</p>')
-
-    return HttpResponse(f'<p id="response-message">An error occured!<br>End!</p>')
 
 
 @csrf_exempt
@@ -143,10 +139,16 @@ def webhook_view(request):
         paid_amount = paid_amount / 100
 
         print(paid_amount, current_transaction.amount)
-        if paid_amount == current_transaction.amount:
-            subscription = Subscription.objects.create(
-                transaction=current_transaction
-            )
+        if paid_amount != current_transaction.amount:
+            return JsonResponse({'status': 'bad request'}, status=400)
+            # log transaction
+
+        current_transaction.is_fully_paid = True
+        current_transaction.save()
+
+        subscription = Subscription.objects.create(
+            transaction=current_transaction
+        )
 
     return JsonResponse({'status': 'success'}, status=200)
 
