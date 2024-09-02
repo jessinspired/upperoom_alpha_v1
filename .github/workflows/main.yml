@@ -25,7 +25,7 @@ jobs:
 
       - name: Set permissions for secrets file (if needed)
         # Uncomment and adjust path if you have a secrets file
-        run: sudo chmod 400 ./ansible/secrets/devops.pem && ls -l ./ansible/secrets/prserverkey.pem
+        run: sudo chmod 400 ./ansible/secrets/devops.pem && ls -l ./ansible/secrets/devops.pem
 
       - name: Set Ansible configuration path
         env:
