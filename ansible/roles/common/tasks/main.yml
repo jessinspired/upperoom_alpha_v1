@@ -1,0 +1,36 @@
+---
+- name: Add user to sudo group
+  user:
+    name: "{{ new_user }}"
+    groups: sudo
+    append: yes
+
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: Install dependencies for pyenv and build-essential
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - build-essential
+    - libssl-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - libreadline-dev
+    - libsqlite3-dev
+    - wget
+    - curl
+    - llvm
+    - libncurses5-dev
+    - libncursesw5-dev
+    - xz-utils
+    - tk-dev
+    - libffi-dev
+    - liblzma-dev
+    - python3-dev
+    - python3-pip

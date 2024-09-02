@@ -1,0 +1,33 @@
+---
+# roles/python_setup/tasks/main.yml
+
+- name: Check if Python {{ python_version }} is already installed with pyenv
+  stat:
+    path: "/home/{{ new_user }}/.pyenv/versions/{{ python_version }}"
+  register: python_installed
+
+- name: Install Python {{ python_version }} with pyenv
+  become_user: "{{ new_user }}"
+  shell: bash -c '/home/{{ new_user }}/.pyenv/bin/pyenv install {{ python_version }}'
+  when: not python_installed.stat.exists
+
+- name: Set global Python version to {{ python_version }} with pyenv
+  become_user: "{{ new_user }}"
+  shell: bash -c '/home/{{ new_user }}/.pyenv/bin/pyenv global {{ python_version }}'
+
+- name: Install pyenv-virtualenv plugin
+  git:
+    repo: https://github.com/pyenv/pyenv-virtualenv.git
+    dest: /home/{{ new_user }}/.pyenv/plugins/pyenv-virtualenv
+    update: yes
+
+- name: Add pyenv virtualenv-init to .bashrc
+  become_user: "{{ new_user }}"
+  lineinfile:
+    dest: '/home/{{ new_user }}/.bashrc'
+    line: 'eval "$(pyenv virtualenv-init -)"'
+    create: yes
+
+- name: Reload the user's shell to apply pyenv changes
+  become_user: "{{ new_user }}"
+  shell: bash -c "source /home/{{ new_user }}/.bashrc"

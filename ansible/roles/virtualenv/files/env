@@ -1,0 +1,15 @@
+REDIS_URL="redis://localhost:6379"
+
+HOME_URL="ec2-50-17-117-96.compute-1.amazonaws.com"
+
+# Django
+DEBUG=True
+
+
+# Email Creds
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'upperoom.ng@gmail.com'
+EMAIL_HOST_PASSWORD = 'mrhg chrt nugf pxcf'
+
+# Paystack Creds
+PAYSTACK_TEST_KEY = 'sk_test_08d4e9cf0f82f2276da5f7477ecb10a4120b5833'

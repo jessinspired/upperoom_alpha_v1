@@ -1,0 +1,14 @@
+---
+# roles/repository/tasks/main.yml
+
+- name: Clone the GitHub repository
+  git:
+    repo: "{{ git_repo }}"
+    dest: "{{ remote_project_path }}"
+    version: "{{ branch }}"
+    update: yes
+    force: yes
+
+- name: Change ownership of the cloned repository folder
+  become: true
+  shell: chown -R {{ new_user }}:{{ new_user }} {{ remote_project_path }}

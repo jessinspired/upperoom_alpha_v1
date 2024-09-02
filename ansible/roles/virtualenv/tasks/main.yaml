@@ -1,0 +1,28 @@
+---
+# roles/virtualenv/tasks/main.yml
+
+- name: Remove existing virtual environment if it exists
+  become_user: "{{ new_user }}"
+  shell: |
+    if [ -d /home/{{ new_user }}/.pyenv/versions/{{ venv_name }} ]; then
+      /home/{{ new_user }}/.pyenv/bin/pyenv uninstall -f {{ venv_name }}
+    fi
+  ignore_errors: true
+
+- name: Create virtual environment with pyenv
+  become_user: "{{ new_user }}"
+  shell: |
+    bash -c '/home/{{ new_user }}/.pyenv/bin/pyenv virtualenv {{ python_version }} {{ venv_name }}'
+
+- name: Install requirements.txt in the virtual environment
+  become_user: "{{ new_user }}"
+  command: "/home/{{ new_user }}/.pyenv/versions/{{ venv_name }}/bin/pip install -r {{ remote_project_path }}/_base/requirements.txt"
+
+- name: Copy environment var file
+  become_user: "{{ new_user }}"
+  copy:
+    src: "{{ env_path }}"
+    dest: "{{ remote_project_path }}/.env"
+    owner: ubuntu
+    group: ubuntu
+    mode: '0777'

@@ -1,0 +1,17 @@
+---
+# roles/static_files/tasks/main.yml
+
+- name: Create static files
+  become_user: "{{ new_user }}"
+  command: "/home/{{ new_user }}/.pyenv/versions/{{ venv_name }}/bin/python3 {{ remote_project_path }}/_base/manage.py collectstatic --noinput"
+
+- name: Delete existing static files in /var/www/static
+  become: true
+  shell: rm -rf /var/www/static/*
+
+- name: Move static files to /var/www/static
+  become: true
+  shell: |
+    mkdir -p /var/www/static
+    mv {{ remote_project_path }}/_base/static/* /var/www/static/
+

@@ -1,0 +1,27 @@
+---
+- name: Install pyenv
+  become_user: "{{ new_user }}"
+  git:
+    repo: 'https://github.com/pyenv/pyenv.git'
+    dest: '/home/{{ new_user }}/.pyenv'
+    version: master
+    update: yes
+
+- name: Add pyenv initialization to .bashrc
+  become_user: "{{ new_user }}"
+  lineinfile:
+    dest: '/home/{{ new_user }}/.bashrc'
+    line: "{{ item }}"
+    create: yes
+  loop:
+    - 'export PYENV_ROOT="$HOME/.pyenv"'
+    - 'export PATH="$PYENV_ROOT/bin:$PATH"'
+    - 'eval "$(pyenv init --path)"'
+
+- name: Reload the user's shell to apply pyenv changes
+  become_user: "{{ new_user }}"
+  shell: bash -c "source /home/{{ new_user }}/.bashrc"
+
+- name: Change ownership of the .pyenv path
+  become: true
+  shell: chown -R {{ new_user }}:{{ new_user }} /home/{{ new_user }}/.pyenv

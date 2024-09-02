@@ -1,0 +1,17 @@
+# roles/redis/templates/redis.conf.j2
+
+bind 127.0.0.1
+protected-mode yes
+port 6379
+tcp-backlog 511
+timeout 0
+tcp-keepalive 300
+loglevel notice
+logfile "/var/log/redis/redis-server.log"
+databases 16
+save 900 1
+save 300 10
+save 60 10000
+rdbcompression yes
+dbfilename dump.rdb
+dir /var/lib/redis
