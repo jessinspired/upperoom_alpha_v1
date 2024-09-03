@@ -114,7 +114,7 @@ def send_initial_subscribed_listings(subscription):
             html_message=html_message,
             fail_silently=False
         )
-        if response > 1:
+        if response == 1:
             print('Email sent successfully')
             subscription.number_of_listings_sent = subscription.subscribed_rooms.count()
             subscription.save()
