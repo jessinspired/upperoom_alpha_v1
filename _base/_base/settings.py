@@ -187,6 +187,129 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
+
+# settings.py
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} -> {module} -> {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'django_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'django.log'),
+            'formatter': 'verbose',
+        },
+        'generic_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'generic.log'),
+            'formatter': 'verbose',
+        },
+        'auths_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'auths.log'),
+            'formatter': 'verbose',
+        },
+        'core_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'core.log'),
+            'formatter': 'verbose',
+        },
+        'listings_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'listings.log'),
+            'formatter': 'verbose',
+        },
+        'messaging_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'messaging.log'),
+            'formatter': 'verbose',
+        },
+        'payments_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'payments.log'),
+            'formatter': 'verbose',
+        },
+        'subscriptions_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'subscriptions.log'),
+            'formatter': 'verbose',
+        },
+        'users_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '_logs', 'users.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['django_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'auths': {
+            'handlers': ['auths_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'core': {
+            'handlers': ['core_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'listings': {
+            'handlers': ['listings_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'messaging': {
+            'handlers': ['messaging_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'payments': {
+            'handlers': ['payments_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'subscriptions': {
+            'handlers': ['subscriptions_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'users': {
+            'handlers': ['users_file', 'generic_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+
 ##### Modify progressively #####
 # redirects users to login for routes with login required
 """

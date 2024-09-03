@@ -5,6 +5,9 @@ from datetime import datetime
 from email.utils import formataddr
 from django.urls import reverse
 import os
+import logging
+
+logger = logging.getLogger('messaging')
 
 
 HOME_URL = os.getenv('HOME_URL')
@@ -116,13 +119,22 @@ def send_initial_subscribed_listings(subscription):
         )
         if response == 1:
             print('Email sent successfully')
+            logger.info(
+                f'Inital subscribed listings successfully sent [client_email: {subscription.client.email}]'
+            )
             subscription.number_of_listings_sent = subscription.subscribed_rooms.count()
             subscription.save()
         else:
+            logger.error(
+                f'Initial subscription listings not sent [client_email: {subscription.client.email}]'
+            )
             print('Email not successfully sent')
 
     except Exception as e:
         print(f"Failed to send email: {e}")
+        logger.error(
+            f'Failed with exception: {e} \n[client_email: {subscription.client.email}]'
+        )
 
 
 @shared_task
@@ -216,7 +228,7 @@ def send_email_verification_mail(user_email, uuid):
         </body>
         </html>
         '''
-        send_mail(
+        response = send_mail(
             'Confirm your email address',
             '',
             from_email,
@@ -225,5 +237,17 @@ def send_email_verification_mail(user_email, uuid):
             fail_silently=False
         )
         print('email sent')
+        if response == 1:
+            logger.info(
+                f'Email verification link successfully sent [user_email: {user_email}]'
+            )
+        else:
+            logger.error(
+                f'Email verification link NOT successfuly sent [user_email: {user_email}]'
+            )
+
     except Exception as e:
         print(f"Failed to send email: {e}")
+        logger.error(
+            f'Failed with exception: {e} \n[user_email: {user_email}]'
+        )
