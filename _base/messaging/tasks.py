@@ -4,6 +4,10 @@ import os
 from datetime import datetime
 from email.utils import formataddr
 from django.urls import reverse
+import os
+
+
+HOME_URL = os.getenv('HOME_URL')
 
 
 @shared_task
@@ -16,8 +20,9 @@ def send_initial_subscribed_listings(subscription):
         from_email = formataddr((
             'Upperoom', 'upperoom.ng@gmail.com'
         ))
-        url = reverse('get_subscribed_listings', args=[subscription.pk])
-        print(url)
+        relative_url = reverse('get_subscribed_listings',
+                               args=[subscription.pk])
+        url = f'{HOME_URL}{relative_url}'
 
         html_message = f'''
         <html>
@@ -90,8 +95,7 @@ def send_initial_subscribed_listings(subscription):
                 <div class="content">
                     <p>Hello,</p>
                     <p>Listings have now been updated!</p>
-                    <p><a href="{url}">click to see updates</a></p>
-                    <p>If you did not request this verification, you can safely ignore this email.</p>
+                    <p><a href="{url}">Click to see updates</a></p>
                     <p>Thank you,<br>The Upperoom Team</p>
                 </div>
                 <div class="footer">
