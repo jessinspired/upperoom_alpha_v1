@@ -90,7 +90,7 @@ def get_subscribed_listings(request, pk):
     except Subscription.DoesNotExist:
         return handle_http_errors(request, 404)
 
-    subscribed_rooms = subscription.subscribed_rooms
+    subscribed_rooms = subscription.subscribed_rooms.all()
     context = {
         'subscribed_rooms': subscribed_rooms
     }
