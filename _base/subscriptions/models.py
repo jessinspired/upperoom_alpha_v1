@@ -67,8 +67,8 @@ class SubscribedListing(BaseModel):
     creator = models.ForeignKey(
         Creator,
         on_delete=models.CASCADE,
-        related_name='subscribed_listings'
-    ),
+        related_name='client_subscribed_listings'
+    )
 
     client = models.ForeignKey(
         Client,
