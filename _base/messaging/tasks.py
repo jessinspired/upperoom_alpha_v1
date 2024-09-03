@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from email.utils import formataddr
 from django.urls import reverse
+from subscriptions.views import create_subscribed_listing
 import os
 import logging
 
@@ -118,20 +119,18 @@ def send_initial_subscribed_listings(subscription):
             fail_silently=False
         )
         if response == 1:
-            print('Email sent successfully')
             logger.info(
                 f'Inital subscribed listings successfully sent [client_email: {subscription.client.email}]'
             )
             subscription.number_of_listings_sent = subscription.subscribed_rooms.count()
             subscription.save()
+            create_subscribed_listing(subscription)
         else:
             logger.error(
                 f'Initial subscription listings not sent [client_email: {subscription.client.email}]'
             )
-            print('Email not successfully sent')
 
     except Exception as e:
-        print(f"Failed to send email: {e}")
         logger.error(
             f'Failed with exception: {e} \n[client_email: {subscription.client.email}]'
         )
@@ -145,7 +144,10 @@ def send_email_verification_mail(user_email, uuid):
         ))
         home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
         url = f"{home_url}/auth/verify_email/{uuid}"
-        print(url)
+
+        # debug
+        logger.info(f'{url}')
+
         html_message = f'''
         <html>
         <head>
@@ -236,7 +238,6 @@ def send_email_verification_mail(user_email, uuid):
             html_message=html_message,
             fail_silently=False
         )
-        print('email sent')
         if response == 1:
             logger.info(
                 f'Email verification link successfully sent [user_email: {user_email}]'
@@ -247,7 +248,6 @@ def send_email_verification_mail(user_email, uuid):
             )
 
     except Exception as e:
-        print(f"Failed to send email: {e}")
         logger.error(
             f'Failed with exception: {e} \n[user_email: {user_email}]'
         )

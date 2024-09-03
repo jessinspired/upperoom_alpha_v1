@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from listings.models import School, Region, RoomProfile, Lodge
 from django.views.decorators.http import require_http_methods
-from .models import Subscription
+from .models import Subscription, SubscribedListing
 from core.views import handle_http_errors
+import logging
+
+logger = logging.getLogger('subscription')
 
 
 @require_http_methods(['GET'])
@@ -100,3 +103,22 @@ def get_subscribed_listings(request, pk):
         'subscriptions/subscribed-listings.html',
         context
     )
+
+
+def create_subscribed_listing(subscription):
+    subscribed_listings = []
+    for room_profile in subscription.subscribed_rooms.all():
+        subscribed_listing = SubscribedListing.objects.create(
+            subscription=subscription,
+            room_profile=room_profile,
+            creator=room_profile.lodge.creator,
+            client=subscription.client
+        )
+        subscribed_listings.append(subscribed_listing)
+
+
+    logger.info(
+        f'subscribed listings listing successfully created for subscription {subscription.pk}'
+    )
+
+    return subscribed_listings
