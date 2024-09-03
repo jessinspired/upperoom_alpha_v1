@@ -15,8 +15,11 @@ from .models import Transaction
 from django.db import transaction as db_transaction
 from subscriptions.views import subscribe_for_listing
 from messaging.tasks import send_initial_subscribed_listings
+import logging
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
+
+logger = logging.getLogger('payments')
 
 
 @role_required(['CLIENT'])
@@ -101,9 +104,9 @@ def webhook_view(request):
     # auth 1: IP Whitelisting
     whitelist = ['52.31.139.75', '52.49.173.169', '52.214.14.220']
     client_ip = request.headers.get('X-Real-Ip')
-    print('client ip: ', client_ip)
 
     if client_ip not in whitelist:
+        logger.warning(f'Unidentified ip to webhook: client ip: {client_ip}')
         return JsonResponse({'status': 'forbidden'}, status=400)
 
     # auth 2: Signature Validation
@@ -117,6 +120,8 @@ def webhook_view(request):
     signature = request.headers.get('X-Paystack-Signature')
 
     if hash != signature:
+        logger.error(
+            f'Unauthorized signature "X-Paystack-Signature" in header: {signature}')
         return JsonResponse({'status': 'unauthorized'}, status=401)
 
     # handle payment success case
@@ -128,7 +133,8 @@ def webhook_view(request):
                 reference=remote_reference)
         except Transaction.DoesNotExist:
             transaction = None
-            # log missing transaction
+            logger.error(
+                f'Transaction does not exist\nremote reference: {remote_reference}')
             return JsonResponse({'status': 'not found'}, status=404)
 
         # debug --> remove in production
@@ -143,11 +149,15 @@ def webhook_view(request):
         print(paid_amount, transaction.amount)
         if paid_amount != transaction.amount:
             # notify client of incomplete payment
-            # log transaction
+            logger.warning(
+                f'Incomplete amount paid:\nPaid_amount: {paid_amount}; Cost Price: {transaction.amount}\nTransaction id: {transaction.pk}')
             return JsonResponse({'status': 'bad request'}, status=400)
 
         transaction.is_fully_paid = True
         transaction.save()
+
+        logger.info(
+            f'Transaction fully paid\nTransaction id: {transaction.pk}')
 
         subscription, subscribed_rooms = subscribe_for_listing(transaction)
 
