@@ -104,16 +104,16 @@ class LodgeRegistrationForm(forms.ModelForm):
 class RoomProfileForm(forms.ModelForm):
     class Meta:
         model = RoomProfile
-        fields = ['price', 'total', 'vacancy', 'is_vacant']
+        fields = ['price', 'number', 'vacancy', 'is_vacant']
 
     def save(self, room_profile, commit=True):
         price = self.cleaned_data.get('price')
-        total = self.cleaned_data.get('total')
+        number = self.cleaned_data.get('number')
         vacancy = self.cleaned_data.get('vacancy')
         is_vacant = self.cleaned_data.get('is_vacant')
 
         room_profile.price = price
-        room_profile.total = total
+        room_profile.number = number
         room_profile.vacancy = vacancy
         room_profile.is_vacant = is_vacant
 

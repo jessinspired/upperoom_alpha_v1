@@ -45,7 +45,7 @@ class RoomProfileAdmin(admin.ModelAdmin):
         'lodge',
         'room_type',
         'price',
-        'total',
+        'number',
         'vacancy',
         'is_vacant'
     )

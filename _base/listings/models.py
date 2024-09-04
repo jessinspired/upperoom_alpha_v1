@@ -249,7 +249,7 @@ class RoomProfile(BaseModel):
         default=0
     )
 
-    total = models.PositiveIntegerField(default=0)
+    number = models.PositiveIntegerField(default=0)
     vacancy = models.PositiveIntegerField(default=0)
 
     room_type = models.ForeignKey(
