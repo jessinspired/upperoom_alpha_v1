@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block main %}
 <a href="{% url 'get_creator' %}">Profile</a>
 
 <h2 style="margin: 0;">Lodge Profile</h2>
@@ -22,3 +25,4 @@
     {% csrf_token %}
     <button>logout</button>
 </form>
+{% endblock %}

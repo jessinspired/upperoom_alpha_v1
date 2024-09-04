@@ -492,3 +492,8 @@ def send_vacancy_update_mail(pk):
         html_message=html_message,
         fail_silently=False
     )
+
+    if response > 1:
+        logger.info(
+            f'Vacancy updates sent to clients: {client_emails_list}'
+        )

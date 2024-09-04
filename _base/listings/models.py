@@ -249,7 +249,7 @@ class RoomProfile(BaseModel):
         default=0
     )
 
-    number = models.PositiveIntegerField(default=0)
+    total = models.PositiveIntegerField(default=0)
     vacancy = models.PositiveIntegerField(default=0)
 
     room_type = models.ForeignKey(
@@ -266,7 +266,7 @@ class RoomProfile(BaseModel):
         default=None
     )
 
-    is_vacant = models.BooleanField(default=True)
+    is_vacant = models.BooleanField(default=False)
 
     # used for favourites
     # clients = models.ManyToManyField(
