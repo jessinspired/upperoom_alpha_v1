@@ -129,7 +129,8 @@ def send_initial_subscribed_listings(subscription_pk):
             subscribed_listings, creator_email_list = create_subscribed_listing(
                 subscription)
 
-            send_creator_subscription_mail.delay(creator_email_list)
+            # send_creator_subscription_mail.delay(creator_email_list)
+            send_creator_subscription_mail(creator_email_list)
         else:
             logger.error(
                 f'Initial subscription listings not sent [client_email: {subscription.client.email}]'
