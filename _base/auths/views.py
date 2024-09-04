@@ -10,7 +10,7 @@ from .forms import (
 )
 from django.contrib.auth import get_user_model, login, logout
 from users.models import User, CreatorProfile, ClientProfile
-from messaging.tasks import send_email_verification_mail
+from messaging.tasks import send_verification_mail
 from .models import EmailVerificationToken
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
@@ -73,7 +73,7 @@ def init_email_auth(request):
     token = EmailVerificationToken.create_token(email, role)
 
     uuid = token.uuid_code
-    send_email_verification_mail.delay(email, uuid)
+    send_verification_mail.delay(email, uuid)
 
     # home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
     # url = f"{home_url}/auth/verify_email/{uuid}"

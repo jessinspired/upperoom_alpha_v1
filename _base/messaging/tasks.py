@@ -7,6 +7,7 @@ from django.urls import reverse
 from subscriptions.views import create_subscribed_listing
 import os
 import logging
+from subscriptions.models import Subscription
 
 logger = logging.getLogger('messaging')
 
@@ -15,12 +16,13 @@ HOME_URL = os.getenv('HOME_URL')
 
 
 @shared_task
-def send_initial_subscribed_listings(subscription):
+def send_initial_subscribed_listings(subscription_pk):
     """
     This task is called just once, when a client
     completes the subscription
     """
     try:
+        subscription = Subscription.objects.get(pk=subscription_pk)
         from_email = formataddr((
             'Upperoom', 'upperoom.ng@gmail.com'
         ))
@@ -120,7 +122,7 @@ def send_initial_subscribed_listings(subscription):
         )
         if response == 1:
             logger.info(
-                f'Inital subscribed listings successfully sent [client_email: {subscription.client.email}]'
+                f'Initial subscribed listings successfully sent [client_email: {subscription.client.email}]'
             )
             subscription.number_of_listings_sent = subscription.subscribed_rooms.count()
             subscription.save()
@@ -140,7 +142,7 @@ def send_initial_subscribed_listings(subscription):
 
 
 @shared_task
-def send_email_verification_mail(user_email, uuid):
+def send_verification_mail(user_email, uuid):
     try:
         from_email = formataddr((
             'Upperoom Verification', 'upperoom.ng@gmail.com'
