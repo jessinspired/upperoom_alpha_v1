@@ -365,4 +365,5 @@ def send_creator_subscription_mail(creator_email_list):
 
     except Exception as e:
         # improve
-        logger.error('Could not send client subscription mail')
+        logger.error(
+            f'Could not send client subscription mail with Execption {e}\nCreator mail list {str(creator_email_list)}')

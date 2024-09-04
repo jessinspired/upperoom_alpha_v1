@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<a href="{% get_home %}">home</a>
-
 <form
 action="{% url 'login' %}"
 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'

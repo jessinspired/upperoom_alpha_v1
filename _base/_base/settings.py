@@ -214,7 +214,7 @@ LOGGING = {
         'generic_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, '_logs', 'generic.log'),
+            'filename': os.path.join(BASE_DIR, '_logs', '_generic.log'),
             'formatter': 'verbose',
         },
         'auths_file': {
