@@ -4,8 +4,9 @@ from django.views.decorators.http import require_http_methods
 from .models import Subscription, SubscribedListing
 from core.views import handle_http_errors
 import logging
+# from messaging.tasks import send_creator_subscription_mail
 
-logger = logging.getLogger('subscription')
+logger = logging.getLogger('subscriptions')
 
 
 @require_http_methods(['GET'])
@@ -107,6 +108,9 @@ def get_subscribed_listings(request, pk):
 
 def create_subscribed_listing(subscription):
     subscribed_listings = []
+    creator_email_set = set()
+
+    # check if subscribed listing already exists
     for room_profile in subscription.subscribed_rooms.all():
         subscribed_listing = SubscribedListing.objects.create(
             subscription=subscription,
@@ -115,10 +119,14 @@ def create_subscribed_listing(subscription):
             client=subscription.client
         )
         subscribed_listings.append(subscribed_listing)
-
+        creator_email_set.add(room_profile.lodge.creator.email)
 
     logger.info(
         f'subscribed listings listing successfully created for subscription {subscription.pk}'
     )
 
-    return subscribed_listings
+    creator_email_list = list(creator_email_set)
+
+    # send_creator_subscription_mail(list(creator_email_set))
+
+    return subscribed_listings, creator_email_list

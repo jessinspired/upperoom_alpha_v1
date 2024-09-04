@@ -11,7 +11,13 @@ from payments.models import Transaction
 @login_required
 @role_required(['CREATOR'])
 def get_creator(request):
-    return render(request, 'users/creator.html')
+    subscribed_listings = request.user.client_subscribed_listings.all()
+
+    context = {
+        'subscribed_listings': subscribed_listings
+    }
+
+    return render(request, 'users/creator.html', context)
 
 
 @login_required

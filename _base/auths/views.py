@@ -73,7 +73,7 @@ def init_email_auth(request):
     token = EmailVerificationToken.create_token(email, role)
 
     uuid = token.uuid_code
-    send_email_verification_mail(email, uuid)
+    send_email_verification_mail.delay(email, uuid)
 
     # home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
     # url = f"{home_url}/auth/verify_email/{uuid}"

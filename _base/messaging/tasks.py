@@ -124,7 +124,10 @@ def send_initial_subscribed_listings(subscription):
             )
             subscription.number_of_listings_sent = subscription.subscribed_rooms.count()
             subscription.save()
-            create_subscribed_listing(subscription)
+            subscribed_listings, creator_email_list = create_subscribed_listing(
+                subscription)
+
+            send_creator_subscription_mail.delay(creator_email_list)
         else:
             logger.error(
                 f'Initial subscription listings not sent [client_email: {subscription.client.email}]'
@@ -251,3 +254,112 @@ def send_email_verification_mail(user_email, uuid):
         logger.error(
             f'Failed with exception: {e} \n[user_email: {user_email}]'
         )
+
+
+@shared_task
+def send_creator_subscription_mail(creator_email_list):
+    try:
+        from_email = formataddr((
+            'Upperoom - Client Subscription Notification', 'upperoom.ng@gmail.com'
+        ))
+        relative_url = reverse('get_creator')
+        url = f'{HOME_URL}{relative_url}'
+        html_message = f'''
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    color: #333333;
+                    background-color: #f9f9f9;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    box-sizing: border-box;
+                }}
+                .container {{
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    box-sizing: border-box;
+                }}
+                .header {{
+                    background-color: #013220; /* Oxford Blue */
+                    padding: 10px;
+                    text-align: center;
+                    color: #ffffff;
+                    border-radius: 10px 10px 0 0;
+                }}
+                .header h1 {{
+                    margin: 0;
+                    font-size: 24px;
+                }}
+                .content {{
+                    padding: 20px;
+                    color: #333333;
+                    box-sizing: border-box;
+                }}
+                .content p {{
+                    line-height: 1.6;
+                    margin: 20px 0;
+                }}
+                .content a {{
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #2e8b57; /* Sea Green */
+                    color: #ffffff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+                .content a:hover {{
+                    background-color: #276d47;
+                }}
+                .footer {{
+                    text-align: center;
+                    padding: 20px;
+                    font-size: 12px;
+                    color: #777777;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Subscription Notification</h1>
+                </div>
+                <div class="content">
+                    <p>Hello,</p>
+                    <p>Some clients have subscribed to your listings</p>
+                    <p><a href="{url}">Click to view in your account</a></p>
+                    <p>Thank you,<br>The Upperoom Team</p>
+                </div>
+                <div class="footer">
+                    <p>&copy; {datetime.now().year} Upperoom Accommodations. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+
+        response = send_mail(
+            'Your listings are getting noticed!',
+            '',
+            from_email,
+            creator_email_list,
+            html_message=html_message,
+            fail_silently=False
+        )
+
+        # work on this later
+        logger.info(
+            f'client subscription email successfully sent'
+        )
+
+    except Exception as e:
+        # improve
+        logger.error('Could not send client subscription mail')

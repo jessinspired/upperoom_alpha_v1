@@ -5,6 +5,11 @@
     <button>logout</button>
 </form>
 
+<h4 style="margin: 0;">Client Subscribed Listings</h4>
+{% for listing in subscribed_listings %}
+    {{ listing.room_profile.room_type.name}} - {{ listing.room_profile.lodge.name }} - {{ listing.status.get_name_display }}
+{% endfor %}
+
 <h4 style="margin: 0;">Your Hostels</h4>
 {% for lodge in user.lodges.all %}
     <div>

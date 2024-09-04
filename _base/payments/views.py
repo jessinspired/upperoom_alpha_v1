@@ -162,7 +162,7 @@ def webhook_view(request):
         subscription, subscribed_rooms = subscribe_for_listing(transaction)
 
         if subscribed_rooms.exists():
-            send_initial_subscribed_listings(subscription)
+            send_initial_subscribed_listings.delay(subscription)
 
         print('subscription for listing added with algorithm')
 
