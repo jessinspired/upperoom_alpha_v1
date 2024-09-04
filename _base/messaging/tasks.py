@@ -8,6 +8,7 @@ from subscriptions.views import create_subscribed_listing
 import os
 import logging
 from subscriptions.models import Subscription
+from listings.models import RoomProfile
 
 logger = logging.getLogger('messaging')
 
@@ -367,3 +368,127 @@ def send_creator_subscription_mail(creator_email_list):
         # improve
         logger.error(
             f'Could not send client subscription mail with Execption {e}\nCreator mail list {str(creator_email_list)}')
+
+
+@shared_task
+def send_vacancy_update_mail(pk):
+    """
+    Sends vacancy updates to all subscribed clients
+    Args:
+        pk: room_profile pk
+            type(str, uuid)
+    """
+
+    room_profile = RoomProfile.objects.get(pk=pk)
+    region = room_profile.lodge.region
+
+    subscriptions = Subscription.objects.filter(
+        is_expired=False,
+        transaction__regions=region
+    ).distinct()
+
+    subscriptions_without_room = subscriptions.exclude(
+        subscribed_rooms=room_profile
+    )
+
+    for subscription in subscriptions_without_room:
+        subscription.subscribed_rooms.add(room_profile)
+
+    client_emails_list = []
+    for subscription in subscriptions:
+        if subscription.client.email not in client_emails_list:
+            client_emails_list.append(subscription.client.email)
+
+    html_message = f'''
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    color: #333333;
+                    background-color: #f9f9f9;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    box-sizing: border-box;
+                }}
+                .container {{
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    box-sizing: border-box;
+                }}
+                .header {{
+                    background-color: #013220; /* Oxford Blue */
+                    padding: 10px;
+                    text-align: center;
+                    color: #ffffff;
+                    border-radius: 10px 10px 0 0;
+                }}
+                .header h1 {{
+                    margin: 0;
+                    font-size: 24px;
+                }}
+                .content {{
+                    padding: 20px;
+                    color: #333333;
+                    box-sizing: border-box;
+                }}
+                .content p {{
+                    line-height: 1.6;
+                    margin: 20px 0;
+                }}
+                .content a {{
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #2e8b57; /* Sea Green */
+                    color: #ffffff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+                .content a:hover {{
+                    background-color: #276d47;
+                }}
+                .footer {{
+                    text-align: center;
+                    padding: 20px;
+                    font-size: 12px;
+                    color: #777777;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>New Vacancy Updates</h1>
+                </div>
+                <div class="content">
+                    <p>Hello,</p>
+                    <p>You have new vacancy updates for your subscription</p>
+                    <p><a href="#">Click to view in your account</a></p>
+                    <p>Thank you,<br>The Upperoom Team</p>
+                </div>
+                <div class="footer">
+                    <p>&copy; {datetime.now().year} Upperoom Accommodations. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+
+    from_email = formataddr((
+        'Upperoom', 'upperoom.ng@gmail.com'
+    ))
+    response = send_mail(
+        'Vacancy updates!',
+        '',
+        from_email,
+        client_emails_list,
+        html_message=html_message,
+        fail_silently=False
+    )

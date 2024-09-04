@@ -266,6 +266,8 @@ class RoomProfile(BaseModel):
         default=None
     )
 
+    is_vacant = models.BooleanField(default=True)
+
     # used for favourites
     # clients = models.ManyToManyField(
     #     Client,
