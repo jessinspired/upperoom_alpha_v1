@@ -77,7 +77,7 @@ def create_transfer_recipient(creator_transfer_info):
         raise ValueError("Failed to create transfer recipient: " + response_data.get('message'))
 
 
-def initiate_transfer(recipient_code, amount, reference, reason):
+def initiate_single_transfer(recipient_code, amount, reference, reason=""):
     """
     Initiates a transfer on Paystack.
 
@@ -229,7 +229,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
 
         recipient_code = create_transfer_recipient(creator_info)
         reference = generate_unique_reference(length=32)
-        transfer_response = initiate_transfer(
+        transfer_response = initiate_single_transfer(
             recipient_code=recipient_code,
             amount=creator_info.balance,
             reference=reference,

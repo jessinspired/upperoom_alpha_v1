@@ -179,7 +179,7 @@ class CreatorTransaction(BaseModel):
         help_text="The creator who initiated the transaction. This establishes a one-to-many relationship with the Creator model."
     )
     
-    amount_transferred = models.DecimalField(
+    income = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         help_text="The amount of money transferred in the transaction."
