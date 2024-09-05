@@ -1,20 +1,273 @@
+import os
 import random
 import string
-from .models import Transaction
+from typing import List, Union
+
+from django.http import JsonResponse
+import requests
+
+from messaging.tasks import send_initial_subscribed_listings
+from subscriptions.views import subscribe_for_listing
+from users.models import Creator
+from .models import CreatorTransaction, CreatorTransferInfo, Transaction
 
 
 def generate_unique_reference(length):
     """
-    Generates unique transaction reference
+    Generates a unique transaction reference.
 
-    args:
-        length(int): the length of the reference
+    Args:
+        length (int): The length of the reference.
+
+    Returns:
+        str: A unique transaction reference.
     """
     allowed_chars = string.ascii_letters + string.digits + '-.='
 
+    def is_reference_unique(reference):
+        """
+        Checks if the reference is unique across Transaction and CreatorTransaction models.
+
+        Args:
+            reference (str): The reference to check.
+
+        Returns:
+            bool: True if unique, False otherwise.
+        """
+        return not (Transaction.objects.filter(reference=reference).exists() or 
+                    CreatorTransaction.objects.filter(reference=reference).exists())
+    
     while True:
         reference = ''.join(random.choices(allowed_chars, k=length))
-
-        # Check if this reference already exists in your transaction model
-        if not Transaction.objects.filter(reference=reference).exists():
+        
+        if is_reference_unique(reference):
             return reference
+
+
+def create_transfer_recipient(creator_transfer_info):
+    """
+    Creates a transfer recipient on Paystack and returns the recipient code.
+
+    Args:
+        creator_transfer_info (CreatorTransferInfo): An instance containing the transfer recipient details.
+
+    Returns:
+        str: The recipient code.
+    """
+    url = 'https://api.paystack.co/transferrecipient'
+    headers = {
+        'Authorization': f'Bearer {os.getenv("PAYSTACK_SECRET_KEY")}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'type': 'nuban',  # Change as needed based on the recipient's bank account type
+        'name': creator_transfer_info.account_name,
+        'account_number': creator_transfer_info.account_number,
+        'bank_code': creator_transfer_info.bank_code,
+        'currency': creator_transfer_info.currency
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    response_data = response.json()
+
+    if response_data.get('status'):
+        recipient_code = response_data['data']['recipient_code']
+        return recipient_code
+    else:
+        raise ValueError("Failed to create transfer recipient: " + response_data.get('message'))
+
+
+def initiate_transfer(recipient_code, amount, reference, reason):
+    """
+    Initiates a transfer on Paystack.
+
+    Args:
+        recipient_code (str): The recipient's code.
+        amount (float): The amount to transfer (in kobo).
+        reference (str): The unique reference for the transfer.
+        reason (str): The reason for the transfer.
+
+    Returns:
+        dict: The response from the Paystack API.
+    """
+    url = 'https://api.paystack.co/transfer'
+    headers = {
+        'Authorization': f'Bearer {os.getenv("PAYSTACK_SECRET_KEY")}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'source': 'balance',  # Can be 'balance' or 'subaccount' depending on the source of funds
+        'amount': int(amount * 100),  # Convert amount to kobo
+        'reference': reference,
+        'recipient': recipient_code,
+        'reason': reason
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    response_data = response.json()
+
+    return response_data
+
+
+def initiate_bulk_transfer(transfers: List[dict]):
+    """
+    Initiates a bulk transfer for multiple creators.
+
+    Args:
+        transfers (List[dict]): A list of transfer objects.
+    """
+    url = 'https://api.paystack.co/transfer/bulk'
+    headers = {
+        'Authorization': f'Bearer {os.getenv("PAYSTACK_SECRET_KEY")}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'currency': 'NGN',
+        'source': 'balance',
+        'transfers': transfers
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    response_data = response.json()
+
+    if response_data.get('status'):
+        for transfer in response_data['data']:
+            CreatorTransaction.objects.create(
+                recipient_code=transfer['recipient'],
+                creator=Creator.objects.get(id=transfer['creator_id']),  # Assuming creator_id is available
+                amount_transfered=transfer['amount'] / 100,  # Convert from kobo to naira
+                reference=transfer['reference'],
+                status=transfer['status'],
+                reason=transfer['reason']
+            )
+    else:
+        raise ValueError("Bulk transfer failed: " + response_data.get('message'))
+
+
+def handle_transfer_event(event, data):
+    """
+    Processes the transfer status event from Paystack.
+    """
+    reference = data.get('reference')
+    if not reference:
+        return
+
+    try:
+        # Update the transaction status based on the event type
+        transaction = CreatorTransaction.objects.get(reference=reference)
+        if event == 'transfer.success':
+            transaction.status = 'successful'
+        elif event == 'transfer.failed':
+            transaction.status = 'failed'
+        elif event == 'transfer.reversed':
+            transaction.status = 'reversed'
+        transaction.save()
+    except CreatorTransaction.DoesNotExist:
+        # Log or handle the case where the transaction does not exist
+        pass
+
+
+def handle_charge_success(data):
+    """
+    Handles the charge.success event from Paystack.
+
+    Args:
+        data (dict): The event data.
+    """
+    global logger
+    
+    remote_reference = data.get('reference')
+    try:
+        transaction = Transaction.objects.get(reference=remote_reference)
+    except Transaction.DoesNotExist:
+        logger.error(f'Transaction not found for reference: {remote_reference}')
+        return JsonResponse({'status': 'not found'}, status=404)
+
+    transaction.paystack_id = data.get('id')
+
+    paid_amount = data.get('amount') / 100  # Convert from kobo to naira
+
+    if paid_amount != transaction.amount:
+        logger.warning(f'Incomplete payment: Paid: {paid_amount}, Expected: {transaction.amount}')
+        return JsonResponse({'status': 'bad request'}, status=400)
+
+    transaction.is_fully_paid = True
+    transaction.save()
+
+    logger.info(f'Transaction fully paid: ID {transaction.pk}')
+    subscription, subscribed_rooms = subscribe_for_listing(transaction)
+
+    if subscribed_rooms.exists():
+        send_initial_subscribed_listings(subscription.pk)
+
+    logger.info('Subscription for listing added')
+
+
+def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
+    """
+    Handles payments for one or more creators by processing the payment pipeline.
+
+    Args:
+        creators (Union[Creator, List[Creator]]): A single Creator instance or a list of Creator instances.
+
+    Returns:
+        List[CreatorTransaction]: A list of CreatorTransaction instances representing the processed transactions.
+    """
+    # Ensure creators is a list
+    if isinstance(creators, Creator):
+        creators = [creators]
+
+    transactions = []
+    
+    if len(creators) == 1:
+        # Handle single payment
+        creator = creators[0]
+        try:
+            creator_info = CreatorTransferInfo.objects.get(creator=creator)
+        except CreatorTransferInfo.DoesNotExist:
+            raise ValueError(f"No transfer info found for creator {creator.id}")
+
+        recipient_code = create_transfer_recipient(creator_info)
+        reference = generate_unique_reference(length=32)
+        transfer_response = initiate_transfer(
+            recipient_code=recipient_code,
+            amount=creator_info.balance,
+            reference=reference,
+            reason="Payment for services"
+        )
+
+        transaction = CreatorTransaction(
+            recipient_code=recipient_code,
+            creator=creator,
+            amount_transfered=creator_info.balance,
+            reference=reference,
+            status=transfer_response.get("status"),
+            reason="Payment for services"
+        )
+        transaction.save()
+        transactions.append(transaction)
+
+    else:
+        # Handle bulk payments
+        transfers = []
+        for creator in creators:
+            try:
+                creator_info = CreatorTransferInfo.objects.get(creator=creator)
+            except CreatorTransferInfo.DoesNotExist:
+                raise ValueError(f"No transfer info found for creator {creator.id}")
+
+            recipient_code = create_transfer_recipient(creator_info)
+            reference = generate_unique_reference(length=32)
+
+            transfers.append({
+                "amount": creator_info.balance,  # Assuming `balance` is in kobo
+                "reference": reference,
+                "reason": "Payment for services",
+                "recipient": recipient_code,
+                "creator_id": creator.id  # Assuming creator_id is available
+            })
+
+        if transfers:
+            initiate_bulk_transfer(transfers)
+
+    return transactions

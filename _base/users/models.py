@@ -1,3 +1,6 @@
+import os
+
+import requests
 from core.models import BaseModel
 from django.db import models
 from django.contrib.auth.models import (
@@ -6,6 +9,7 @@ from django.contrib.auth.models import (
     Group,
     Permission
 )
+from django.core.exceptions import ValidationError
 
 
 class User(BaseModel, AbstractUser):
@@ -25,11 +29,38 @@ class User(BaseModel, AbstractUser):
 
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)
+    customer_code = models.CharField(max_length=50, default="")
 
     def save(self, *args, **kwargs):
-        if not self.role:
-            self.role = self.Role.DEFAULT
-        super().save(*args, **kwargs)
+        """Override save to create a Paystack customer when a user is created."""
+        # Check if it's a new user
+        if self.pk is None:
+            super().save(*args, **kwargs)  # Save user first to get the ID
+            self._create_paystack_customer()
+        else:
+            super().save(*args, **kwargs)  # Update existing user
+
+
+    def _create_paystack_customer(self):
+        """Create a Paystack customer and save the customer code."""
+        url = "https://api.paystack.co/customer"
+        headers = {
+            "Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY')}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "email": self.email,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+        }
+        response = requests.post(url, headers=headers, json=data)
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            self.customer_code = response_data['data']['customer_code']
+            self.save()
+        else:
+            raise ValidationError("Failed to create Paystack customer.")
 
 
 # Creator models

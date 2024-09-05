@@ -1,4 +1,5 @@
-from django.http import JsonResponse, HttpResponseForbidden
+from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import os
@@ -10,17 +11,56 @@ from auths.decorators import role_required
 from listings.models import Region
 import hmac
 import hashlib
-from .utils import generate_unique_reference
-from .models import Transaction
+from .utils import generate_unique_reference, handle_charge_success, handle_transfer_event
+from .models import CreatorTransferInfo, Transaction
 from django.db import transaction as db_transaction
-from subscriptions.views import subscribe_for_listing
-from messaging.tasks import send_initial_subscribed_listings
 import logging
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 logger = logging.getLogger('payments')
 
+
+@role_required(['CREATOR'])
+@require_http_methods(['POST'])
+def save_transfer_info(request):
+    try:
+        data = json.loads(request.body)
+        
+        account_number = data.get('account_number')
+        bank_code = data.get('bank_code')
+        currency = data.get('currency')
+        bvn = data.get('bvn')
+        
+        # Validate required fields
+        if not all([account_number, bank_code, currency, bvn]):
+            return JsonResponse({"error": "Missing required fields"}, status=400)
+        
+        creator = request.user
+        
+        # Create or update transfer info
+        try:
+            CreatorTransferInfo.objects.update_or_create(
+                creator=creator,
+                defaults={
+                    'account_number': account_number,
+                    'bank_code': bank_code,
+                    'currency': currency,
+                    'bvn': bvn,
+                }
+            )
+            
+            return JsonResponse({"message": "Transfer info saved successfully"}, status=201)
+        
+        except ValidationError as e:
+            # Handle validation errors (e.g., account resolving, name mismatch)
+            return JsonResponse({"error": str(e)}, status=400)
+    
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    
+    except Exception as e:
+        return JsonResponse({"error": "An error occurred: " + str(e)}, status=500)
 
 @role_required(['CLIENT'])
 @require_http_methods(['POST'])
@@ -95,76 +135,37 @@ def webhook_view(request):
     """
     Primary Purpose: To verify the transaction status
 
-    - First and most preferred way to verify payments from paystack
-    - Doesn't work with local host
-    - Switch to this when testing on remote server with a public domain
-    - web hook url is set up in paystack dashboard
+    - Verifies payments from Paystack
+    - Requires a public domain for webhooks
+    - Webhook URL is set up in Paystack dashboard
     """
 
-    # auth 1: IP Whitelisting
+    # Auth 1: IP Whitelisting
     whitelist = ['52.31.139.75', '52.49.173.169', '52.214.14.220']
     client_ip = request.headers.get('X-Real-Ip')
 
     if client_ip not in whitelist:
-        logger.warning(f'Unidentified ip to webhook: client ip: {client_ip}')
-        return JsonResponse({'status': 'forbidden'}, status=400)
+        logger.warning(f'Unauthorized IP: {client_ip}')
+        return JsonResponse({'status': 'forbidden'}, status=403)
 
-    # auth 2: Signature Validation
+    # Auth 2: Signature Validation
     secret = os.getenv('PAYSTACK_TEST_KEY')
     body = request.body
     payload = json.loads(body)
-    print('payload :', payload)
-    print('headers: ', request.headers)
-
-    hash = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
     signature = request.headers.get('X-Paystack-Signature')
 
-    if hash != signature:
-        logger.error(
-            f'Unauthorized signature "X-Paystack-Signature" in header: {signature}')
+    expected_signature = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
+
+    if signature != expected_signature:
+        logger.error(f'Unauthorized signature: {signature}')
         return JsonResponse({'status': 'unauthorized'}, status=401)
 
-    # handle payment success case
-    if payload.get('event') == 'charge.success':
-        remote_reference = payload.get('data').get('reference')
+    event = payload.get('event')
+    data = payload.get('data', {})
 
-        try:
-            transaction = Transaction.objects.get(
-                reference=remote_reference)
-        except Transaction.DoesNotExist:
-            transaction = None
-            logger.error(
-                f'Transaction does not exist\nremote reference: {remote_reference}')
-            return JsonResponse({'status': 'not found'}, status=404)
-
-        # debug --> remove in production
-        if transaction:
-            print(remote_reference, transaction.reference)
-
-        transaction.paystack_id = payload.get('data').get('id')
-
-        paid_amount = payload.get('data').get('amount')
-        paid_amount = paid_amount / 100
-
-        print(paid_amount, transaction.amount)
-        if paid_amount != transaction.amount:
-            # notify client of incomplete payment
-            logger.warning(
-                f'Incomplete amount paid:\nPaid_amount: {paid_amount}; Cost Price: {transaction.amount}\nTransaction id: {transaction.pk}')
-            return JsonResponse({'status': 'bad request'}, status=400)
-
-        transaction.is_fully_paid = True
-        transaction.save()
-
-        logger.info(
-            f'Transaction fully paid\nTransaction id: {transaction.pk}')
-
-        subscription, subscribed_rooms = subscribe_for_listing(transaction)
-
-        if subscribed_rooms.exists():
-            # send_initial_subscribed_listings.delay(subscription.pk)
-            send_initial_subscribed_listings(subscription.pk)
-
-        print('subscription for listing added with algorithm')
+    if event == 'charge.success':
+        handle_charge_success(data)
+    elif event in ['transfer.success', 'transfer.failed', 'transfer.reversed']:
+        handle_transfer_event(event, data)
 
     return JsonResponse({'status': 'success'}, status=200)
