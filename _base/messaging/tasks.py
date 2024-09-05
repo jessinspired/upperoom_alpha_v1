@@ -492,7 +492,6 @@ def send_vacancy_update_mail(pk):
         client_emails_list,
         html_message=html_message,
         fail_silently=False,
-        headers={'Reply-To': 'replyto@example.com'}
     )
 
     if response == 0:
