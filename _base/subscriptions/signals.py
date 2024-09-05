@@ -7,6 +7,8 @@ from django.dispatch import receiver
 from .models import RoomProfile
 import logging
 from messaging.tasks import send_vacancy_update_mail
+from .models import Subscription, SubscribedListing
+
 
 logger = logging.getLogger('subscriptions')
 
@@ -26,7 +28,25 @@ def process_vacancy(sender, instance, **kwargs):
         return
     try:
         original_instance = RoomProfile.objects.get(pk=instance.pk)
-        if original_instance.is_vacant == instance.is_vacant or instance.is_vacant == False:
+        if original_instance.is_vacant == instance.is_vacant:
+            return
+
+        if instance.is_vacant == False:
+            subscriptions = Subscription.objects.filter(
+                subscribed_rooms=instance,
+                is_expired=False
+            )
+
+            for subscription in subscriptions:
+                subscription.subscribed_rooms.remove(instance)
+
+            SubscribedListing.objects.filter(
+                subscription__is_expired=False,
+                room_profile=instance
+            ).update(status=SubscribedListing.Status.REJECTED)
+
+            logger.info(
+                'room profile removed from subscriptions and substriction lisitng set to rejected')
             return
 
         logger.info(

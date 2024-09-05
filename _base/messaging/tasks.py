@@ -133,6 +133,7 @@ def send_initial_subscribed_listings(subscription_pk):
             # send_creator_subscription_mail.delay(creator_email_list)
             send_creator_subscription_mail(creator_email_list)
         else:
+
             logger.error(
                 f'Initial subscription listings not sent [client_email: {subscription.client.email}]'
             )
@@ -490,10 +491,29 @@ def send_vacancy_update_mail(pk):
         from_email,
         client_emails_list,
         html_message=html_message,
-        fail_silently=False
+        fail_silently=False,
+        headers={'Reply-To': 'replyto@example.com'}
     )
 
-    if response > 1:
-        logger.info(
-            f'Vacancy updates sent to clients: {client_emails_list}'
+    if response == 0:
+        logger.error(
+            f'No Vacancy updates sent to clients: {client_emails_list}'
         )
+        return
+
+    from subscriptions.models import SubscribedListing
+
+    for subscription in subscriptions:
+        SubscribedListing.objects.create(
+            subscription=subscription,
+            room_profile=room_profile,
+            creator=room_profile.lodge.creator,
+            client=subscription.client
+        )
+
+    logger.info(
+        f'Vacancy updates sent to clients: {client_emails_list}'
+    )
+    logger.info(
+        f'Subscription listings created: {client_emails_list}'
+    )
