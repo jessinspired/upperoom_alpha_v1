@@ -116,7 +116,7 @@ class CreatorTransferInfo(BaseModel):
         # Step 1: Resolve account details from Paystack
         resolve_url = f'https://api.paystack.co/bank/resolve?account_number={self.account_number}&bank_code={self.bank_code}'
         headers = {
-            'Authorization': f'Bearer {os.getenv('PAYSTACK_TEST_KEY')}'
+            'Authorization': f'Bearer {os.getenv("PAYSTACK_TEST_KEY")}'
         }
         
         resolve_response = requests.get(resolve_url, headers=headers)
