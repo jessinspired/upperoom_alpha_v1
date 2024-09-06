@@ -9,6 +9,7 @@ logger = logging.getLogger('subscriptions')
 
 @shared_task
 def change_status_to_verified(subscribed_listing_id):
+    logger.info('In change_status_to_verified -> subscriptions.task')
     try:
         subscribed_listing = SubscribedListing.objects.get(
             id=subscribed_listing_id)

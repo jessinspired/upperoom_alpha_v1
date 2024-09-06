@@ -14,11 +14,11 @@ logger = logging.getLogger('subscriptions')
 
 
 @receiver(pre_save, sender=RoomProfile)
-def process_vacancy(sender, instance, created, **kwargs):
+def process_vacancy(sender, instance, **kwargs):
     logger.info(
         f'debugging process vacancy')
 
-    if created:
+    if instance.pk is None:
         if instance.is_vacant == False:
             return
 
