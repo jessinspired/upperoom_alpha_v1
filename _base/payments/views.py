@@ -6,7 +6,11 @@ import os
 import requests
 from django.http import HttpResponse
 from django_htmx.http import trigger_client_event
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
 import json
+from .forms import CreatorTransferInfoForm
 from auths.decorators import role_required
 from listings.models import Region
 import hmac
@@ -128,6 +132,23 @@ def initialize_transaction(request):
         print(e)
         return HttpResponse(f'<p id="response-message">An error occured!<br>Error<b>{e}</p>')
 
+
+@role_required(['CREATOR'])
+@require_http_methods(['GET', 'POST'])
+def creator_transfer_info_view(request):
+    if request.method == 'POST':
+        form = CreatorTransferInfoForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Transfer information saved successfully.')
+                return redirect('success_url')  # Redirect to a success page or another view
+            except ValidationError as e:
+                messages.error(request, str(e))
+    else:
+        form = CreatorTransferInfoForm()
+
+    return render(request, 'payments/transfer_info.html', {'form': form})
 
 @csrf_exempt
 @require_http_methods(['POST'])
