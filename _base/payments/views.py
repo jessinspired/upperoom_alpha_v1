@@ -139,16 +139,18 @@ def creator_transfer_info_view(request):
     if request.method == 'POST':
         form = CreatorTransferInfoForm(request.POST)
         if form.is_valid():
+            transfer_info = form.save(commit=False)
+            transfer_info.creator = request.user
             try:
-                form.save()
+                transfer_info.save()
                 messages.success(request, 'Transfer information saved successfully.')
-                return redirect('success_url')  # Redirect to a success page or another view
+                return redirect('creator_transfer_info')
             except ValidationError as e:
                 messages.error(request, str(e))
     else:
         form = CreatorTransferInfoForm()
 
-    return render(request, 'payments/transfer_info.html', {'form': form})
+    return render(request, 'payments/transfer-info.html', {'form': form})
 
 @csrf_exempt
 @require_http_methods(['POST'])
