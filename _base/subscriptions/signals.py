@@ -17,12 +17,14 @@ logger = logging.getLogger('subscriptions')
 def process_vacancy(sender, instance, **kwargs):
     logger.info(f'process_vacancy: {instance.pk}')
 
-    if instance.pk is None:
+    if not RoomProfile.objects.filter(pk=instance.pk).exists():
         if instance.is_vacant == False:
+            logger.info(
+                f'Room profile with id {instance.pk} created and is occupied')
             return
 
         logger.info(
-            f'Room profile with id {instance.pk} freshly created and is vacant')
+            f'Room profile with id {instance.pk} created and is vacant')
         send_vacancy_update_mail(instance.pk)
         return
     try:
