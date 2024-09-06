@@ -101,6 +101,10 @@ class CreatorTransferInfo(BaseModel):
         default=0.00
     )
     
+    is_validated = models.BooleanField(
+        default=False,
+    )
+    
     def save(self, *args, **kwargs):
         """
         Override the save method to perform additional validations and resolve account details before saving the record.
@@ -128,26 +132,32 @@ class CreatorTransferInfo(BaseModel):
         else:
             raise ValidationError("Failed to resolve account details. Please check the account number and bank code.")
         
-        # Step 2: Verify creator name with BVN and bank account using Paystack
-        creator_first_name = self.creator.first_name
-        creator_last_name = self.creator.last_name
-        
-        verification_url = f'https://api.paystack.co/customer/{self.creator.customer_code}/identification'
-        verification_data = {
-            "country": "NG",
-            "type": "bank_account",
-            "account_number": self.account_number,
-            "bvn": self.bvn,
-            "bank_code": self.bank_code,
-            "first_name": creator_first_name,
-            "last_name": creator_last_name
-        }
-        
-        verification_response = requests.post(verification_url, headers=headers, json=verification_data)
-        verification_result = verification_response.json()
-        
-        if not verification_result.get("status"):
-            raise ValidationError("Failed to verify account details. The name on the bank account does not match the creator's name.")
+        if not self.is_validated:
+            # Step 2: Verify creator name with BVN and bank account using Paystack
+            creator_first_name = self.creator.first_name
+            creator_last_name = self.creator.last_name
+            
+            verification_url = f'https://api.paystack.co/customer/{self.creator.customer_code}/identification'
+            verification_data = {
+                "country": "NG",
+                "type": "bank_account",
+                "account_number": self.account_number,
+                "bvn": self.bvn,
+                "bank_code": self.bank_code,
+                "first_name": creator_first_name,
+                "last_name": creator_last_name
+            }
+            
+            verification_response = requests.post(verification_url, headers=headers, json=verification_data)
+            verification_result = verification_response.json()
+            
+            if not verification_result.get("status"):
+                if verification_result.get("message") == "Customer already validated using the same credentials":
+                    pass
+                else:
+                    raise ValidationError("Failed to verify account details. The name on the bank account does not match the creator's name.")
+            
+            self.is_validated = True
         
         # Save the record if all checks pass
         super().save(*args, **kwargs)

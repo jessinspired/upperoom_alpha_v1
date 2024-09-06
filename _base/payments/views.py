@@ -15,7 +15,7 @@ from auths.decorators import role_required
 from listings.models import Region
 import hmac
 import hashlib
-from .utils import generate_unique_reference, handle_charge_success, handle_transfer_event
+from .utils import creator_payment_pipeline, generate_unique_reference, handle_charge_success, handle_transfer_event
 from .models import CreatorTransferInfo, Transaction
 from django.db import transaction as db_transaction
 import logging
@@ -151,6 +151,16 @@ def creator_transfer_info_view(request):
         form = CreatorTransferInfoForm()
 
     return render(request, 'payments/transfer-info.html', {'form': form})
+
+
+@role_required(['CREATOR'])
+@require_http_methods(['GET', 'POST'])
+def withdraw_balance(request):
+    transaction = creator_payment_pipeline(request.user, 10)
+    if transaction:
+        print(transaction[0])
+        return HttpResponse("<h1>Successful</h1>")
+    return HttpResponse("<h1>Failed</h1>")
 
 @csrf_exempt
 @require_http_methods(['POST'])

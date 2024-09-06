@@ -19,8 +19,12 @@
         <a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a>
     </div>
 {% endfor %}
+balance: N{{ request.user.transferprofile.balance }}
+<br>
+<a href="{% url 'pay_creator' %}">Withdraw balance</a>
 <br>
 
 <a href="{% url 'creator_transfer_info' %}">Save payment Information</a>
+<br>
 <a href="{% url 'register_lodge' %}">Register hostel</a>
 {% endblock %}

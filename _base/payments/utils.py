@@ -8,7 +8,7 @@ import requests
 
 from messaging.tasks import send_initial_subscribed_listings
 from subscriptions.views import subscribe_for_listing
-from users.models import Creator
+from users.models import Creator, User
 from .models import CreatorTransaction, CreatorTransferInfo, Transaction
 
 
@@ -56,7 +56,7 @@ def create_transfer_recipient(creator_transfer_info):
     """
     url = 'https://api.paystack.co/transferrecipient'
     headers = {
-        'Authorization': f'Bearer {os.getenv("PAYSTACK_SECRET_KEY")}',
+        'Authorization': f'Bearer {os.getenv("PAYSTACK_TEST_KEY")}',
         'Content-Type': 'application/json'
     }
     data = {
@@ -92,7 +92,7 @@ def initiate_single_transfer(recipient_code, amount, reference, reason=""):
     """
     url = 'https://api.paystack.co/transfer'
     headers = {
-        'Authorization': f'Bearer {os.getenv("PAYSTACK_SECRET_KEY")}',
+        'Authorization': f'Bearer {os.getenv("PAYSTACK_TEST_KEY")}',
         'Content-Type': 'application/json'
     }
     data = {
@@ -105,7 +105,6 @@ def initiate_single_transfer(recipient_code, amount, reference, reason=""):
 
     response = requests.post(url, headers=headers, json=data)
     response_data = response.json()
-
     return response_data
 
 
@@ -118,7 +117,7 @@ def initiate_bulk_transfer(transfers: List[dict]):
     """
     url = 'https://api.paystack.co/transfer/bulk'
     headers = {
-        'Authorization': f'Bearer {os.getenv("PAYSTACK_SECRET_KEY")}',
+        'Authorization': f'Bearer {os.getenv("PAYSTACK_TEST_KEY")}',
         'Content-Type': 'application/json'
     }
     data = {
@@ -203,7 +202,7 @@ def handle_charge_success(data):
     logger.info('Subscription for listing added')
 
 
-def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
+def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
     """
     Handles payments for one or more creators by processing the payment pipeline.
 
@@ -214,7 +213,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         List[CreatorTransaction]: A list of CreatorTransaction instances representing the processed transactions.
     """
     # Ensure creators is a list
-    if isinstance(creators, Creator):
+    if isinstance(creators, (Creator, User)):
         creators = [creators]
 
     transactions = []
@@ -229,21 +228,31 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
 
         recipient_code = create_transfer_recipient(creator_info)
         reference = generate_unique_reference(length=32)
+        if creator.transferprofile.balance < amount:
+            print("Insufficient balance")
+            raise Exception("Insufficient funds")
+        
         transfer_response = initiate_single_transfer(
             recipient_code=recipient_code,
-            amount=creator_info.balance,
+            amount=amount,
             reference=reference,
             reason="Payment for services"
         )
-
+        
+        # update creator balance
+        # temporary code, not the best
+        creator.transferprofile.balance -= amount
+        creator.transferprofile.save()
+        
         transaction = CreatorTransaction(
             recipient_code=recipient_code,
             creator=creator,
-            amount_transfered=creator_info.balance,
+            income=creator_info.balance,
             reference=reference,
             status=transfer_response.get("status"),
             reason="Payment for services"
         )
+        
         transaction.save()
         transactions.append(transaction)
 

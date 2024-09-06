@@ -34,7 +34,7 @@ class User(BaseModel, AbstractUser):
     def save(self, *args, **kwargs):
         """Override save to create a Paystack customer when a user is created."""
         # Check if it's a new user
-        if self.pk is None:
+        if not self.customer_code:
             super().save(*args, **kwargs)  # Save user first to get the ID
             self._create_paystack_customer()
         else:
@@ -42,10 +42,11 @@ class User(BaseModel, AbstractUser):
 
 
     def _create_paystack_customer(self):
+        print("Creating customer on paystack...")
         """Create a Paystack customer and save the customer code."""
         url = "https://api.paystack.co/customer"
         headers = {
-            "Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY')}",
+            "Authorization": f"Bearer {os.getenv('PAYSTACK_TEST_KEY')}",
             "Content-Type": "application/json"
         }
         data = {
@@ -54,12 +55,13 @@ class User(BaseModel, AbstractUser):
             "last_name": self.last_name,
         }
         response = requests.post(url, headers=headers, json=data)
-        
         if response.status_code == 200:
             response_data = response.json()
             self.customer_code = response_data['data']['customer_code']
+            print(f"Paystack customer created successfully. Code: {self.customer_code}")
             self.save()
         else:
+            response_data = response.json()
             raise ValidationError("Failed to create Paystack customer.")
 
 
