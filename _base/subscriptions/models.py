@@ -45,6 +45,7 @@ class SubscribedListing(BaseModel):
         VERIFIED = 'VERIFIED', 'Verified'
         PROBATION = 'PROBATION', 'Probation'
         REJECTED = 'REJECTED', 'Rejected'
+        SETTLED = 'SETTLED', 'Settled'
 
     status = models.CharField(
         max_length=50,

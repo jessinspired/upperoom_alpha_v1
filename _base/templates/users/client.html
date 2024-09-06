@@ -10,12 +10,67 @@
     </ul>
 {% endfor %}
 
-<h4>Subscribed Rooms</h4>
-{% for room in subscribed_rooms %}
-    <ul>
-        <li>{{ room.room_type }} - {{room.lodge}}</li>
-    </ul>
-{% endfor %}
+<h4>Subscribed Listings</h4>
+
+<ul>
+    <b>Unverified Listings</b>
+    {% if unverified_listings %}
+    {% for listing in unverified_listings %}
+        <div>{{ listing.room_profile.room_type.get_name_display }} -
+            <button
+            hx-post="{% url 'handle_occupied_report' pk=listing.pk %}"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            >
+                Report Occupied
+            </button>
+        </div>
+    {% endfor %}
+    {% else %}
+        <div>No Unverified Listings</div>
+    {% endif %}
+</ul>
+<ul>
+    <b>Verified Listings</b>
+    {% if verified_listings %}
+    {% for listing in verified_listings %}
+        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+    {% endfor %}
+    {% else %}
+       <div> No verified Listings</div>
+    {% endif %}
+</ul>
+<ul>
+    <b>Probation Listings</b>
+    {% if probation_listings %}
+    {% for listing in probation_listings %}
+        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+    {% endfor %}
+    {% else %}
+        <div>No probation Listings</div>
+    {% endif %}
+</ul>
+<ul>
+    <b>Rejected Listings</b>
+    {% if rejected_listings %}
+    {% for listing in rejected_listings %}
+        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+    {% endfor %}
+    {% else %}
+        <div>No rejected Listings</div>
+    {% endif %}
+</ul>
+<ul>
+    <b>Settled Listings</b>
+    {% if settled_listings %}
+    {% for listing in settled_listings %}
+        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+    {% endfor %}
+    {% else %}
+        <div>No settled Listings</div>
+    {% endif %}
+</ul>
+
+
 
 <form action="{% url 'logout' %}" method="post">
     {% csrf_token %}

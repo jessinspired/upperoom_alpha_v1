@@ -21,7 +21,7 @@ def change_status_to_verified(subscribed_listing_id):
                 f'Status changed to verified for subscribed_listing with id {subscribed_listing_id}')
         else:
             logger.info(
-                f'Cannot verify lodge with status: {subscribed_listing.status}')
+                f'Cannot verify listing with status: {subscribed_listing.status}\nlisting pk: {subscribed_listing_id}')
     except SubscribedListing.DoesNotExist:
         logger.error(
             f'subscribed_listing does not exist for id: {subscribed_listing_id}')

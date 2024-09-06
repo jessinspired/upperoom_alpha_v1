@@ -30,12 +30,32 @@ def get_client(request):
         subscriptions__in=subscriptions
     ).distinct()
 
+    from subscriptions.models import SubscribedListing
+    unverified_listings = request.user.subscribed_listings.filter(
+        status=SubscribedListing.Status.UNVERIFIED)
+
+    verified_listings = request.user.subscribed_listings.filter(
+        status=SubscribedListing.Status.VERIFIED)
+
+    probation_listings = request.user.subscribed_listings.filter(
+        status=SubscribedListing.Status.PROBATION)
+
+    rejected_listings = request.user.subscribed_listings.filter(
+        status=SubscribedListing.Status.REJECTED)
+
+    settled_listings = request.user.subscribed_listings.filter(
+        status=SubscribedListing.Status.SETTLED)
+
     transactions = Transaction.objects.filter(subscription__in=subscriptions)
     subscribed_regions = Region.objects.filter(
         transactions__in=transactions).distinct()
 
     context = {
-        'subscribed_rooms': subscribed_rooms,
+        'unverified_listings': unverified_listings,
+        'verified_listings': verified_listings,
+        'probation_listings': probation_listings,
+        'rejected_listings': rejected_listings,
+        'settled_listings': settled_listings,
         'subscribed_regions': subscribed_regions
     }
 

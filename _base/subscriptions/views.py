@@ -4,6 +4,8 @@ from django.views.decorators.http import require_http_methods
 from .models import Subscription, SubscribedListing
 from core.views import handle_http_errors
 import logging
+from auths.decorators import role_required
+from django.http import HttpResponse
 # from messaging.tasks import send_creator_subscription_mail
 
 logger = logging.getLogger('subscriptions')
@@ -130,3 +132,26 @@ def create_subscribed_listing(subscription):
     # send_creator_subscription_mail(list(creator_email_set))
 
     return subscribed_listings, creator_email_list
+
+
+@require_http_methods(['POST'])
+@role_required(['CLIENT'])
+def handle_occupied_report(request, pk):
+    try:
+        listing = SubscribedListing.objects.get(pk=pk)
+    except SubscribedListing.DoesNotExist as e:
+        logger.error(
+            f'Subscribed listing with pk {pk} does not exist for occupied report\nError: {e}')
+
+        return handle_http_errors(request, 404)
+
+    if listing.status == SubscribedListing.Status.UNVERIFIED:
+        listing.status = SubscribedListing.Status.PROBATION
+        listing.save()
+        logger.info(
+            f'Subscribed listing status changed from unverified to probation for pk: {pk}')
+        return HttpResponse('<p>Probation set</p>')
+    else:
+        logger.info(
+            f'Subscribed listing with status {listing.status} cannot be set to probation')
+        return HttpResponse('<p>Not set to unverified</p>')
