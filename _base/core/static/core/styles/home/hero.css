@@ -46,3 +46,44 @@
     font-size: 1rem;
     letter-spacing: .3rem;
 }
+
+/* Style for the select element */
+#schools-dropdown {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Style for individual options */
+#schools-dropdown option {
+    background-color: #fff;
+    color: #333;
+    padding: 10px;
+}
+
+/* Style for the disabled, selected option */
+#schools-dropdown option[disabled] {
+    color: #888;
+}
+
+/* Hover effect for the dropdown */
+#schools-dropdown:hover {
+    border-color: #4CAF50;
+}
+
+/* Focused state (when the dropdown is clicked) */
+#schools-dropdown:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.fa-location-dot {
+    color: darkslategrey;
+    font-size: 1rem;
+}

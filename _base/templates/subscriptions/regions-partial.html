@@ -19,10 +19,12 @@
 
 <button id="proceed-btn" class="order-summary-btn" hx-swap-oob="true">Proceed</button>
 {% else %}
-<p id="regions-checkboxes">Regions unavailable</p>
 
-<button class="order-summary-btn" id="proceed-btn" hx-swap-oob="true" disabled>Proceed</button>
+<div id="regions-checkboxes" hx-select-oob="true">
+    <p><i class="fa-solid fa-location-dot"></i> <span>Regions unavailable</span></p>
+</div>
 
+<button id="proceed-btn" hx-swap-oob="true" disabled>Proceed</button>
 {% endif %}
 
 
