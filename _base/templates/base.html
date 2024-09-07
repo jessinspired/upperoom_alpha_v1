@@ -4,6 +4,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- common stylesheets -->
+     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/base.css' %}">
+     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/nav.css' %}">
+
+     {% block page_stylesheets %}
+
+     {% endblock %}
+
     <!-- htmx integration -->
     <script hx-preserve="true" src="{% static 'core/jsLibraries/htmx.min.js' %}" defer></script>
     <script hx-preserve="true" src="{% static 'core/jsLibraries/htmxHeadExtension.js' %}" defer></script>
@@ -18,22 +26,27 @@
     <title>Upperoom</title>
 </head>
 <body>
-    <div id="response-message"></div>
+    <div id="global-response-message"></div>
 
-    <a href="{% url 'get_home' %}">Home</a>
-    <br>
-    {% if not user.is_authenticated %}
-    <a href="{% url 'init_email_auth' %}">Account</a>
-    <br>
-    <a href="{% url 'login' %}">Login</a>
-    {% elif user.role == 'CLIENT' %}
-    <a href="{% url 'get_client' %}">Account</a>
-    {% elif user.role == 'CREATOR' %}
-    <a href="{% url 'get_creator' %}">Account</a>
-    {% endif %}
+    <div id="root-container">
+        <nav class="nav">
+            <a href="{% url 'get_home' %}"><b>Upperoom</b></a>
 
-    {% block main %}
-    {% endblock %}
+            <div class="nav-auth-container">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'init_email_auth' %}">Register</a>
+                <a href="{% url 'login' %}">Login</a>
+                {% elif user.role == 'CLIENT' %}
+                <a href="{% url 'get_client' %}">Account</a>
+                {% elif user.role == 'CREATOR' %}
+                <a href="{% url 'get_creator' %}">Account</a>
+                {% endif %}
+            </div>
+        </nav>
 
+        {% block main %}
+        {% endblock %}
+
+    </div>
 </body>
 </html>
