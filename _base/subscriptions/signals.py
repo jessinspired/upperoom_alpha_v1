@@ -64,7 +64,10 @@ def schedule_status_change(sender, instance, created, **kwargs):
     if created:
         logger.info(
             f'Calling change status to verified function for subscribed listing {instance.pk}')
-        change_status_to_verified.apply_async(
+        result = change_status_to_verified.apply_async(
             args=[instance.id],
             countdown=120  # 600s - 10 minutes
         )
+
+        instance.status_task_id = result.id
+        instance.save()

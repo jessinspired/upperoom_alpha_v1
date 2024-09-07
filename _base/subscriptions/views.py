@@ -6,6 +6,8 @@ from core.views import handle_http_errors
 import logging
 from auths.decorators import role_required
 from django.http import HttpResponse
+from celery import current_app
+
 # from messaging.tasks import send_creator_subscription_mail
 
 logger = logging.getLogger('subscriptions')
@@ -147,9 +149,12 @@ def handle_occupied_report(request, pk):
 
     if listing.status == SubscribedListing.Status.UNVERIFIED:
         listing.status = SubscribedListing.Status.PROBATION
+
+        current_app.control.revoke(listing.status_task_id, terminate=True)
+        listing.status_task_id = None
         listing.save()
         logger.info(
-            f'Subscribed listing status changed from unverified to probation for pk: {pk}')
+            f'Subscribed listing status changed from unverified to probation for pk: {pk}\ntask_status_id for subscribed_listing set to None')
         return HttpResponse('<p>Probation set</p>')
     else:
         logger.info(

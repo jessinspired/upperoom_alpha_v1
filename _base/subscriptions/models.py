@@ -77,3 +77,5 @@ class SubscribedListing(BaseModel):
         on_delete=models.CASCADE,
         related_name='subscribed_listings'
     )
+
+    status_task_id = models.CharField(max_length=255, blank=True, null=True)
