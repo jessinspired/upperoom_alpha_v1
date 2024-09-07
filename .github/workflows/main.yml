@@ -33,4 +33,4 @@ jobs:
         run: echo $ANSIBLE_CONFIG
 
       - name: Run Ansible playbook (replace with your actual command)
-        run: ansible-playbook -i ansible/inventory/production/hosts ansible/playbooks/update.yaml
+        run: ansible-playbook -i ansible/inventory/production/hosts ansible/playbooks/deploy.yaml
