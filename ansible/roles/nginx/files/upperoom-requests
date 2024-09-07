@@ -1,3 +1,11 @@
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name upperoom.ng www.upperoom.ng;
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS configuration for upperoom.ng
 server {
     listen 443 ssl;
     server_name upperoom.ng;
@@ -15,8 +23,14 @@ server {
     location /static/ {
         alias /var/www/static/;
     }
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
 }
 
+# HTTPS configuration for www.upperoom.ng
 server {
     listen 443 ssl;
     server_name www.upperoom.ng;
@@ -34,4 +48,9 @@ server {
     location /static/ {
         alias /var/www/static/;
     }
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
 }
