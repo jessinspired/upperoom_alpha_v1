@@ -38,10 +38,10 @@
 }
 
 .order-summary-btn {
-    background-color: #4ad66d;
+    background-color: var(--primaryGreen);
     border: none;
     padding: .5rem 1.5rem;
-    color: white;
+    color: var(--primaryWhite);
     font-weight: 400;
     font-size: 1rem;
     letter-spacing: .3rem;
@@ -49,20 +49,18 @@
 
 /* Style for the select element */
 #schools-dropdown {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #f8f9fa;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    color: #333;
+    padding: .8rem;
+    background-color: var(--backgroundGray);
+    border: 2px solid var(--darkGray);
+    font-size: .8rem;
+    color: var(--darkGray);
     cursor: pointer;
 }
 
 /* Style for individual options */
 #schools-dropdown option {
-    background-color: #fff;
-    color: #333;
+    background-color: var(--primaryWhite);
+    color: var(--darkGray);
     padding: 10px;
 }
 
@@ -73,17 +71,17 @@
 
 /* Hover effect for the dropdown */
 #schools-dropdown:hover {
-    border-color: #4CAF50;
+    border-color: var(--primaryGreen);
 }
 
 /* Focused state (when the dropdown is clicked) */
 #schools-dropdown:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    border-color: var(--primaryGreen);
+    box-shadow: 0 0 5px var(--darkGray);
 }
 
 .fa-location-dot {
-    color: darkslategrey;
+    color: var(--darkGray);
     font-size: 1rem;
 }

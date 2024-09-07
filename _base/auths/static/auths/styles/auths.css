@@ -1,0 +1,73 @@
+.auths-container {
+    min-height: 80vh;
+    display: grid;
+    justify-content: center;
+    padding-top: 5rem;
+    align-content: flex-start;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    outline: none;
+    border: none;
+    padding: .5rem 0;
+    width: 100%;
+}
+
+.input-field {
+    box-shadow: var(--slimBoxShadow);
+    padding: 0rem 1rem;
+    background-color: var(--primaryWhite);
+    width: 20rem;
+    display: flex;
+    column-gap: .5rem;
+    align-items: center;
+}
+
+#verify-email-form {
+    display: grid;
+    row-gap: 2rem;
+}
+
+.auths-form {
+    box-shadow: var(--slimBoxShadow);
+    padding: 2rem 1rem;
+    min-height: 25rem;
+}
+
+button[type="submit"] {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+    border: none;
+    padding: .5rem 0;
+    max-height: 2.5rem;
+}
+
+.password-field-container {
+    display: flex;
+    align-items: center;
+    column-gap: .5rem;
+}
+
+.toogle-visibility-button {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    width: 1.5rem;
+    border: none;
+    font-size: 1rem;
+}
+
+#login-form {
+    display: grid;
+}
+
+#login-form fieldset {
+    display: grid;
+    /* row-gap: 2rem; */
+}
+
+#login-form button[type="submit"] {
+    margin-top: 3rem;
+}

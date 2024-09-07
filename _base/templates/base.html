@@ -15,8 +15,11 @@
     {% endblock %}
 
     <!-- htmx integration -->
-    <script hx-preserve="true" src="{% static 'core/jsLibraries/htmx.min.js' %}" defer></script>
-    <script hx-preserve="true" src="{% static 'core/jsLibraries/htmxHeadExtension.js' %}" defer></script>
+    <script hx-preserve="true" src="{% static 'core/dependencies/htmx.min.js' %}" defer></script>
+    <script hx-preserve="true" src="{% static 'core/dependencies/htmxHeadExtension.js' %}" defer></script>
+
+    <!-- alpine js integration -->
+    <script hx-preserve="true" src="{% static 'core/dependencies/alpine.min.js' %}" defer></script>
 
     <!-- paystack integration -->
     <script hx-preserve="true" src="{% static 'subscriptions/libraries/paystack.js' %}" defer></script>
