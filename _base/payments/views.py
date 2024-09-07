@@ -8,7 +8,6 @@ from django.http import HttpResponse
 from django_htmx.http import trigger_client_event
 from django.contrib import messages
 from django.shortcuts import render, redirect
-
 import json
 from .forms import CreatorTransferInfoForm
 from auths.decorators import role_required
@@ -24,13 +23,11 @@ PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 logger = logging.getLogger('payments')
 
-
 @role_required(['CREATOR'])
 @require_http_methods(['POST'])
 def save_transfer_info(request):
     try:
         data = json.loads(request.body)
-        
         account_number = data.get('account_number')
         bank_code = data.get('bank_code')
         currency = data.get('currency')
@@ -38,32 +35,35 @@ def save_transfer_info(request):
         
         # Validate required fields
         if not all([account_number, bank_code, currency, bvn]):
+            logger.error("Missing required fields in transfer info data.")
             return JsonResponse({"error": "Missing required fields"}, status=400)
         
         creator = request.user
         
         # Create or update transfer info
-        try:
-            CreatorTransferInfo.objects.update_or_create(
-                creator=creator,
-                defaults={
-                    'account_number': account_number,
-                    'bank_code': bank_code,
-                    'currency': currency,
-                    'bvn': bvn,
-                }
-            )
-            
-            return JsonResponse({"message": "Transfer info saved successfully"}, status=201)
+        CreatorTransferInfo.objects.update_or_create(
+            creator=creator,
+            defaults={
+                'account_number': account_number,
+                'bank_code': bank_code,
+                'currency': currency,
+                'bvn': bvn,
+            }
+        )
         
-        except ValidationError as e:
-            # Handle validation errors (e.g., account resolving, name mismatch)
-            return JsonResponse({"error": str(e)}, status=400)
+        logger.info(f"Transfer info saved successfully for creator: {creator.username}")
+        return JsonResponse({"message": "Transfer info saved successfully"}, status=201)
     
     except json.JSONDecodeError:
+        logger.error("Invalid JSON data received.")
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
     
+    except ValidationError as e:
+        logger.error(f"Validation error: {e}")
+        return JsonResponse({"error": str(e)}, status=400)
+    
     except Exception as e:
+        logger.error(f"An error occurred: {e}")
         return JsonResponse({"error": "An error occurred: " + str(e)}, status=500)
 
 @role_required(['CLIENT'])
@@ -97,12 +97,10 @@ def initialize_transaction(request):
         }
 
         response = requests.post(url, headers=headers, json=data)
-
-        if response.status_code != 200:
-            return HttpResponse('<p id="response-message">An error occured!<br>Response not 200</p>')
-
         json_response = response.json()
-        if not json_response.get('status'):
+
+        if response.status_code != 200 or not json_response.get('status'):
+            logger.error(f"Paystack initialization failed: {json_response.get('message')}")
             return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
 
         with db_transaction.atomic():
@@ -117,49 +115,53 @@ def initialize_transaction(request):
                 reference=reference,
                 client=request.user
             )
-
             transaction.regions.set(regions)
 
-        http_response = HttpResponse(
-            '<p id="response-message"></p>'
-        )
+        logger.info(f"Transaction initialized successfully for client: {request.user.username}")
+        http_response = HttpResponse('<p id="response-message"></p>')
         return trigger_client_event(
             http_response,
             'completeTransaction',
             {'access_code': json_response.get('data').get('access_code')}
         )
     except Exception as e:
-        print(e)
-        return HttpResponse(f'<p id="response-message">An error occured!<br>Error<b>{e}</p>')
+        logger.error(f"An error occurred during transaction initialization: {e}")
+        return HttpResponse(f'<p id="response-message">An error occurred!<br>Error<b>{e}</p>')
 
-
-@role_required(['CREATOR'])
-@require_http_methods(['GET', 'POST'])
 def creator_transfer_info_view(request):
+    try:
+        transfer_info = CreatorTransferInfo.objects.get(creator=request.user)
+    except CreatorTransferInfo.DoesNotExist:
+        logger.info(f"No transfer info found for creator: {request.user.username}")
+        transfer_info = None
+
     if request.method == 'POST':
-        form = CreatorTransferInfoForm(request.POST)
+        form = CreatorTransferInfoForm(request.POST, instance=transfer_info)
         if form.is_valid():
             transfer_info = form.save(commit=False)
-            transfer_info.creator = request.user
+            if transfer_info.creator is None:
+                transfer_info.creator = request.user
             try:
                 transfer_info.save()
                 messages.success(request, 'Transfer information saved successfully.')
+                logger.info(f"Transfer info updated successfully for creator: {request.user.username}")
                 return redirect('creator_transfer_info')
             except ValidationError as e:
                 messages.error(request, str(e))
+                logger.error(f"Validation error during transfer info save: {e}")
     else:
-        form = CreatorTransferInfoForm()
+        form = CreatorTransferInfoForm(instance=transfer_info)
 
     return render(request, 'payments/transfer-info.html', {'form': form})
-
 
 @role_required(['CREATOR'])
 @require_http_methods(['GET', 'POST'])
 def withdraw_balance(request):
     transaction = creator_payment_pipeline(request.user, 10)
     if transaction:
-        print(transaction[0])
+        logger.info(f"Balance withdrawal successful for creator: {request.user.username}")
         return HttpResponse("<h1>Successful</h1>")
+    logger.error(f"Balance withdrawal failed for creator: {request.user.username}")
     return HttpResponse("<h1>Failed</h1>")
 
 @csrf_exempt
@@ -198,7 +200,9 @@ def webhook_view(request):
 
     if event == 'charge.success':
         handle_charge_success(data)
+        logger.info('Charge success event handled.')
     elif event in ['transfer.success', 'transfer.failed', 'transfer.reversed']:
         handle_transfer_event(event, data)
+        logger.info(f'Transfer event handled: {event}')
 
     return JsonResponse({'status': 'success'}, status=200)

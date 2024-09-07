@@ -63,6 +63,31 @@ class User(BaseModel, AbstractUser):
         else:
             response_data = response.json()
             raise ValidationError("Failed to create Paystack customer.")
+    
+    def delete(self, *args, **kwargs):
+        """Override delete to remove the customer from Paystack before deleting the user."""
+        if self.customer_code:
+            self._delete_paystack_customer()
+
+        # Proceed to delete the user from the database
+        super().delete(*args, **kwargs)
+
+    def _delete_paystack_customer(self):
+        """Delete the Paystack customer associated with this user."""
+        print(f"Deleting customer from Paystack with code: {self.customer_code}")
+        url = f"https://api.paystack.co/customer/{self.customer_code}"
+        headers = {
+            "Authorization": f"Bearer {os.getenv('PAYSTACK_TEST_KEY')}",
+            "Content-Type": "application/json"
+        }
+        response = requests.delete(url, headers=headers)
+        print(response.json())
+        if response.status_code == 200:
+            print(f"Paystack customer deleted successfully.")
+        else:
+            response_data = response.json()
+            print(f"Failed to delete Paystack customer. Reason: {response_data.get('message', 'Unknown error')}")
+
 
 
 # Creator models

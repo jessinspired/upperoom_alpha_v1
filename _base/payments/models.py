@@ -92,7 +92,7 @@ class CreatorTransferInfo(BaseModel):
     
     currency = models.CharField(
         max_length=5,
-        choices=[('NGN', 'Nigerian Naira')]
+        choices=[('NGN', 'Nigerian Naira')],
     )
     
     balance = models.DecimalField(
@@ -150,7 +150,7 @@ class CreatorTransferInfo(BaseModel):
             
             verification_response = requests.post(verification_url, headers=headers, json=verification_data)
             verification_result = verification_response.json()
-            
+            print(verification_result)
             if not verification_result.get("status"):
                 if verification_result.get("message") == "Customer already validated using the same credentials":
                     pass

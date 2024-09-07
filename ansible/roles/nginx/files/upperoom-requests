@@ -1,6 +1,6 @@
 server {
     listen 443 ssl;
-    server_name upperoom.ng;
+    server_name 54.174.171.91 upperoom.ng;
 
     ssl_certificate /etc/letsencrypt/live/upperoom.ng/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/upperoom.ng/privkey.pem;
@@ -19,7 +19,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name www.upperoom.ng;
+    server_name 54.174.171.91 www.upperoom.ng;
 
     ssl_certificate /etc/letsencrypt/live/www.upperoom.ng/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/www.upperoom.ng/privkey.pem;
