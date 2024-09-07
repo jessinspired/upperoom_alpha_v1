@@ -51,10 +51,11 @@
 #schools-dropdown {
     padding: .8rem;
     background-color: var(--backgroundGray);
-    border: 2px solid var(--darkGray);
     font-size: .8rem;
     color: var(--darkGray);
     cursor: pointer;
+    border: 1.5px solid var(--primaryGreen);
+    outline: none;
 }
 
 /* Style for individual options */
@@ -78,7 +79,6 @@
 #schools-dropdown:focus {
     outline: none;
     border-color: var(--primaryGreen);
-    box-shadow: 0 0 5px var(--darkGray);
 }
 
 .fa-location-dot {
