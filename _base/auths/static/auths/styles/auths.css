@@ -19,7 +19,7 @@ input[type="text"] {
     box-shadow: var(--slimBoxShadow);
     padding: 0rem 1rem;
     background-color: var(--primaryWhite);
-    width: 20rem;
+    width: 100%;
     display: flex;
     column-gap: .5rem;
     align-items: center;
@@ -34,6 +34,7 @@ input[type="text"] {
     box-shadow: var(--slimBoxShadow);
     padding: 2rem 1rem;
     min-height: 25rem;
+    width: min(30rem, 80vw);
 }
 
 button[type="submit"] {
