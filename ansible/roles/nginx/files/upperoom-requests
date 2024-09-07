@@ -16,3 +16,9 @@ server {
         alias /var/www/static/;
     }
 }
+
+server {
+    listen 80;
+    server_name www.upperoom.ng;
+    return 301 https://upperoom.ng$request_uri;
+}
