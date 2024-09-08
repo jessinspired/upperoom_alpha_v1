@@ -1,20 +1,46 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{% static 'auths/styles/auths.css' %}">
+{% endblock %}
 
 {% block main %}
-<form
-action="{% url 'login' %}"
-hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-method="post"
->
-    {% csrf_token %}
-    <h1>Login</h1>
+<div class="auths-container">
+    <form
+    id="login-form"
+    class="auths-form"
+    action="{% url 'login' %}"
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+    method="post"
+    >
+        {% csrf_token %}
+        <h1>Login</h1>
 
-    <fieldset>
-        {{form}}
-    </fieldset>
+        <fieldset>
+            <div>
+                <div class="input-field">
+                    <label for="{{ form.email.id_for_label }}">@</label>
+                    {{ form.username }}
+                </div>
+            </div>
+            <div x-data="{ show: false }" class="password-field-container">
+                <div class="input-field">
+                    <label for="{{ form.password.id_for_label }}"><i class="fa-solid fa-lock"></i></label>
+                    <input :type="show ? 'text' : 'password'" id="{{ form.password.id_for_label }}" name="password" placeholder="Password" class="input" />
+                </div>
 
-    <button>
-        Continue
-    </button>
-</form>
+                <!-- Toggle button to show/hide password -->
+                <button class="toogle-visibility-button" type="button" @click="show = !show">
+                    <i :class="show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                </button>
+            </div>
+        </fieldset>
+
+        <button type="submit">
+            Continue
+        </button>
+    </form>
+</div>
+
 {% endblock %}

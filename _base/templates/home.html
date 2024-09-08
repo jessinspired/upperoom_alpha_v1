@@ -1,38 +1,44 @@
 {% extends 'base.html' %}
+{% load static %}
+
+
+{% block page_stylesheets %}
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
+{% endblock %}
 
 {% block main %}
-<h1>Home page</h1>
-
-
-<h3>Select school to get started!</h3>
-
-<form action="{% url 'get_order_summary' %}" method="post">
-    {% csrf_token %}
-    <select
-    name="schools"
-    id="schools-dropdown"
-    hx-get="{% url 'get_regions' %}"
-    hx-target="#regions-checkboxes"
-    hx-trigger="change"
-    hx-swap="outerHTML"
-    >
-        <option value="" disabled selected>schools</option>
-    {% for school in schools %}
-        <option value="{{school.pk}}">{{school.name}}</option>
-    {% endfor %}
-    </select>
-    <br><br>
-
-    <div id="regions-checkboxes">
-        <label>
-            <input type="checkbox" name="regions" value="#" disabled="disabled">
-            <span style="color:lightslategray">Regions</span>
-        </label>
+<section id="hero">
+    <div class="hero-heading-container">
+        <h1>Student Accommodations, Earnings and More...</h1>
     </div>
 
-    <br>
 
-    <button id="proceed-btn" disabled>proceed</button>
+    <form id="order-summary-form" action="{% url 'get_order_summary' %}" method="post">
+        {% csrf_token %}
+        <select
+        name="schools"
+        id="schools-dropdown"
+        hx-get="{% url 'get_regions' %}"
+        hx-target="#regions-checkboxes"
+        hx-trigger="change"
+        hx-swap="outerHTML"
+        >
+            <option value="" disabled selected>schools</option>
+            {% for school in schools %}
+                <option value="{{school.pk}}">{{school.name}}</option>
+            {% endfor %}
+            </select>
 
-</form>
+        <div id="regions-checkboxes">
+            <label>
+                <i class="fa-solid fa-location-dot"></i>
+                <span style="color:lightslategray">Regions</span>
+            </label>
+        </div>
+
+        <button id="proceed-btn" disabled>proceed</button>
+    </form>
+</section>
 {% endblock %}

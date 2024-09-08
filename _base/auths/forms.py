@@ -14,15 +14,30 @@ from users.models import Client, Creator
 class EmailBasedLoginForm(AuthenticationForm):
     username = forms.EmailField(
         label='Email',
-        widget=forms.EmailInput(attrs={'autofocus': True})
+        widget=forms.EmailInput(
+            attrs={
+                'autofocus': True,
+                'placeholder': 'Email'
+            }))
+    password = forms.CharField(
+        label='Password',
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                'placeholder': 'Password'
+            }
+        )
     )
 
 
 class EmailVerificationForm(forms.Form):
     email = forms.EmailField(
         label='Email',
-        widget=forms.EmailInput(attrs={'autofocus': True})
-    )
+        widget=forms.EmailInput(
+            attrs={
+                'autofocus': True,
+                'placeholder': 'Email'
+            }))
 
 
 class ClientRegistrationForm(UserCreationForm):

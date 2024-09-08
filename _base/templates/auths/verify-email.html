@@ -1,22 +1,40 @@
 {% extends 'base.html' %}
+{% load static %}
+
+
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{% static 'auths/styles/auths.css' %}">
+{% endblock %}
 
 {% block main %}
-<form
-method="post"
-action="{% url 'init_email_auth' %}"
->
-    {% csrf_token %}
-    {{form}}
-    <div>
-        <label>
-            <input type="radio" name="role" value="CREATOR">
-            Creator
-        </label><br>
-        <label>
-            <input type="radio" name="role" value="CLIENT">
-            Client
-        </label>
-    </div>
-    <button style="margin-top: 1rem">Submit</button>
-</form>
+<div class="auths-container">
+    <form
+    id="verify-email-form"
+    class="auths-form"
+    method="post"
+    action="{% url 'init_email_auth' %}"
+    >
+        <h1>Welcome</h1>
+        {% csrf_token %}
+
+        <div class="input-field">
+            <label for="{{ form.email.id_for_label }}">@</label>
+            {{ form.email }}
+        </div>
+
+        <fieldset>
+            <p>Select Your Role</p>
+            <label>
+                <input type="radio" name="role" value="CREATOR">
+                Creator
+            </label><br>
+            <label>
+                <input type="radio" name="role" value="CLIENT">
+                Client
+            </label>
+        </fieldset>
+        <button type="submit">Submit</button>
+    </form>
+
+</div>
 {% endblock %}

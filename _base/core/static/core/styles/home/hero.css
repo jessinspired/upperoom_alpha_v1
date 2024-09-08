@@ -1,0 +1,87 @@
+#hero {
+    padding-top: 4rem;
+    display: grid;
+    justify-content: center;
+    text-align: center;
+    row-gap: 2rem;
+}
+
+.hero-heading-container {
+    width: min(60rem, 100%);
+    text-align: center;
+    justify-self: center;
+}
+
+.hero-heading-container h1 {
+    font-size: clamp(1.5rem, 5vw + .5rem, 3.5rem);
+    margin: 0;
+    line-height: calc(5vw + .5rem);
+    padding: 0;
+}
+
+#order-summary-form {
+    /* outline: 2px solid blue; */
+    display: grid;
+    width: min(40rem, 100%);
+    justify-self: center;
+    row-gap: 1rem;
+}
+
+#regions-checkboxes {
+    width: max-content;
+    text-align: left;
+    display: grid;
+    row-gap: .8rem;
+    font-size: .8rem;
+    max-height: 20rem;
+    overflow-y: auto;
+}
+
+.order-summary-btn {
+    background-color: var(--primaryGreen);
+    border: none;
+    padding: .5rem 1.5rem;
+    color: var(--primaryWhite);
+    font-weight: 400;
+    font-size: 1rem;
+    letter-spacing: .3rem;
+}
+
+/* Style for the select element */
+#schools-dropdown {
+    padding: .8rem;
+    background-color: var(--backgroundGray);
+    font-size: .8rem;
+    color: var(--darkGray);
+    cursor: pointer;
+    border: 1.5px solid var(--primaryGreen);
+    outline: none;
+}
+
+/* Style for individual options */
+#schools-dropdown option {
+    background-color: var(--primaryWhite);
+    color: var(--darkGray);
+    padding: 10px;
+}
+
+/* Style for the disabled, selected option */
+#schools-dropdown option[disabled] {
+    color: #888;
+}
+
+/* Hover effect for the dropdown */
+#schools-dropdown:hover {
+    border-color: var(--primaryGreen);
+}
+
+/* Focused state (when the dropdown is clicked) */
+#schools-dropdown:focus {
+    outline: none;
+    border-color: var(--primaryGreen);
+}
+
+.fa-location-dot {
+    color: var(--darkGray);
+    font-size: 1rem;
+}
