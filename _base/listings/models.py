@@ -218,28 +218,17 @@ class Lodge(BaseModel):
         return self.name
 
 
-# class LodgeImage(BaseModel, ImageOptimizationModel):
-#     image = models.ImageField(
-#         upload_to=get_upload_path_lodge,
-#         default=default_lodge_image_cdn,
-#         storage=MediaCloudinaryStorage(),
-#         null=True,
-#         blank=True,
-#         max_length=1000,
-#     )
+class LodgeImage(models.Model):
+    lodge = models.ForeignKey(Lodge, related_name='lodge_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='lodges/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
-#     lodge = models.ForeignKey(
-#         Lodge, on_delete=models.CASCADE, related_name='images')
+    def __str__(self):
+        return f"LodgeId: {self.lodge.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
 
-#     class Meta(BaseModel.Meta, ImageOptimizationModel.Meta):
-#         pass
-
-#     def __str__(self):
-#         return self.image.name
-
-#     def delete(self, *args, **kwargs):
-#         cloudinary.uploader.destroy(self.image.name)
-#         super(LodgeImage, self).delete(*args, **kwargs)
+    def delete(self, *args, **kwargs):
+        self.image.delete(save=False)
+        super().delete(*args, **kwargs)
 
 
 class RoomProfile(BaseModel):
@@ -287,22 +276,14 @@ class RoomProfile(BaseModel):
         return f'{self.lodge} - {self.room_type}'
 
 
-# class RoomImage(BaseModel, ImageOptimizationModel):
-#     image = models.ImageField(
-#         upload_to=get_upload_path_room,
-#         default=default_room_cdn,
-#         storage=MediaCloudinaryStorage(),
-#         null=True,
-#         blank=True,
-#         max_length=1000,
-#     )
+class RoomProfileImage(models.Model):
+    room_profile = models.ForeignKey(Lodge, related_name='room_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='rooms/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
-#     room_profile = models.ForeignKey(
-#         RoomProfile, on_delete=models.CASCADE, related_name='images'
-#     )
-
-#     class Meta(BaseModel.Meta, ImageOptimizationModel.Meta):
-#         pass
-
-#     def __str__(self):
-#         return self.image.name
+    def __str__(self):
+        return f"RoomId: {self.room_profile.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
+    
+    def delete(self, *args, **kwargs):
+        self.image.delete(save=False)
+        super().delete(*args, **kwargs)
