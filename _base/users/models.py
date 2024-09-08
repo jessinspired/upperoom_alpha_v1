@@ -66,8 +66,8 @@ class User(BaseModel, AbstractUser):
     
     def delete(self, *args, **kwargs):
         """Override delete to remove the customer from Paystack before deleting the user."""
-        if self.customer_code:
-            self._delete_paystack_customer()
+        # if self.customer_code:
+        #     self._delete_paystack_customer()
 
         # Proceed to delete the user from the database
         super().delete(*args, **kwargs)
@@ -81,7 +81,7 @@ class User(BaseModel, AbstractUser):
             "Content-Type": "application/json"
         }
         response = requests.delete(url, headers=headers)
-        print(response.json())
+        print(response)
         if response.status_code == 200:
             print(f"Paystack customer deleted successfully.")
         else:
@@ -118,6 +118,7 @@ class Creator(User):
 
         if not self.groups.filter(name="creators").exists():
             self.groups.add(creators_group)
+        
 
     def delete(self, *args, **kwargs):
         """Removes creator from group before deleting."""
