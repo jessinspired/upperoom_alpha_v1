@@ -139,8 +139,14 @@ def creator_transfer_info_view(request):
         form = CreatorTransferInfoForm(request.POST, instance=transfer_info)
         if form.is_valid():
             transfer_info = form.save(commit=False)
-            if transfer_info.creator is None:
+            
+            try:
+                if transfer_info.creator is None:
+                    transfer_info.creator = request.user
+            except Exception as e:
+                print(e)
                 transfer_info.creator = request.user
+                
             try:
                 transfer_info.save()
                 messages.success(request, 'Transfer information saved successfully.')
@@ -157,7 +163,26 @@ def creator_transfer_info_view(request):
 @role_required(['CREATOR'])
 @require_http_methods(['GET', 'POST'])
 def withdraw_balance(request):
-    transaction = creator_payment_pipeline(request.user, 10)
+    try:
+        tranfer_info = CreatorTransferInfo.objects.get(creator=request.user)
+    except CreatorTransferInfo.DoesNotExist:
+        logger.error("You have to setup a payment profile. Creator has no payment profile")
+        return HttpResponse("<h1>Failed</h1>")
+    
+    try:
+        if not tranfer_info.is_validated:
+            raise Exception("Payment Info is not validated")
+        
+    except Exception as e:
+        logger.error("Creator payment is not validated!")
+        return HttpResponse("<h1>Failed</h1>")
+    
+    try:
+        transaction = creator_payment_pipeline(request.user, 10)
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse("<h1>Failed</h1>")
+    
     if transaction:
         logger.info(f"Balance withdrawal successful for creator: {request.user.username}")
         return HttpResponse("<h1>Successful</h1>")
