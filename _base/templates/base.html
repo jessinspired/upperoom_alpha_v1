@@ -69,9 +69,9 @@
                 <a href="{% url 'init_email_auth' %}">Register</a>
                 <a href="{% url 'login' %}">Login</a>
                 {% elif user.role == 'CLIENT' %}
-                <a href="{% url 'get_client' %}">Account</a>
+                <a href="{% url 'get_client' %}"><i class="fa-solid fa-user"></i></a>
                 {% elif user.role == 'CREATOR' %}
-                <a href="{% url 'get_creator' %}">Account</a>
+                <a href="{% url 'get_creator' %}"><i class="fa-solid fa-user"></i></a>
                 {% endif %}
             </div>
         </nav>

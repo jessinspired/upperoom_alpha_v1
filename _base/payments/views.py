@@ -162,7 +162,10 @@ def initialize_transaction(request):
 
         logger.info(
             f"Transaction initialized successfully for client: {request.user.username}")
-        http_response = HttpResponse('<p id="response-message"></p>')
+        # http_response = HttpResponse(
+        #     '<dialog id="global-response-modal"></dialog>')
+        http_response = render(request, 'elements/response-modal.html')
+
         return trigger_client_event(
             http_response,
             'completeTransaction',
@@ -171,7 +174,8 @@ def initialize_transaction(request):
     except Exception as e:
         logger.error(
             f"An error occurred during transaction initialization: {e}")
-        return HttpResponse(f'<p id="response-message">An error occurred!<br>Error<b>{e}</p>')
+        context = {'messages': ['An error occured, please try again']}
+        return render(request, 'elements/response-modal.html', context)
 
 
 def creator_transfer_info_view(request):

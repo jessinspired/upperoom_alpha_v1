@@ -1,3 +1,4 @@
+{% if messages %}
 <dialog id="global-response-modal" x-data x-ref="modal" x-init="$refs.modal.showModal()" @click.outside="$refs.modal.close()">
     <button class="close-global-modal-btn" @click="$refs.modal.close()">X</button>
     <ul>
@@ -6,3 +7,6 @@
         {% endfor %}
     </ul>
 </dialog>
+{% else %}
+<dialog id="global-response-modal"></dialog>
+{% endif %}

@@ -11,7 +11,7 @@
 id="payment-form"
 hx-post="{% url 'initialize_transaction' %}"
 hx-trigger="click"
-hx-target="#response-message"
+hx-target="#global-response-modal"
 hx-swap="outerHTML"
 >
     {% csrf_token %}
