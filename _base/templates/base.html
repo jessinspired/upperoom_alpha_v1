@@ -10,6 +10,7 @@
 
     <!-- common elements -->
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/global-response-modal.css' %}">
 
 
     <!-- install font awesome -->
@@ -52,7 +53,11 @@
             <li>{{ message }}</li>
         </ul>
     {% endfor %}
-</div>
+    </div>
+
+    <dialog id="global-response-modal">
+    </dialog>
+
 
 
     <div id="root-container">

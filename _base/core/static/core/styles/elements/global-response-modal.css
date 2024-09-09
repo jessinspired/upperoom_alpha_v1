@@ -1,0 +1,41 @@
+#global-response-modal {
+    box-shadow: var(--slimBoxShadow);
+    outline: none;
+    border: none;
+    position: relative;
+    padding: 0;
+    padding: 2rem 2rem 5rem 2rem;
+}
+
+#global-response-modal ul {
+    margin: 0;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+#global-response-modal li {
+    list-style-type: none;
+    font-size: var(--smallFontSize);
+    display: flex;
+    align-items: center;
+    column-gap: .5rem;
+}
+
+#global-response-modal li i {
+    color: var(--primaryGreen);
+}
+
+.close-global-modal-btn {
+    position: absolute;
+    color: var(--primaryGreen);
+    border: 2.5px dotted var(--primaryGreen);
+    top: .5rem;
+    right: 1rem;
+    border-radius: 50%;
+    padding: .1rem .4rem;
+}
+
+.close-global-modal-btn:hover {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+}

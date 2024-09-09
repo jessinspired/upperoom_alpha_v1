@@ -29,7 +29,7 @@ urlpatterns = [
         name='init_email_auth'
     ),
     path(
-        'verify_email/<str:uuid_code>',
+        'verify_email/<str:uuid_code>/',
         verify_email,
         name='verify_email'
     ),

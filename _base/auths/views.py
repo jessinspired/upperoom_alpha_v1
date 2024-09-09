@@ -15,10 +15,13 @@ from .models import EmailVerificationToken
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 import os
+import logging
 
 
 UserModel = get_user_model()
 BACKEND = 'auths.backends.EmailBackend'
+
+logger = logging.getLogger('auths')
 
 
 def init_email_auth(request):
@@ -33,7 +36,9 @@ def init_email_auth(request):
     role = request.POST.get('role')
 
     if role not in ['CREATOR', 'CLIENT']:
-        return render(request, 'core/error_pages/400.html', status=400)
+        logger.error('400 Bad Request Role not found in creator and client')
+        messages.error('Select a role')
+        return redirect('init_email_auth')
 
     if not form.is_valid():
         error_list = []
@@ -75,11 +80,16 @@ def init_email_auth(request):
     uuid = token.uuid_code
     send_verification_mail.delay(email, uuid)
 
-    # home_url = os.getenv('HOME_URL', 'http://127.0.0.1:8000')
-    # url = f"{home_url}/auth/verify_email/{uuid}"
-    # return HttpResponse(f'<a href="{url}">Click link</a>')
+    home_url = os.getenv('HOME_URL')
+    url = f"{home_url}/auth/verify_email/{uuid}/"
+    logger.info(f'Email verification link for {email}: {url}')
 
-    return HttpResponse(f'<p>Click the link sent to your mail for verification</p>')
+    context = {
+
+        'messages': ['Click the link sent to your email to get verfied!']
+    }
+
+    return render(request, 'elements/response-modal.html', context)
 
 
 @require_http_methods(['GET'])

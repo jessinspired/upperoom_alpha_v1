@@ -11,8 +11,10 @@
     <form
     id="verify-email-form"
     class="auths-form"
-    method="post"
-    action="{% url 'init_email_auth' %}"
+    action="#"
+    hx-post="{% url 'init_email_auth' %}"
+    hx-swap="outerHTML"
+    hx-target="#global-response-modal"
     >
         <h1>Welcome</h1>
         {% csrf_token %}
