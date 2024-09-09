@@ -1,0 +1,7 @@
+.button-one {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+    border: none;
+    padding: .5rem 0;
+    max-height: 2.5rem;
+}

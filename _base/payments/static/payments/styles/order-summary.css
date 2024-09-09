@@ -1,0 +1,51 @@
+/* element resets */
+li {
+    list-style-type: none;
+}
+
+ul {
+    padding: 0;
+}
+
+/* end element resets */
+
+#container {
+    padding-top: 5rem;
+    display: grid;
+    justify-content: center;
+    min-height: 70vh;
+}
+
+#payment-form {
+    display: grid;
+    /* outline: 2px solid blueviolet; */
+    align-content: flex-start;
+    row-gap: 1.5rem;
+    box-shadow: var(--slimBoxShadow);
+    padding: 2rem;
+    height: 90%;
+}
+
+.regions-list > li {
+    display: flex;
+    column-gap: .5rem;
+    align-items: center;
+}
+
+.regions-list > li > i {
+    color: var(--primaryGreen);
+}
+
+.regions-list > li > span {
+    width: 100%;
+    display: flex;
+}
+
+.regions-list > li > span > span,
+.amount-container > span {
+    margin-left: auto;
+}
+
+.amount-container {
+    display: flex;
+}

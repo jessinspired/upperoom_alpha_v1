@@ -23,9 +23,19 @@ PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 logger = logging.getLogger('payments')
 
+
 def get_order_summary(request):
     if request.method != 'POST':
-        return redirect('get_home')
+        from listings.models import School
+        regions = list(School.objects.get(abbr='UNIPORT').regions.all())
+
+        context = {
+            'regions': regions,
+            'amount': 1500 * len(regions)
+        }
+
+        return render(request, 'payments/order-summary.html', context)
+        # return redirect('get_home')
     regions_pk_list = request.POST.getlist('regions')
 
     if not regions_pk_list:
@@ -47,7 +57,7 @@ def get_order_summary(request):
         'amount': 1500 * len(regions)
     }
 
-    return render(request, 'subscriptions/order-summary.html', context)
+    return render(request, 'payments/order-summary.html', context)
 
 
 @role_required(['CREATOR'])
@@ -78,7 +88,8 @@ def save_transfer_info(request):
             }
         )
 
-        logger.info(f"Transfer info saved successfully for creator: {creator.username}")
+        logger.info(
+            f"Transfer info saved successfully for creator: {creator.username}")
         return JsonResponse({"message": "Transfer info saved successfully"}, status=201)
 
     except json.JSONDecodeError:
@@ -92,6 +103,7 @@ def save_transfer_info(request):
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return JsonResponse({"error": "An error occurred: " + str(e)}, status=500)
+
 
 @role_required(['CLIENT'])
 @require_http_methods(['POST'])
@@ -127,7 +139,8 @@ def initialize_transaction(request):
         json_response = response.json()
 
         if response.status_code != 200 or not json_response.get('status'):
-            logger.error(f"Paystack initialization failed: {json_response.get('message')}")
+            logger.error(
+                f"Paystack initialization failed: {json_response.get('message')}")
             return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
 
         with db_transaction.atomic():
@@ -144,7 +157,8 @@ def initialize_transaction(request):
             )
             transaction.regions.set(regions)
 
-        logger.info(f"Transaction initialized successfully for client: {request.user.username}")
+        logger.info(
+            f"Transaction initialized successfully for client: {request.user.username}")
         http_response = HttpResponse('<p id="response-message"></p>')
         return trigger_client_event(
             http_response,
@@ -152,14 +166,17 @@ def initialize_transaction(request):
             {'access_code': json_response.get('data').get('access_code')}
         )
     except Exception as e:
-        logger.error(f"An error occurred during transaction initialization: {e}")
+        logger.error(
+            f"An error occurred during transaction initialization: {e}")
         return HttpResponse(f'<p id="response-message">An error occurred!<br>Error<b>{e}</p>')
+
 
 def creator_transfer_info_view(request):
     try:
         transfer_info = CreatorTransferInfo.objects.get(creator=request.user)
     except CreatorTransferInfo.DoesNotExist:
-        logger.info(f"No transfer info found for creator: {request.user.username}")
+        logger.info(
+            f"No transfer info found for creator: {request.user.username}")
         transfer_info = None
 
     if request.method == 'POST':
@@ -176,16 +193,20 @@ def creator_transfer_info_view(request):
 
             try:
                 transfer_info.save()
-                messages.success(request, 'Transfer information saved successfully.')
-                logger.info(f"Transfer info updated successfully for creator: {request.user.username}")
+                messages.success(
+                    request, 'Transfer information saved successfully.')
+                logger.info(
+                    f"Transfer info updated successfully for creator: {request.user.username}")
                 return redirect('creator_transfer_info')
             except ValidationError as e:
                 messages.error(request, str(e))
-                logger.error(f"Validation error during transfer info save: {e}")
+                logger.error(
+                    f"Validation error during transfer info save: {e}")
     else:
         form = CreatorTransferInfoForm(instance=transfer_info)
 
     return render(request, 'payments/transfer-info.html', {'form': form})
+
 
 @role_required(['CREATOR'])
 @require_http_methods(['GET', 'POST'])
@@ -193,7 +214,8 @@ def withdraw_balance(request):
     try:
         tranfer_info = CreatorTransferInfo.objects.get(creator=request.user)
     except CreatorTransferInfo.DoesNotExist:
-        logger.error("You have to setup a payment profile. Creator has no payment profile")
+        logger.error(
+            "You have to setup a payment profile. Creator has no payment profile")
         return HttpResponse("<h1>Failed</h1>")
 
     try:
@@ -211,10 +233,13 @@ def withdraw_balance(request):
         return HttpResponse("<h1>Failed</h1>")
 
     if transaction:
-        logger.info(f"Balance withdrawal successful for creator: {request.user.username}")
+        logger.info(
+            f"Balance withdrawal successful for creator: {request.user.username}")
         return HttpResponse("<h1>Successful</h1>")
-    logger.error(f"Balance withdrawal failed for creator: {request.user.username}")
+    logger.error(
+        f"Balance withdrawal failed for creator: {request.user.username}")
     return HttpResponse("<h1>Failed</h1>")
+
 
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -241,7 +266,8 @@ def webhook_view(request):
     payload = json.loads(body)
     signature = request.headers.get('X-Paystack-Signature')
 
-    expected_signature = hmac.new(secret.encode('utf-8'), body, hashlib.sha512).hexdigest()
+    expected_signature = hmac.new(secret.encode(
+        'utf-8'), body, hashlib.sha512).hexdigest()
 
     if signature != expected_signature:
         logger.error(f'Unauthorized signature: {signature}')
