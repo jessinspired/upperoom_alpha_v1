@@ -35,7 +35,25 @@
     <title>Upperoom</title>
 </head>
 <body>
-    <div id="global-response-message"></div>
+    <div id="global-response-message"
+    class="{% if not messages %}hide{% endif %}"
+     x-data="{ hasError: false }"
+     x-init="
+        {% for message in messages %}
+            {% if 'error' in message.tags %}
+                hasError = true;
+            {% endif %}
+        {% endfor %}
+     "
+     x-bind:class="hasError ? 'error' : 'success'">
+    <button onclick="document.getElementById('global-response-message').classList.add('hide')">&#10005;</button>
+    {% for message in messages %}
+        <ul>
+            <li>{{ message }}</li>
+        </ul>
+    {% endfor %}
+</div>
+
 
     <div id="root-container">
         <nav class="nav">

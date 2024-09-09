@@ -33,13 +33,16 @@ def get_order_summary(request):
             'regions': regions,
             'amount': 1500 * len(regions)
         }
-
-        return render(request, 'payments/order-summary.html', context)
-        # return redirect('get_home')
+        logger.error(
+            f'Error 405: Expected method is POST, but got {request.method}')
+        return redirect('get_home')
     regions_pk_list = request.POST.getlist('regions')
 
     if not regions_pk_list:
-        # bad request
+        logger.error(
+            'Bad Request (400): No list of regions to get order summary for')
+
+        messages.error(request, "Select at least one region")
         return redirect('get_home')
 
     try:

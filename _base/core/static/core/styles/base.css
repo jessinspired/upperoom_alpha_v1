@@ -7,6 +7,8 @@
     --backgroundGray: #f8f9fa;
     --lightGray: #ccc;
     --darkGray: #333;
+    --crimson: crimson;
+    --transparent: transparent;
 
     --slimBoxShadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
@@ -41,3 +43,42 @@ button {
 #root-container {
     margin: 3rem max(1.5rem, 5vw);
 }
+
+
+/* messages */
+#global-response-message.hide {
+    display: none;
+}
+
+#global-response-message {
+    position: relative;
+    padding: 1rem 2rem;
+    font-size: .8rem;
+}
+
+#global-response-message > button {
+    background-color: var(--transparent);
+    padding: 0;
+    border: none;
+    font-weight: bold;
+    position: absolute;
+    right: 1rem;
+    top: .5rem;
+    color: var(--primaryWhite);
+}
+
+#global-response-message ul {
+    margin: 0;
+}
+
+.error {
+    background-color: var(--crimson);
+    color: var(--primaryWhite);
+}
+.success {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+}
+
+
+/* end messages */
