@@ -23,6 +23,33 @@ PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
 logger = logging.getLogger('payments')
 
+def get_order_summary(request):
+    if request.method != 'POST':
+        return redirect('get_home')
+    regions_pk_list = request.POST.getlist('regions')
+
+    if not regions_pk_list:
+        # bad request
+        return redirect('get_home')
+
+    try:
+        regions = []
+        for pk in regions_pk_list:
+            region = Region.objects.get(pk=pk)
+            regions.append(region)
+    except:
+        return redirect('get_home')
+
+    # regions = list(School.objects.get(abbr='UNIPORT').regions.all())
+
+    context = {
+        'regions': regions,
+        'amount': 1500 * len(regions)
+    }
+
+    return render(request, 'subscriptions/order-summary.html', context)
+
+
 @role_required(['CREATOR'])
 @require_http_methods(['POST'])
 def save_transfer_info(request):
@@ -32,14 +59,14 @@ def save_transfer_info(request):
         bank_code = data.get('bank_code')
         currency = data.get('currency')
         bvn = data.get('bvn')
-        
+
         # Validate required fields
         if not all([account_number, bank_code, currency, bvn]):
             logger.error("Missing required fields in transfer info data.")
             return JsonResponse({"error": "Missing required fields"}, status=400)
-        
+
         creator = request.user
-        
+
         # Create or update transfer info
         CreatorTransferInfo.objects.update_or_create(
             creator=creator,
@@ -50,18 +77,18 @@ def save_transfer_info(request):
                 'bvn': bvn,
             }
         )
-        
+
         logger.info(f"Transfer info saved successfully for creator: {creator.username}")
         return JsonResponse({"message": "Transfer info saved successfully"}, status=201)
-    
+
     except json.JSONDecodeError:
         logger.error("Invalid JSON data received.")
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
-    
+
     except ValidationError as e:
         logger.error(f"Validation error: {e}")
         return JsonResponse({"error": str(e)}, status=400)
-    
+
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return JsonResponse({"error": "An error occurred: " + str(e)}, status=500)
@@ -139,14 +166,14 @@ def creator_transfer_info_view(request):
         form = CreatorTransferInfoForm(request.POST, instance=transfer_info)
         if form.is_valid():
             transfer_info = form.save(commit=False)
-            
+
             try:
                 if transfer_info.creator is None:
                     transfer_info.creator = request.user
             except Exception as e:
                 print(e)
                 transfer_info.creator = request.user
-                
+
             try:
                 transfer_info.save()
                 messages.success(request, 'Transfer information saved successfully.')
@@ -168,21 +195,21 @@ def withdraw_balance(request):
     except CreatorTransferInfo.DoesNotExist:
         logger.error("You have to setup a payment profile. Creator has no payment profile")
         return HttpResponse("<h1>Failed</h1>")
-    
+
     try:
         if not tranfer_info.is_validated:
             raise Exception("Payment Info is not validated")
-        
+
     except Exception as e:
         logger.error("Creator payment is not validated!")
         return HttpResponse("<h1>Failed</h1>")
-    
+
     try:
         transaction = creator_payment_pipeline(request.user, 10)
     except Exception as e:
         logger.error(e)
         return HttpResponse("<h1>Failed</h1>")
-    
+
     if transaction:
         logger.info(f"Balance withdrawal successful for creator: {request.user.username}")
         return HttpResponse("<h1>Successful</h1>")

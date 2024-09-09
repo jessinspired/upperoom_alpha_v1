@@ -31,33 +31,6 @@ def get_regions(request):
     )
 
 
-def get_order_summary(request):
-    if request.method != 'POST':
-        return redirect('get_home')
-    regions_pk_list = request.POST.getlist('regions')
-
-    if not regions_pk_list:
-        # bad request
-        return redirect('get_home')
-
-    try:
-        regions = []
-        for pk in regions_pk_list:
-            region = Region.objects.get(pk=pk)
-            regions.append(region)
-    except:
-        return redirect('get_home')
-
-    # regions = list(School.objects.get(abbr='UNIPORT').regions.all())
-
-    context = {
-        'regions': regions,
-        'amount': 1500 * len(regions)
-    }
-
-    return render(request, 'subscriptions/order-summary.html', context)
-
-
 def subscribe_for_listing(transaction):
     subscription = Subscription.objects.create(
         client=transaction.client,
