@@ -126,7 +126,7 @@ def verify_email(request, uuid_code):
 
         messages.error(
             request, 'Verification status is invalid or has expired. Try again')
-        return render(request, 'auths/register.html', {'form': form})
+        return redirect('init_email_auth')
 
 
 @require_http_methods(['POST', 'GET'])
@@ -180,6 +180,8 @@ def finish_email_auth(request):
             profile.save()
 
             login(request, user, BACKEND)
+
+            logger.info(f'{role} account creation complete for {email}')
 
             if role == 'creator':
                 return redirect('get_creator')

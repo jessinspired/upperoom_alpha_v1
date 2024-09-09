@@ -40,8 +40,8 @@ fieldset {
 
 button {
     cursor: pointer;
-    background-color: var(--transparent);
-    border: none;
+    /* background-color: var(--transparent); */
+    /* border: none; */
     padding: 0;
 }
 

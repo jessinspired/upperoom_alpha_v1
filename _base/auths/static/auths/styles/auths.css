@@ -69,6 +69,16 @@ button[type="submit"] {
     /* row-gap: 2rem; */
 }
 
-#login-form button[type="submit"] {
+#login-form button[type="submit"],
+#register-form button[type="submit"] {
     margin-top: 3rem;
+}
+
+#register-form {
+    display: grid;
+}
+
+#register-form fieldset {
+    display: grid;
+    row-gap: 2rem;
 }

@@ -50,42 +50,56 @@ class ClientRegistrationForm(UserCreationForm):
     '''
     email = forms.EmailField(
         label='Email',
-        widget=forms.TextInput(attrs={'readonly': 'readonly'})
+        widget=forms.TextInput(attrs={
+            'readonly': 'readonly',
+            'placeholder': 'Email'
+        })
     )
 
     phone_number = forms.CharField(
         label='Phone Number',
         max_length=20,
-        required=True
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Phone number'
+        })
     )
 
     password1 = forms.CharField(
         label='Password',
         help_text='',
-        widget=forms.PasswordInput,
-        required=True
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Password'
+        })
     )
 
     password2 = forms.CharField(
         label='Confirm Password',
         help_text='',
-        widget=forms.PasswordInput,
-        required=True
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Confirm your password'
+        })
     )
 
     first_name = forms.CharField(
         label='First Name',
         help_text='',
-        required=True
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'First name'
+        })
     )
 
     last_name = forms.CharField(
         label='Last Name',
         help_text='',
-        required=True
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Last name'
+        })
     )
-
-    # usable_password = None
 
     class Meta:
         '''defines meta data for form
@@ -127,47 +141,56 @@ class CreatorRegistrationForm(UserCreationForm):
     '''
     email = forms.EmailField(
         label='Email',
-        widget=forms.TextInput(attrs={'readonly': 'readonly'})
+        widget=forms.TextInput(attrs={
+            'readonly': 'readonly',
+            'placeholder': 'Email'
+        })
     )
 
     phone_number = forms.CharField(
         label='Phone Number',
         max_length=20,
-        required=True
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Phone number'
+        })
     )
 
     password1 = forms.CharField(
         label='Password',
         help_text='',
-        widget=forms.PasswordInput,
-        required=True
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Password'
+        })
     )
 
     password2 = forms.CharField(
         label='Confirm Password',
         help_text='',
-        widget=forms.PasswordInput,
-        required=True
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Confirm your password'
+        })
     )
 
     first_name = forms.CharField(
         label='First Name',
         help_text='',
-        required=True
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'First name'
+        })
     )
 
     last_name = forms.CharField(
         label='Last Name',
         help_text='',
-        required=True
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Last name'
+        })
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        initial_email = kwargs.pop('initial_email', None)
-        if initial_email:
-            self.initial['email'] = initial_email
 
     class Meta:
         '''defines meta data for form
