@@ -17,9 +17,9 @@
             <a href="#"><i class="fa-solid fa-credit-card"></i>Payments</a>
         </div>
 
-        <form action="{% url 'logout' %}" method="post">
+        <form id="logout-form" action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button>logout</button>
+            <button class="logout-btn">logout</button>
         </form>
     </nav>
 </div>

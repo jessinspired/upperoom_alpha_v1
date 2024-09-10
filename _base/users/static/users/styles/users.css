@@ -32,9 +32,9 @@ li {
     position: fixed;
     top: 0;
     left: 0;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     row-gap: 4rem;
-    align-content: flex-start;
     width: 10rem;
     z-index: var(--sideNav);
     background-color: var(--primaryWhite);
@@ -162,6 +162,18 @@ li {
 .middle-content > :first-child > h3 {
     position: sticky;
     left: 1rem;
+}
+
+#logout-form {
+    margin-top: auto;
+}
+
+
+.logout-btn {
+    align-self:flex-end;
+    background-color: var(--slateGray);
+    color: var(--primaryWhite);
+    padding: .3rem 1rem;
 }
 
 
