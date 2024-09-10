@@ -16,6 +16,11 @@
             <a href="#"><i class="fa-solid fa-list-check"></i>Subscriptions</a>
             <a href="#"><i class="fa-solid fa-credit-card"></i>Payments</a>
         </div>
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button>logout</button>
+        </form>
     </nav>
 </div>
 
@@ -32,7 +37,7 @@
 
     <div class="middle-content">
         <div>
-            <h3><i class="fa-solid fa-house-chimney-user"></i>Subscribed Listings</h3>
+            <h3><i class="fa-solid fa-house-chimney-user"></i><span>Subscribed Listings</span></h3>
             <div class="listings-card-container">
                 <div>
                     <i class="fa-solid fa-hourglass-start"></i>
@@ -50,18 +55,6 @@
                     {% endfor %}
                     {% else %}
                         <div>0</div>
-                    {% endif %}
-                </div>
-
-                <div>
-                    <i class="fa-solid fa-certificate"></i>
-                    <b>Verified</b>
-                    {% if verified_listings %}
-                    {% for listing in verified_listings %}
-                        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-                    {% endfor %}
-                    {% else %}
-                    <div>0</div>
                     {% endif %}
                 </div>
 
@@ -86,6 +79,18 @@
                     {% endfor %}
                     {% else %}
                         <div>0</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <i class="fa-solid fa-certificate"></i>
+                    <b>Verified</b>
+                    {% if verified_listings %}
+                    {% for listing in verified_listings %}
+                        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+                    {% endfor %}
+                    {% else %}
+                    <div>0</div>
                     {% endif %}
                 </div>
 
@@ -145,11 +150,4 @@
     </div>
 
 </main>
-
-
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button>logout</button>
-</form>
-
 {% endblock %}
