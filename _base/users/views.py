@@ -26,9 +26,9 @@ def get_client(request):
 
     subscriptions = request.user.subscriptions.filter(is_expired=False)
 
-    subscribed_rooms = RoomProfile.objects.filter(
-        subscriptions__in=subscriptions
-    ).distinct()
+    # subscribed_rooms = RoomProfile.objects.filter(
+    #     subscriptions__in=subscriptions
+    # ).distinct()
 
     from subscriptions.models import SubscribedListing
     unverified_listings = request.user.subscribed_listings.filter(
@@ -50,13 +50,24 @@ def get_client(request):
     subscribed_regions = Region.objects.filter(
         transactions__in=transactions).distinct()
 
+    incomplete_transactions = request.user.transactions.filter(
+        is_fully_paid=False)
+
+    complete_transactions = request.user.transactions.filter(
+        is_fully_paid=True)
+
+    active_subscriptions = request.user.subscriptions.filter(is_expired=False)
+
     context = {
         'unverified_listings': unverified_listings,
         'verified_listings': verified_listings,
         'probation_listings': probation_listings,
         'rejected_listings': rejected_listings,
         'settled_listings': settled_listings,
-        'subscribed_regions': subscribed_regions
+        'subscribed_regions': subscribed_regions,
+        'incomplete_transactions': incomplete_transactions,
+        'complete_transactions': complete_transactions,
+        'active_subscriptions': active_subscriptions
     }
 
     return render(request, 'users/client.html', context)

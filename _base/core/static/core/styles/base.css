@@ -10,11 +10,23 @@
     --crimson: crimson;
     --transparent: transparent;
 
+    /* box shadows */
     --slimBoxShadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-
+    --mediumBoxShadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 
     /* font sizes */
     --smallFontSize: .8rem;
+
+    /* z-index */
+    --primaryNav: 2;
+    --sideNav: 3;
+    --navCard: 4;
+
+    /* heights */
+    --navHeight: 4rem;
+
+    /* border radius */
+    --smallBorderRadius: .6rem
 }
 
 * {

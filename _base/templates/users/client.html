@@ -1,75 +1,150 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{% static 'users/styles/users.css' %}">
+    <link rel="stylesheet" href="{% static 'users/styles/client.css' %}">
+{% endblock %}
 
 {% block main %}
-<p>Client Dashboard</p>
-
-<h4>Subscribed Regions</h4>
-{% for region in subscribed_regions %}
-    <ul>
-        <li>{{ region.name }}</li>
-    </ul>
-{% endfor %}
-
-<h4>Subscribed Listings</h4>
-
-<ul>
-    <b>Unverified Listings</b>
-    {% if unverified_listings %}
-    {% for listing in unverified_listings %}
-        <div>{{ listing.room_profile.room_type.get_name_display }} -
-            <button
-            hx-post="{% url 'handle_occupied_report' pk=listing.pk %}"
-            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-            >
-                Report Occupied
-            </button>
+<div id="container">
+    <nav class="side-nav">
+        <a href="{% url 'get_home' %}"><h3>UppeRoom</h3></a>
+        <div class="side-nav-links-container">
+            <a href="#"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+            <!-- <a href="#">Listings</a> -->
+            <a href="#"><i class="fa-solid fa-list-check"></i>Subscriptions</a>
+            <a href="#"><i class="fa-solid fa-credit-card"></i>Payments</a>
         </div>
-    {% endfor %}
-    {% else %}
-        <div>No Unverified Listings</div>
-    {% endif %}
-</ul>
-<ul>
-    <b>Verified Listings</b>
-    {% if verified_listings %}
-    {% for listing in verified_listings %}
-        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-    {% endfor %}
-    {% else %}
-       <div> No verified Listings</div>
-    {% endif %}
-</ul>
-<ul>
-    <b>Probation Listings</b>
-    {% if probation_listings %}
-    {% for listing in probation_listings %}
-        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-    {% endfor %}
-    {% else %}
-        <div>No probation Listings</div>
-    {% endif %}
-</ul>
-<ul>
-    <b>Rejected Listings</b>
-    {% if rejected_listings %}
-    {% for listing in rejected_listings %}
-        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-    {% endfor %}
-    {% else %}
-        <div>No rejected Listings</div>
-    {% endif %}
-</ul>
-<ul>
-    <b>Settled Listings</b>
-    {% if settled_listings %}
-    {% for listing in settled_listings %}
-        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-    {% endfor %}
-    {% else %}
-        <div>No settled Listings</div>
-    {% endif %}
-</ul>
+    </nav>
+</div>
 
+<main id="main">
+    {% comment %}
+    <h4>Subscribed Regions</h4>
+    {% for region in subscribed_regions %}
+        <ul>
+            <li>{{ region.name }}</li>
+        </ul>
+    {% endfor %}
+    {% endcomment %}
+
+
+    <div class="middle-content">
+        <div>
+            <h3><i class="fa-solid fa-house-chimney-user"></i>Subscribed Listings</h3>
+            <div class="listings-card-container">
+                <div>
+                    <i class="fa-solid fa-hourglass-start"></i>
+                    <b>Unverified</b>
+                    {% if unverified_listings %}
+                    {% for listing in unverified_listings %}
+                        <div>{{ listing.room_profile.room_type.get_name_display }} -
+                            <button
+                            hx-post="{% url 'handle_occupied_report' pk=listing.pk %}"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Report Occupied
+                            </button>
+                        </div>
+                    {% endfor %}
+                    {% else %}
+                        <div>0</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <i class="fa-solid fa-certificate"></i>
+                    <b>Verified</b>
+                    {% if verified_listings %}
+                    {% for listing in verified_listings %}
+                        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+                    {% endfor %}
+                    {% else %}
+                    <div>0</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <b>Probation</b>
+                    {% if probation_listings %}
+                    {% for listing in probation_listings %}
+                        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+                    {% endfor %}
+                    {% else %}
+                        <div>0</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <i class="fa-solid fa-ban"></i>
+                    <b>Rejected</b>
+                    {% if rejected_listings %}
+                    {% for listing in rejected_listings %}
+                        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+                    {% endfor %}
+                    {% else %}
+                        <div>0</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <i class="fa-solid fa-flag-checkered"></i>
+                    <b>Settled</b>
+                    {% if settled_listings %}
+                    {% for listing in settled_listings %}
+                        <div>{{ listing.room_profile.room_type.get_name_display }}</div>
+                    {% endfor %}
+                    {% else %}
+                        <div>0</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="key-stats-container-mobile">
+            <h3>
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Key Stats</span>
+            </h3>
+
+            <ul>
+                <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
+                <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
+            </ul>
+        </div>
+
+        <div class="notifications">
+            <h3><i class="fa-solid fa-bell"></i>Notifications</h3>
+            <div class="notifications-card">
+                {% if notifications %}
+                    {{notifications}}
+                {% else %}
+                    <span>&#8594; No notifications for now</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="key-stats-container">
+        <h3>
+            <i class="fa-solid fa-chart-simple"></i>
+            <span>Key Stats</span>
+        </h3>
+
+        <ul>
+            <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
+            <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
+            <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
+            <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
+        </ul>
+
+    </div>
+
+</main>
 
 
 <form action="{% url 'logout' %}" method="post">
