@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{% static 'core/styles/elements/arrow-checkbox.css' %}">
+    <link rel="stylesheet" href="{% static 'users/styles/users.css' %}">
+
+    {% block section_stylesheets %}
+    {% endblock %}
+{% endblock %}
+
+{% block main %}
+<div id="container">
+
+    <nav class="side-nav" x-ref="sidenav" id="side-nav">
+        <a href="{% url 'get_home' %}"><h3>UppeRoom</h3></a>
+        <div class="side-nav-links-container">
+            <a href="{% url 'get_client' %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+            <!-- <a href="#">Listings</a> -->
+            <a href="{% url 'get_client_subscriptions' %}"><i class="fa-solid fa-list-check"></i>Subscriptions</a>
+            <a href="#"><i class="fa-solid fa-credit-card"></i>Payments</a>
+        </div>
+
+        <form id="logout-form" action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="logout-btn">logout</button>
+        </form>
+    </nav>
+
+    <main id="main">
+        <div class="middle-content">
+            {% block middle_content %}
+            {% endblock %}
+        </div>
+
+        <div class="key-stats-container">
+            <h3>
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Key Stats</span>
+            </h3>
+
+            <ul>
+                <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
+                <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
+            </ul>
+
+        </div>
+    </main>
+
+    <label class="buttons__burger">
+        <input type="checkbox" id="burger" onchange="toggleNav()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+
+    <script>
+        function toggleNav() {
+          const checkbox = document.getElementById('burger');
+          const sidenav = document.getElementById('side-nav');
+
+          if (checkbox.checked) {
+            sidenav.style.display = 'flex';
+          } else {
+            sidenav.style.display = 'none';
+          }
+        }
+    </script>
+</div>
+{% endblock %}

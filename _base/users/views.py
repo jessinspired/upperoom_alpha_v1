@@ -8,7 +8,6 @@ from payments.models import Transaction
 # Create your views here.
 
 
-@login_required
 @role_required(['CREATOR'])
 def get_creator(request):
     subscribed_listings = request.user.client_subscribed_listings.all()
@@ -20,7 +19,6 @@ def get_creator(request):
     return render(request, 'users/creator.html', context)
 
 
-@login_required
 @role_required(['CLIENT'])
 def get_client(request):
 
@@ -70,4 +68,14 @@ def get_client(request):
         'active_subscriptions': active_subscriptions
     }
 
-    return render(request, 'users/client.html', context)
+    return render(request, 'users/client/dashboard.html', context)
+
+
+@role_required(['CLIENT'])
+def get_client_subscriptions(request):
+    active_subscriptions = request.user.subscriptions.filter(is_expired=False)
+
+    context = {
+        'active_subscriptions': active_subscriptions
+    }
+    return render(request, 'users/client/subscriptions.html', context)

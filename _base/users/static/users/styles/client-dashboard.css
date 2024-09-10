@@ -1,0 +1,24 @@
+.middle-content {
+    padding-top: 2rem;
+    display: grid;
+    align-content: flex-start;
+    row-gap: 4rem;
+}
+
+.middle-content h3 {
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    column-gap: .5rem;
+}
+
+.middle-content > :first-child > h3 {
+    position: sticky;
+    left: 1rem;
+}
+
+.middle-content > :first-child {
+    width: 100%;
+    overflow-x: auto;
+}

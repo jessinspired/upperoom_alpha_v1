@@ -1,0 +1,32 @@
+{% extends 'users/client-base.html' %}
+{% load static %}
+{% load subscription_filters %}
+
+{% block section_stylesheets %}
+<link rel="stylesheet" href="{% static 'users/styles/client-subscriptions.css' %}?uuid={{uuid}}">
+
+{% endblock %}
+
+{% block middle_content %}
+    <h1>My Subscriptions</h1>
+    <div class="subscriptions-container">
+        {% for subscription in active_subscriptions %}
+        <ul>
+            <li><b>Date Created:</b> {{ subscription.created_at}}</li>
+            <li><b>Amount:</b> {{subscription.transaction.amount}}</li>
+            <li><b>Regions:</b>
+                {% for region in subscription.transaction.regions.all %}
+                    {{region}},&nbsp;
+                {% endfor %}
+            </li>
+            <li><b>Unverified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"UNVERIFIED"}}</li>
+            <li><b>Verified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"VERIFIED"}}</li>
+            <li><b>Probation Listings</b>: {{subscription.subscribed_listings|filter_by_status:"PROBATION"}}</li>
+            <li><b>Rejected Listings</b>: {{subscription.subscribed_listings|filter_by_status:"REJECTED"}}</li>
+            <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
+        </ul>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

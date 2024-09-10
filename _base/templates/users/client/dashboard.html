@@ -1,0 +1,73 @@
+{% extends 'users/client-base.html' %}
+{% load static %}
+
+{% block section_stylesheets %}
+<link rel="stylesheet" href="{% static 'users/styles/client-dashboard.css' %}">
+{% endblock %}
+
+{% block middle_content %}
+<div class="middle-content">
+    <div>
+        <h3><i class="fa-solid fa-house-chimney-user"></i><span>Subscribed Listings</span></h3>
+        <div class="listings-card-container">
+            <div>
+                <i class="fa-solid fa-hourglass-start"></i>
+                <b>Unverified</b>
+                <div>{% if unverified_listings %}{{ unverified_listings.count }}{% else %}0{% endif %}</div>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <b>Probation</b>
+                <div>{% if probation_listings %}{{ probation_listings.count}}{% else %}0{% endif %}</div>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-ban"></i>
+                <b>Rejected</b>
+                <div>{% if rejected_listings %}{{rejected_listings.count}}{% else %}0{% endif %}</div>
+            </div>
+
+            <div>
+                <i class="fa-solid fa-certificate"></i>
+                <b>Verified</b>
+                <div>{% if verified_listings %}{{verified_listings.count}}{% else %}0{% endif %}</div>
+            </div>
+
+            {% comment %}
+            <div>
+                <i class="fa-solid fa-flag-checkered"></i>
+                <b>Settled</b>
+                <div>{% if settled_listings %}{{settled_listings.count }}{% else %}0{% endif %}</div>
+            </div>
+            {% endcomment %}
+        </div>
+    </div>
+
+    <div class="key-stats-container-mobile">
+        <h3>
+            <i class="fa-solid fa-chart-simple"></i>
+            <span>Key Stats</span>
+        </h3>
+
+        <ul>
+            <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
+            <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
+            <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
+            <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
+        </ul>
+    </div>
+
+    <div class="notifications">
+        <h3><i class="fa-solid fa-bell"></i>Notifications</h3>
+        <div class="notifications-card">
+            {% if notifications %}
+                {{notifications}}
+            {% else %}
+                <span>&#8594; No notifications for now</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

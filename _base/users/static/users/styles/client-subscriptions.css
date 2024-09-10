@@ -1,0 +1,20 @@
+.middle-content {
+    padding: 1rem 2rem;
+}
+
+.subscriptions-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    /* background-color: rebeccapurple; */
+}
+
+.subscriptions-container > * {
+    box-shadow: var(--slimBoxShadow);
+    max-width: 25rem;
+    padding: 2rem;
+    display: grid;
+    row-gap: .5rem;
+    font-size: var(--smallFontSize);
+    background-color: var(--primaryWhite);
+}
