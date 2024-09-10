@@ -74,7 +74,7 @@ li {
     row-gap: 1rem;
     justify-content: space-evenly;
     overflow-x: auto;
-    padding: 1rem;
+    padding: 0 1rem .1rem 1rem;
     width: 100%;
     min-width: 50rem;
 }
