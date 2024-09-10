@@ -33,68 +33,31 @@
                     <div>
                         <i class="fa-solid fa-hourglass-start"></i>
                         <b>Unverified</b>
-                        {% if unverified_listings %}
-                        {% for listing in unverified_listings %}
-                            <div>{{ listing.room_profile.room_type.get_name_display }} -
-                                <button
-                                hx-post="{% url 'handle_occupied_report' pk=listing.pk %}"
-                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                                >
-                                    Report Occupied
-                                </button>
-                            </div>
-                        {% endfor %}
-                        {% else %}
-                            <div>0</div>
-                        {% endif %}
+                        <div>{% if unverified_listings %}{{ unverified_listings.count }}{% else %}0{% endif %}</div>
                     </div>
 
                     <div>
                         <i class="fa-solid fa-circle-exclamation"></i>
                         <b>Probation</b>
-                        {% if probation_listings %}
-                        {% for listing in probation_listings %}
-                            <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-                        {% endfor %}
-                        {% else %}
-                            <div>0</div>
-                        {% endif %}
+                        <div>{% if probation_listings %}{{ probation_listings.count}}{% else %}0{% endif %}</div>
                     </div>
 
                     <div>
                         <i class="fa-solid fa-ban"></i>
                         <b>Rejected</b>
-                        {% if rejected_listings %}
-                        {% for listing in rejected_listings %}
-                            <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-                        {% endfor %}
-                        {% else %}
-                            <div>0</div>
-                        {% endif %}
+                        <div>{% if rejected_listings %}{{rejected_listings.count}}{% else %}0{% endif %}</div>
                     </div>
 
                     <div>
                         <i class="fa-solid fa-certificate"></i>
                         <b>Verified</b>
-                        {% if verified_listings %}
-                        {% for listing in verified_listings %}
-                            <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-                        {% endfor %}
-                        {% else %}
-                        <div>0</div>
-                        {% endif %}
+                        <div>{% if verified_listings %}{{verified_listings.count}}{% else %}0{% endif %}</div>
                     </div>
 
                     <div>
                         <i class="fa-solid fa-flag-checkered"></i>
                         <b>Settled</b>
-                        {% if settled_listings %}
-                        {% for listing in settled_listings %}
-                            <div>{{ listing.room_profile.room_type.get_name_display }}</div>
-                        {% endfor %}
-                        {% else %}
-                            <div>0</div>
-                        {% endif %}
+                        <div>{% if settled_listings %}{{settled_listings.count }}{% else %}0{% endif %}</div>
                     </div>
                 </div>
             </div>
