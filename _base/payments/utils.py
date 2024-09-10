@@ -11,6 +11,10 @@ from subscriptions.views import subscribe_for_listing
 from users.models import Creator, User
 from .models import CreatorTransaction, CreatorTransferInfo, Transaction
 
+import logging
+
+logger = logging.getLogger('payments')
+
 
 def generate_unique_reference(length):
     """
@@ -34,12 +38,12 @@ def generate_unique_reference(length):
         Returns:
             bool: True if unique, False otherwise.
         """
-        return not (Transaction.objects.filter(reference=reference).exists() or 
+        return not (Transaction.objects.filter(reference=reference).exists() or
                     CreatorTransaction.objects.filter(reference=reference).exists())
-    
+
     while True:
         reference = ''.join(random.choices(allowed_chars, k=length))
-        
+
         if is_reference_unique(reference):
             return reference
 
@@ -74,7 +78,8 @@ def create_transfer_recipient(creator_transfer_info):
         recipient_code = response_data['data']['recipient_code']
         return recipient_code
     else:
-        raise ValueError("Failed to create transfer recipient: " + response_data.get('message'))
+        raise ValueError(
+            "Failed to create transfer recipient: " + response_data.get('message'))
 
 
 def initiate_single_transfer(recipient_code, amount, reference, reason=""):
@@ -133,14 +138,17 @@ def initiate_bulk_transfer(transfers: List[dict]):
         for transfer in response_data['data']:
             CreatorTransaction.objects.create(
                 recipient_code=transfer['recipient'],
-                creator=Creator.objects.get(id=transfer['creator_id']),  # Assuming creator_id is available
-                amount_transfered=transfer['amount'] / 100,  # Convert from kobo to naira
+                # Assuming creator_id is available
+                creator=Creator.objects.get(id=transfer['creator_id']),
+                # Convert from kobo to naira
+                amount_transfered=transfer['amount'] / 100,
                 reference=transfer['reference'],
                 status=transfer['status'],
                 reason=transfer['reason']
             )
     else:
-        raise ValueError("Bulk transfer failed: " + response_data.get('message'))
+        raise ValueError("Bulk transfer failed: " +
+                         response_data.get('message'))
 
 
 def handle_transfer_event(event, data):
@@ -173,13 +181,13 @@ def handle_charge_success(data):
     Args:
         data (dict): The event data.
     """
-    global logger
-    
+
     remote_reference = data.get('reference')
     try:
         transaction = Transaction.objects.get(reference=remote_reference)
     except Transaction.DoesNotExist:
-        logger.error(f'Transaction not found for reference: {remote_reference}')
+        logger.error(
+            f'Transaction not found for reference: {remote_reference}')
         return JsonResponse({'status': 'not found'}, status=404)
 
     transaction.paystack_id = data.get('id')
@@ -187,7 +195,8 @@ def handle_charge_success(data):
     paid_amount = data.get('amount') / 100  # Convert from kobo to naira
 
     if paid_amount != transaction.amount:
-        logger.warning(f'Incomplete payment: Paid: {paid_amount}, Expected: {transaction.amount}')
+        logger.warning(
+            f'Incomplete payment: Paid: {paid_amount}, Expected: {transaction.amount}')
         return JsonResponse({'status': 'bad request'}, status=400)
 
     transaction.is_fully_paid = True
@@ -217,33 +226,34 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
         creators = [creators]
 
     transactions = []
-    
+
     if len(creators) == 1:
         # Handle single payment
         creator = creators[0]
         try:
             creator_info = CreatorTransferInfo.objects.get(creator=creator)
         except CreatorTransferInfo.DoesNotExist:
-            raise ValueError(f"No transfer info found for creator {creator.id}")
+            raise ValueError(
+                f"No transfer info found for creator {creator.id}")
 
         recipient_code = create_transfer_recipient(creator_info)
         reference = generate_unique_reference(length=32)
         if creator.transferprofile.balance < amount:
             print("Insufficient balance")
             raise Exception("Insufficient funds")
-        
+
         transfer_response = initiate_single_transfer(
             recipient_code=recipient_code,
             amount=amount,
             reference=reference,
             reason="Payment for services"
         )
-        
+
         # update creator balance
         # temporary code, not the best
         creator.transferprofile.balance -= amount
         creator.transferprofile.save()
-        
+
         transaction = CreatorTransaction(
             recipient_code=recipient_code,
             creator=creator,
@@ -252,7 +262,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
             status=transfer_response.get("status"),
             reason="Payment for services"
         )
-        
+
         transaction.save()
         transactions.append(transaction)
 
@@ -263,7 +273,8 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
             try:
                 creator_info = CreatorTransferInfo.objects.get(creator=creator)
             except CreatorTransferInfo.DoesNotExist:
-                raise ValueError(f"No transfer info found for creator {creator.id}")
+                raise ValueError(
+                    f"No transfer info found for creator {creator.id}")
 
             recipient_code = create_transfer_recipient(creator_info)
             reference = generate_unique_reference(length=32)
