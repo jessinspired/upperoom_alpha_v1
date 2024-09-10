@@ -17,14 +17,15 @@ class EmailBasedLoginForm(AuthenticationForm):
         widget=forms.EmailInput(
             attrs={
                 'autofocus': True,
-                'placeholder': 'Email'
+                'placeholder': 'Email',
+                'autocomplete': 'username'
             }))
     password = forms.CharField(
         label='Password',
         strip=False,
         widget=forms.PasswordInput(
             attrs={
-                'placeholder': 'Password'
+                'placeholder': 'Password',
             }
         )
     )

@@ -27,7 +27,7 @@
             <div x-data="{ show: false }" class="password-field-container">
                 <div class="input-field">
                     <label for="{{ form.password.id_for_label }}"><i class="fa-solid fa-lock"></i></label>
-                    <input :type="show ? 'text' : 'password'" id="{{ form.password.id_for_label }}" name="password" placeholder="Password" class="input" />
+                    <input :type="show ? 'text' : 'password'" id="{{ form.password.id_for_label }}" name="password" placeholder="Password" class="input" autocomplete="current-password"/>
                 </div>
 
                 <!-- Toggle button to show/hide password -->

@@ -108,7 +108,7 @@ def save_transfer_info(request):
         return JsonResponse({"error": "An error occurred: " + str(e)}, status=500)
 
 
-@role_required(['CLIENT'])
+@role_required(['CLIENT'], True)
 @require_http_methods(['POST'])
 def initialize_transaction(request):
     """
