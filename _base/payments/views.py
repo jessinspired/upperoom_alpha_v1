@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -9,7 +10,7 @@ from django_htmx.http import trigger_client_event
 from django.contrib import messages
 from django.shortcuts import render, redirect
 import json
-from .forms import CreatorTransferInfoForm
+from .forms import CreatorTransferInfoForm, PaymentRequestForm
 from auths.decorators import role_required
 from listings.models import Region
 import hmac
@@ -233,19 +234,15 @@ def withdraw_balance(request):
         logger.error("Creator payment is not validated!")
         return HttpResponse("<h1>Failed</h1>")
 
-    try:
-        transaction = creator_payment_pipeline(request.user, 10)
-    except Exception as e:
-        logger.error(e)
-        return HttpResponse("<h1>Failed</h1>")
-
-    if transaction:
-        logger.info(
-            f"Balance withdrawal successful for creator: {request.user.username}")
-        return HttpResponse("<h1>Successful</h1>")
-    logger.error(
-        f"Balance withdrawal failed for creator: {request.user.username}")
-    return HttpResponse("<h1>Failed</h1>")
+    if request.method == 'POST':
+        form = PaymentRequestForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            transaction = creator_payment_pipeline(request.user, amount)
+            messages.success(request, f"Payment request of N{amount} has been submitted.")
+            return redirect('get_creator')
+    else:
+        form = PaymentRequestForm()
 
 
 @csrf_exempt
