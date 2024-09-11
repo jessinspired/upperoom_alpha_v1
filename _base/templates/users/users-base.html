@@ -17,12 +17,14 @@
         <div class="side-nav-links-container">
             <a href="{% if user.role == 'CLIENT' %}{% url 'get_client' %}{% elif user.role == 'CREATOR' %}{% url 'get_creator' %}{% endif %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
             <!-- <a href="#">Listings</a> -->
+            {% if user.role == 'CLIENT' %}
             <a href="{% url 'get_client_subscriptions' %}"><i class="fa-solid fa-list-check"></i>Subscriptions</a>
+            {% endif %}
 
             {% if user.role == 'CREATOR' %}
-            <a href="{% url 'get_creator_listings' %}"><i class="fa-solid fa-hotel"></i>Listings</a>
+            <a href="{% url 'get_creator_listings' %}"><i class="fa-solid fa-hotel"></i>Lodges</a>
 
-            <a href="#"><i class="fa-solid fa-credit-card"></i>Payments</a>
+            <a href="{% url 'get_creator_payments' %}"><i class="fa-solid fa-credit-card"></i>Earnings</a>
             {% endif %}
         </div>
 

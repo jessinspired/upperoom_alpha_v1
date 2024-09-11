@@ -22,5 +22,10 @@ urlpatterns = [
         'creator_listings/',
         views.get_creator_listings,
         name='get_creator_listings'
+    ),
+    path(
+        'creator_payments',
+        views.get_creator_payments,
+        name="get_creator_payments"
     )
 ]

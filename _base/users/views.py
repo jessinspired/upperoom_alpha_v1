@@ -92,3 +92,8 @@ def get_creator_listings(request):
     }
 
     return render(request, 'users/creator/listings.html', context)
+
+
+@role_required(['CREATOR'])
+def get_creator_payments(request):
+    return render(request, 'users/creator/payments.html')

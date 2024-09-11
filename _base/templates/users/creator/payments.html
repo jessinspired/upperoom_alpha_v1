@@ -1,0 +1,25 @@
+{% extends 'users/users-base.html' %}
+{% load static %}
+
+{% block section_stylesheets %}
+{% endblock %}
+
+{% block middle_content %}
+<div class="middle-content">
+    <h2>Earnings</h2>
+
+    {% if request.user.transferprofile %}
+    balance: N{{ request.user.transferprofile.balance }}
+{% else %}
+    balance: N0.00
+{% endif %}
+<br>
+<a href="{% url 'pay_creator' %}">Withdraw balance</a>
+<br>
+
+<a href="{% url 'creator_transfer_info' %}">Save payment Information</a>
+
+<div>Number of Verified Listings: 0</div>
+</div>
+
+{% endblock %}
