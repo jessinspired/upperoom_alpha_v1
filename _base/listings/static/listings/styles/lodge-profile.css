@@ -1,0 +1,37 @@
+body {
+    background-color: var(--backgroundGray);
+}
+
+#main {
+    padding-top: 3rem;
+    display: grid;
+    row-gap:2rem;
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+
+.room-profile-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    column-gap: 2rem;
+    row-gap: 3rem;
+
+}
+
+.room-profile-container > * {
+    max-width: 20rem;
+    box-shadow: var(--slimBoxShadow);
+    display: grid;
+    justify-content: center;
+    row-gap: 1rem;
+    padding: 2rem;
+    background-color: var(--primaryWhite);
+}
+
+.room-profile-container form {
+    display: grid;
+    font-size: var(--smallFontSize);
+    row-gap: .5rem;
+}

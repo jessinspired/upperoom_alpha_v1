@@ -1,12 +1,13 @@
 /* From Uiverse.io by tarantino421 */
 .buttons__burger {
-  --size: 2rem;
-  --clr: #000;
+  --size: 1.5rem;
+  --clr: var(--slateGray);
   width: var(--size);
   height: calc(0.7 * var(--size));
   cursor: pointer;
   position: relative;
   display: block;
+
 }
 
 .buttons__burger #burger {
@@ -20,7 +21,7 @@
   position: absolute;
   width: 100%;
   border-radius: 0.5rem;
-  border: 2px solid var(--clr);
+  border: 1px solid var(--clr);
   background-color: var(--clr);
   -webkit-transition: 0.15s ease-in-out;
   transition: 0.15s ease-in-out;

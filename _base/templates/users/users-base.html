@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block page_stylesheets %}
-    <link rel="stylesheet" href="{% static 'core/styles/elements/arrow-checkbox.css' %}">
-    <link rel="stylesheet" href="{% static 'users/styles/users.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/elements/arrow-checkbox.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" href="{% static 'users/styles/users.css' %}?uuid={{uuid}}">
 
     {% block section_stylesheets %}
     {% endblock %}
@@ -63,12 +63,14 @@
         </div>
     </main>
 
-    <label class="buttons__burger">
-        <input type="checkbox" id="burger" onchange="toggleNav()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </label>
+    <div class="users-menu-btn">
+        <label class="buttons__burger">
+            <input type="checkbox" id="burger" onchange="toggleNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+    </div>
 
     <script>
         function toggleNav() {
