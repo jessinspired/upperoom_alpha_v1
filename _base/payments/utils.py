@@ -78,6 +78,7 @@ def create_transfer_recipient(creator_transfer_info):
         recipient_code = response_data['data']['recipient_code']
         return recipient_code
     else:
+        logger.error("Failed to create transfer recipient: " + response_data.get('message'))
         raise ValueError(
             "Failed to create transfer recipient: " + response_data.get('message'))
 
