@@ -248,7 +248,6 @@ class CreatorTransaction(BaseModel):
 
     recipient_code = models.CharField(
         max_length=50,
-        unique=True,
         help_text="A unique code identifying the recipient. This code should be used to refer to the recipient in transactions."
     )
     
