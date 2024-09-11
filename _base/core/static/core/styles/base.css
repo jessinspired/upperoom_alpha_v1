@@ -28,7 +28,8 @@
     --navHeight: 4rem;
 
     /* border radius */
-    --smallBorderRadius: .6rem
+    --smallBorderRadius: .6rem;
+    --circularBorderRadius: 50%
 }
 
 * {
