@@ -108,7 +108,12 @@ class CreatorTransferInfo(BaseModel):
     
     @property
     def balance(self):
-        return self._balance
+        try:
+            return self._balance
+        except:
+            self._balance = Decimal("0")
+            return self._balance
+    
     
     @balance.setter
     def balance(self, amount):
