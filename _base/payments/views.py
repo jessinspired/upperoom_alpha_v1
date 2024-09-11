@@ -243,6 +243,8 @@ def withdraw_balance(request):
             return redirect('get_creator')
     else:
         form = PaymentRequestForm()
+    
+    return render(request, 'payments/withdraw.html', {'form': form})
 
 
 @csrf_exempt
