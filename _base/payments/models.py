@@ -111,6 +111,13 @@ class CreatorTransferInfo(BaseModel):
         decimal_places=2,
         default=0.00
     )
+    
+    recipient_code = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        help_text="A unique code identifying the recipient. This code should be used to refer to the recipient in transactions."
+    )
 
     is_validated = models.BooleanField(
         default=False,

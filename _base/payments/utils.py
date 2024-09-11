@@ -238,7 +238,8 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
             raise ValueError(
                 f"No transfer info found for creator {creator.id}")
 
-        recipient_code = create_transfer_recipient(creator_info)
+        
+        recipient_code = create_transfer_recipient(creator_info) if not creator.recipient_code else creator.recipient_code
         reference = generate_unique_reference(length=32)
         if creator.transferprofile.balance < amount:
             logger.error("No transfer info found for creator {creator.id}")
