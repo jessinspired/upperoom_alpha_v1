@@ -1,3 +1,4 @@
+from decimal import Decimal
 import os
 from django.db import models
 from django.forms import ValidationError
@@ -105,6 +106,59 @@ class CreatorTransferInfo(BaseModel):
         default=False,
     )
     
+    @property
+    def balance(self):
+        return self._balance
+    
+    @balance.setter
+    def balance(self, amount):
+        if not isinstance(amount, Decimal):
+            try:
+                amount = Decimal(amount)
+            except (ValueError, TypeError):
+                raise ValidationError("The amount must be a valid number.")
+        
+        if amount < Decimal('0.00'):
+            raise ValidationError("Balance cannot be negative.")
+        
+        self._balance = amount
+    
+    def increment_balance(self, amount):
+        """
+        Increment the balance by a given amount.
+        """
+        if not isinstance(amount, Decimal):
+            try:
+                amount = Decimal(amount)
+            except (ValueError, TypeError):
+                raise ValidationError("The amount must be a valid number in string format.")
+
+        new_balance = self._balance + amount
+
+        if new_balance < Decimal('0.00'):
+            raise ValidationError("Balance cannot be negative.")
+
+        self._balance = new_balance
+        self.save()
+
+    def decrement_balance(self, amount):
+        """
+        Decrement the balance by a given amount.
+        """
+        if not isinstance(amount, Decimal):
+            try:
+                amount = Decimal(amount)
+            except (ValueError, TypeError):
+                raise ValidationError("The amount must be a valid number in string format.")
+
+        new_balance = self._balance - amount
+
+        if new_balance < Decimal('0.00'):
+            raise ValidationError("Balance cannot be negative.")
+
+        self._balance = new_balance
+        self.save()
+        
     def save(self, *args, **kwargs):
         """
         Override the save method to perform additional validations and resolve account details before saving the record.

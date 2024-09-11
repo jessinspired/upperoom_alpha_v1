@@ -251,8 +251,9 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
 
         # update creator balance
         # temporary code, not the best
-        creator.transferprofile.balance -= amount
-        creator.transferprofile.save()
+        # check the status of the tranfer_response and update balance accordingly
+        logger.info(f"Creator has been payed an amount of {amount} successfully")
+        creator.transferprofile.decrement_balance(amount)
 
         transaction = CreatorTransaction(
             recipient_code=recipient_code,
