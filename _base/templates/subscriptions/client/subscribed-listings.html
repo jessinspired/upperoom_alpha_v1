@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block page_stylesheets %}
+    <!-- <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'subscriptions/styles/subscribed-listings.css' %}?uuid={{uuid}}">
+{% endblock %}
+
+{% block main %}
+<main id="main">
+    <h1>Subscribed Listings</h1>
+
+    <div class="listings-container">
+        {% for listing in subscribed_listings %}
+        <div class="listing">
+            <button onclick="document.getElementById(`modal-{{ listing.pk }}`).showModal()" class="show-listing-info-btn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+
+            <div class="listing-image"><b>Listing Image Slide</b></div>
+            <div id="status-slide-{{listing.pk}}" class="listing-status">{{ listing.get_status_display }}</div>
+
+            {% if listing.status == 'UNVERIFIED' %}
+            <button
+            class="report-occupied-btn"
+            id="report-occupied-btn-{{listing.pk}}"
+            hx-post="{% url 'handle_occupied_report' pk=listing.pk %}"
+            hx-target="#report-occupied-btn-{{listing.pk}}"
+            hx-swap="outerHTML"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            >Report Occupied
+            </button>
+            {% endif %}
+
+            <dialog class="listing-modal" id="modal-{{ listing.pk }}">
+                <button onclick="document.getElementById('modal-{{ listing.pk }}').close()">X</button>
+                <div>
+                    <div><b>Room Type:</b> {{ listing.room_profile.room_type }}</div>
+                    <div><b>Lodge:</b> {{ listing.room_profile.lodge }}</div>
+                    <div><b>School:</b> {{ listing.room_profile.lodge.school.name }}</div>
+                    <div ><b>Status:</b> <span id="status-modal-{{listing.pk}}">{{ listing.get_status_display }}</span></div>
+                </div>
+            </dialog>
+        </div>
+        {% endfor %}
+
+
+    </div>
+</main>
+
+
+
+{% endblock %}

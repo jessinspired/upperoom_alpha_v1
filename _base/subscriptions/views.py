@@ -7,6 +7,7 @@ import logging
 from auths.decorators import role_required
 from django.http import HttpResponse
 from celery import current_app
+from django_htmx.http import retarget
 
 # from messaging.tasks import send_creator_subscription_mail
 
@@ -68,17 +69,19 @@ def get_subscribed_listings(request, pk):
     """
     try:
         subscription = Subscription.objects.get(pk=pk)
-    except Subscription.DoesNotExist:
+    except Subscription.DoesNotExist as e:
+        logger.error(
+            f'Cannot get subscribed listing with pk: {pk}, error: {e}')
         return handle_http_errors(request, 404)
 
-    subscribed_rooms = subscription.subscribed_rooms.all()
+    subscribed_listings = subscription.subscribed_listings.all()
     context = {
-        'subscribed_rooms': subscribed_rooms
+        'subscribed_listings': subscribed_listings
     }
 
     return render(
         request,
-        'subscriptions/subscribed-listings.html',
+        'subscriptions/client/subscribed-listings.html',
         context
     )
 
@@ -128,8 +131,17 @@ def handle_occupied_report(request, pk):
         listing.save()
         logger.info(
             f'Subscribed listing status changed from unverified to probation for pk: {pk}\ntask_status_id for subscribed_listing set to None')
-        return HttpResponse('<p>Probation set</p>')
+
+        context = {
+            'listing': listing
+        }
+        return render(request, 'subscriptions/client/occupied-report-response.html', context)
     else:
         logger.info(
             f'Subscribed listing with status {listing.status} cannot be set to probation')
-        return HttpResponse('<p>Not set to unverified</p>')
+
+        context = {
+            'messages': ['Listing needs to be unverified to be set to probation']
+        }
+        response = render(request, 'elements/response-modal.html', context)
+        return retarget(response, '#global-response-modal')

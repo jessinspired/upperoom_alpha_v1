@@ -1,0 +1,14 @@
+<div
+hx-swap-oob="true"
+id="status-slide-{{listing.pk}}" class="listing-status">{{ listing.get_status_display }}</div>
+
+<button
+id="report-occupied-btn-{{listing.pk}}"
+>
+</button>
+
+
+<span
+hx-swap-oob="true"
+id="status-modal-{{listing.pk}}">{{ listing.get_status_display }}</span>
+
