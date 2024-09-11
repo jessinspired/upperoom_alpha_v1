@@ -16,6 +16,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 import os
 import logging
+from django_htmx.http import HttpResponseClientRefresh
 
 
 UserModel = get_user_model()
@@ -37,38 +38,23 @@ def init_email_auth(request):
 
     if role not in ['CREATOR', 'CLIENT']:
         logger.error('400 Bad Request Role not found in creator and client')
-        messages.error('Select a role')
-        return redirect('init_email_auth')
+        messages.error(request, 'Please select a role')
+        return HttpResponseClientRefresh()
 
     if not form.is_valid():
-        error_list = []
+        logger.error(f'Init email auth error: {form.errors.items()}')
         for field, errors in form.errors.items():
             for error in errors:
-                error_list.append(f"{error}")
-        context = {
-            'form': form,
-            'error_list': error_list
-        }
-        return render(
-            request,
-            'auths/verify-email.html',
-            context
-        )
+                messages.error(request, f'{error}')
+        return HttpResponseClientRefresh()
 
     email = form.cleaned_data.get('email')
     user = User.objects.filter(email=email)
 
     # check if email exists locally
     if user:
-        context = {
-            'form': form,
-            'error_list': ['This email ID is already registered']
-        }
-        return render(
-            request,
-            'auths/verify-email.html',
-            context
-        )
+        messages.error(request, 'This email ID is already registered')
+        return HttpResponseClientRefresh()
 
     token_obj = EmailVerificationToken.objects.filter(email=email)
     if token_obj:
@@ -129,86 +115,93 @@ def verify_email(request, uuid_code):
         return redirect('init_email_auth')
 
 
-@require_http_methods(['POST', 'GET'])
+@require_http_methods(['POST'])
 def finish_email_auth(request):
-    role = request.GET.get('role')
+    role = None
     form = None
-    if role not in ['creator', 'client']:
-        return render(request, 'error_pages/400-bad-request.html', status=400)
 
-    if request.method == 'POST':
-        modified_post_data = request.POST.copy()
-        modified_post_data['password2'] = modified_post_data.get('password1')
-        if role == 'creator':
-            form = CreatorRegistrationForm(modified_post_data)
-        elif role == 'client':
-            form = ClientRegistrationForm(modified_post_data)
+    modified_post_data = request.POST.copy()
+    modified_post_data['password2'] = modified_post_data.get('password1')
 
-        if form.is_valid():
-            user = form.save(commit=False)
-            if not user:
-                messages.error(
-                    request, "Encountered an error while creating Account.")
-                return redirect('init_email_auth')
-            first_name = form.cleaned_data.get('first_name')
-            last_name = form.cleaned_data.get('last_name')
-            phone = form.cleaned_data.get('phone_number')
-            email = form.cleaned_data.get('email')
+    email = modified_post_data.get('email')
 
-            token = EmailVerificationToken.objects.get(email=email)
-            if not token.is_verified:
-                messages.error("Your email address must be verified.")
-                return redirect('init_email_auth')
+    if not email:
+        messages.error(request, 'No email provided')
+        return redirect('init_email_auth')
 
-            import random
-            while True:
-                random_number = str(random.randint(1000000, 9999999))
-                username = f'{first_name}{last_name}{random_number}'
+    try:
+        email_verification_obj = EmailVerificationToken.objects.get(
+            email=email)
+    except EmailVerificationToken.DoesNotExist as e:
+        logger.error(f'finish email auth error for email: {email}\n {e}')
+        messages.error(request, "Your email address must be verified.")
+        return redirect('init_email_auth')
 
-                if not UserModel.objects.filter(username=username):
-                    user.username = username
-                    user.authentication_means = 'EMAIL'
-                    user = form.save()
-                    break
+    if not email_verification_obj.is_verified:
+        messages.error(request, "Your email address must be verified.")
+        return redirect('init_email_auth')
 
-            if role == 'creator':
-                profile = CreatorProfile.objects.get(user=user)
-            elif role == 'client':
-                profile = ClientProfile.objects.get(user=user)
+    role = email_verification_obj.role
+    if not role:
+        email_verification_obj.delete()
+        messages.error(request, 'No role provided')
+        return redirect('init_email_auth')
 
-            profile.phone_number = form.cleaned_data.get('phone_number')
-            profile.save()
+    if role == 'CREATOR':
+        form = CreatorRegistrationForm(modified_post_data)
+    elif role == 'CLIENT':
+        form = ClientRegistrationForm(modified_post_data)
 
-            login(request, user, BACKEND)
+    if form.is_valid():
+        user = form.save(commit=False)
+        if not user:
+            messages.error(
+                request, "Encountered an error while creating Account.")
+            return redirect('init_email_auth')
 
-            logger.info(f'{role} account creation complete for {email}')
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+        phone = form.cleaned_data.get('phone_number')
+        # email = form.cleaned_data.get('email')
 
-            if role == 'creator':
-                return redirect('get_creator')
-            elif role == 'client':
-                return redirect('get_client')
-        else:
-            error_feedback = []
-            for field, errors in form.errors.items():
-                for error in errors:
-                    error_feedback.append(f"{error}")
-            context = {
-                'form': form,
-                'error_feedback': error_feedback,
-                'role': role
-            }
-            return render(
-                request,
-                'auths/register.html',
-                context
-            )
+        token = EmailVerificationToken.objects.get(email=email)
+        if not token.is_verified:
+            messages.error("Your email address must be verified.")
+            return redirect('init_email_auth')
+
+        import random
+        while True:
+            random_number = str(random.randint(1000000, 9999999))
+            username = f'{first_name}{last_name}{random_number}'
+
+            if not UserModel.objects.filter(username=username):
+                user.username = username
+                user.authentication_means = 'EMAIL'
+                user = form.save()
+                break
+
+        if role == 'CREATOR':
+            profile = CreatorProfile.objects.get(user=user)
+        elif role == 'CLIENT':
+            profile = ClientProfile.objects.get(user=user)
+
+        profile.phone_number = form.cleaned_data.get('phone_number')
+        profile.save()
+
+        login(request, user, BACKEND)
+
+        logger.info(f'{role} account creation complete for {email}')
+
+        if role == 'CREATOR':
+            return redirect('get_creator')
+        elif role == 'CLIENT':
+            return redirect('get_client')
     else:
-        if role == 'creator':
-            form = CreatorRegistrationForm()
-        elif role == 'client':
-            form = ClientRegistrationForm()
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f'{error}')
 
-        return render(request, 'auths/register.html', {'form': form})
+        return redirect('verify_email', uuid_code=email_verification_obj.uuid_code)
 
 
 class CustomLoginView(LoginView):
@@ -220,20 +213,12 @@ class CustomLoginView(LoginView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
-        error_list = []
+        logger.error(f'Login error: {form.errors.items()}')
         for field, errors in form.errors.items():
             for error in errors:
-                error_list.append(f"{error}")
-        context = {
-            'form': form,
-            'error_list': error_list
-        }
+                messages.error(self.request, f'{error}')
 
-        return render(
-            self.request,
-            'auths/login.html',
-            context
-        )
+        return redirect('login')
 
     def get_success_url(self):
         """
