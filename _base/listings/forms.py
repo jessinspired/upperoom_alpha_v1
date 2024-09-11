@@ -15,20 +15,20 @@ class LodgeRegistrationForm(forms.ModelForm):
     '''set basic info about lodge'''
 
     name = forms.CharField(
-        help_text="N/B: If lodge has no name, use the alias field below instead",
+        # help_text="N/B: If lodge has no name, use the alias field below instead",
         required=False
     )
 
     alias = forms.CharField(
-        help_text=(
-            '- Use this to identify nameless lodges in your dashboard.<br>'
-            '- This name, however, would not be rendered for users to see'
-        ),
+        # help_text=(
+        #     '- Use this to identify nameless lodges in your dashboard.<br>'
+        #     '- This name, however, would not be rendered for users to see'
+        # ),
         required=False
     )
 
     phone_number = forms.CharField(
-        help_text="Number of lodge agent/caretaker"
+        # help_text="Number of lodge agent/caretaker"
     )
 
     class Meta:

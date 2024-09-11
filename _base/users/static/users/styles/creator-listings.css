@@ -1,0 +1,34 @@
+.middle-content {
+    display: flex;
+    justify-content:space-around;
+    flex-wrap: wrap-reverse;
+    padding: 1rem;
+    column-gap: 4rem;
+    row-gap: 2rem;
+}
+
+.register-lodge-container {
+    display: grid;
+    row-gap: 1rem;
+    align-content: flex-start;
+}
+
+.register-lodge-container > h3 {
+    /* position: sticky; */
+    /* top: 2rem; */
+    text-align: center;
+}
+
+.register-lodge-container > form {
+    /* position: sticky; */
+    /* top: 5rem; */
+    box-shadow: var(--mediumBoxShadow);
+    padding: 2rem 2rem;
+    border-radius: var(--smallBorderRadius);
+}
+
+.listings-container {
+    display: grid;
+    row-gap: 1rem;
+    align-content: flex-start;
+}

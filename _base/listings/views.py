@@ -4,6 +4,12 @@ from .forms import LodgeRegistrationForm, RoomProfileForm
 from listings.models import Lodge, RoomType, RoomProfile
 from django.forms import formset_factory
 from django.views.decorators.http import require_http_methods
+from django_htmx.http import HttpResponseClientRefresh
+import logging
+from django.contrib import messages
+
+
+logger = logging.getLogger('listings')
 
 
 @role_required(['CREATOR'])
@@ -12,19 +18,24 @@ def register_lodge(request):
         lodge_form = LodgeRegistrationForm(request.POST, request.FILES)
         if lodge_form.is_valid():
             lodge = lodge_form.save(creator=request.user)
-            return redirect('get_creator')
 
-            # url = reverse('lodge_profile', args=[lodge.id])
-            # return redirect(url)
-    else:
-        form = LodgeRegistrationForm()
+            logger.info(f'New lodge registered with pk: {lodge.pk}')
 
-    context = {
-        'form': form
-    }
-    template = 'listings/register-lodge.html'
+            messages.success(request, 'Lodge successfully registered')
+            if request.htmx:
+                # change later to dynamically partials
+                return HttpResponseClientRefresh()
+                # return render(request, 'listings/creator/register-lodge-response.html')
+            return redirect('get_creator_listings')
+        else:
+            for field, errors in lodge_form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{error}')
+            if request.htmx:
+                return HttpResponseClientRefresh()
+            return redirect('get_creator_listings')
 
-    return render(request, template, context)
+    return redirect('get_creator_listings')
 
 
 @role_required(['CREATOR'])

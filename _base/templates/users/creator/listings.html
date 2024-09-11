@@ -2,34 +2,62 @@
 {% load static %}
 
 {% block section_stylesheets %}
-<!-- <link rel="stylesheet" href="{% static 'users/styles/client-dashboard.css' %}"> -->
+<link rel="stylesheet" href="{% static 'users/styles/creator-listings.css' %}?uuid={{uuid}}">
 {% endblock %}
 
 {% block middle_content %}
 <div class="middle-content">
-    <h1>My Listings</h1>
+    <div class="listings-container">
+        <h3>My Listings</h3>
 
-    <ul>
-        {% for lodge in user.lodges.all %}
-        <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a></li>
-        {% endfor %}
-    </ul>
+        <!-- <a href="{% url 'register_lodge' %}">Register hostel</a> -->
 
-    {% comment %}
-    <div class="key-stats-container-mobile">
-        <h3>
-            <i class="fa-solid fa-chart-simple"></i>
-            <span>Key Stats</span>
-        </h3>
-
+        {% if user.lodges.all %}
         <ul>
-            <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
-            <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
-            <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
-            <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
+            {% for lodge in user.lodges.all %}
+            <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a></li>
+            {% endfor %}
         </ul>
+        {% else %}
+        <div id="lodges-list">
+            No registered lodges yet
+        </div>
+        {% endif %}
+
+        {% comment %}
+        <div class="key-stats-container-mobile">
+            <h3>
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Key Stats</span>
+            </h3>
+
+            <ul>
+                <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
+                <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
+            </ul>
+        </div>
+        {% endcomment %}
+
     </div>
-    {% endcomment %}
+
+    <div class="register-lodge-container">
+        <h3>Register A New Lodge</h3>
+
+        <form
+        id="register-lodge-form"
+        action="#"
+        hx-post="{% url 'register_lodge' %}"
+        hx-swap="outerHTML"
+        hx-target="#register-lodge-form"
+        >
+            {% csrf_token %}
+            {{lodge_registration_form}}
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
 
 </div>
 

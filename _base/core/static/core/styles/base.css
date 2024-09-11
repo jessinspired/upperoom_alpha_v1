@@ -23,6 +23,7 @@
     --sideNav: 3;
     --navCard: 4;
     --toggleNavCardBtn: 4;
+    --globalResponseMessage: 5;
 
     /* heights */
     --navHeight: 4rem;
@@ -76,6 +77,7 @@ button {
     position: relative;
     padding: 1rem 2rem;
     font-size: .8rem;
+    z-index: var(--globalResponseMessage);
 }
 
 #global-response-message > button {

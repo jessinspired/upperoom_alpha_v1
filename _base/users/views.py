@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from auths.decorators import role_required
 from listings.models import RoomProfile, Region
 from payments.models import Transaction
+from listings.forms import LodgeRegistrationForm, RoomProfileForm
+
 
 # Create your views here.
 
@@ -83,4 +85,10 @@ def get_client_subscriptions(request):
 
 @role_required(['CREATOR'])
 def get_creator_listings(request):
-    return render(request, 'users/creator/listings.html')
+    lodge_registration_form = LodgeRegistrationForm()
+
+    context = {
+        'lodge_registration_form': lodge_registration_form
+    }
+
+    return render(request, 'users/creator/listings.html', context)
