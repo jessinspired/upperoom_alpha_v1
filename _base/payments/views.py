@@ -238,11 +238,17 @@ def withdraw_balance(request):
         form = PaymentRequestForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
-            transaction = creator_payment_pipeline(request.user, amount)
-            messages.success(request, f"Payment request of N{amount} has been submitted.")
-            return redirect('get_creator')
-    else:
-        form = PaymentRequestForm()
+
+            try:
+                transaction = creator_payment_pipeline(request.user, amount)
+                messages.success(request, f"Payment request of N{amount} has been submitted.")
+                return redirect('get_creator')
+            except Exception as e:
+                messages.error(request, e)
+                
+    form = PaymentRequestForm()
+    
+    return render(request, 'payments/withdraw.html', {'form': form})
 
 
 @csrf_exempt

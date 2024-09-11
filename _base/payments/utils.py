@@ -78,6 +78,7 @@ def create_transfer_recipient(creator_transfer_info):
         recipient_code = response_data['data']['recipient_code']
         return recipient_code
     else:
+        logger.error("Failed to create transfer recipient: " + response_data.get('message'))
         raise ValueError(
             "Failed to create transfer recipient: " + response_data.get('message'))
 
@@ -147,8 +148,8 @@ def initiate_bulk_transfer(transfers: List[dict]):
                 reason=transfer['reason']
             )
     else:
-        raise ValueError("Bulk transfer failed: " +
-                         response_data.get('message'))
+        logger.error("Bulk transfer failed: " + response_data.get('message'))
+        raise ValueError("Bulk transfer failed: " + response_data.get('message'))
 
 
 def handle_transfer_event(event, data):
@@ -233,13 +234,15 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
         try:
             creator_info = CreatorTransferInfo.objects.get(creator=creator)
         except CreatorTransferInfo.DoesNotExist:
+            logger.error(f"No transfer info found for creator {creator.id}")
             raise ValueError(
                 f"No transfer info found for creator {creator.id}")
 
-        recipient_code = create_transfer_recipient(creator_info)
+        
+        recipient_code = create_transfer_recipient(creator_info) if not creator.recipient_code else creator.recipient_code
         reference = generate_unique_reference(length=32)
         if creator.transferprofile.balance < amount:
-            print("Insufficient balance")
+            logger.error(f"Insufficient funds for creator: {creator.id}")
             raise Exception("Insufficient funds")
 
         transfer_response = initiate_single_transfer(
@@ -258,7 +261,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
         transaction = CreatorTransaction(
             recipient_code=recipient_code,
             creator=creator,
-            income=creator_info.balance,
+            income=amount,
             reference=reference,
             status=transfer_response.get("status"),
             reason="Payment for services"
@@ -274,10 +277,11 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
             try:
                 creator_info = CreatorTransferInfo.objects.get(creator=creator)
             except CreatorTransferInfo.DoesNotExist:
+                logger.error(f"No transfer info found for creator {creator.id}")
                 raise ValueError(
                     f"No transfer info found for creator {creator.id}")
 
-            recipient_code = create_transfer_recipient(creator_info)
+            recipient_code = create_transfer_recipient(creator_info) if not creator.recipient_code else creator.recipient_code
             reference = generate_unique_reference(length=32)
 
             transfers.append({
