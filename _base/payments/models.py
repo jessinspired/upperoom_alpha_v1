@@ -106,65 +106,76 @@ class CreatorTransferInfo(BaseModel):
         default=False,
     )
     
-    @property
-    def balance(self):
-        try:
-            return self._balance
-        except:
-            self._balance = Decimal("0")
-            return self._balance
-    
-    
-    @balance.setter
-    def balance(self, amount):
-        if not isinstance(amount, Decimal):
-            try:
-                amount = Decimal(amount)
-            except (ValueError, TypeError):
-                raise ValidationError("The amount must be a valid number.")
-        
-        if amount < Decimal('0.00'):
-            raise ValidationError("Balance cannot be negative.")
-        
-        self._balance = amount
-    
+    balance = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0.00
+    )
+
+    is_validated = models.BooleanField(
+        default=False,
+    )
+
     def increment_balance(self, amount):
-        """
-        Increment the balance by a given amount.
-        """
-        if not isinstance(amount, Decimal):
-            try:
-                amount = Decimal(amount)
-            except (ValueError, TypeError):
-                raise ValidationError("The amount must be a valid number in string format.")
-
-        new_balance = self._balance + amount
-
-        if new_balance < Decimal('0.00'):
-            raise ValidationError("Balance cannot be negative.")
-
-        self._balance = new_balance
+        """Increment the balance by a given amount."""
+        amount = Decimal(amount)
+        if amount < Decimal('0.00'):
+            raise ValidationError("Amount must be non-negative.")
+        self.balance += amount
         self.save()
 
     def decrement_balance(self, amount):
-        """
-        Decrement the balance by a given amount.
-        """
-        if not isinstance(amount, Decimal):
-            try:
-                amount = Decimal(amount)
-            except (ValueError, TypeError):
-                raise ValidationError("The amount must be a valid number in string format.")
-
-        new_balance = self._balance - amount
-
-        if new_balance < Decimal('0.00'):
+        """Decrement the balance by a given amount."""
+        amount = Decimal(amount)
+        if amount < Decimal('0.00'):
+            raise ValidationError("Amount must be non-negative.")
+        if self.balance - amount < Decimal('0.00'):
             raise ValidationError("Balance cannot be negative.")
-
-        self._balance = new_balance
+        self.balance -= amount
         self.save()
-        
+
     def save(self, *args, **kwargs):
+        """Override the save method to perform additional validations and resolve account details before saving the record."""
+        # Step 1: Resolve account details from Paystack
+        resolve_url = f'https://api.paystack.co/bank/resolve?account_number={self.account_number}&bank_code={self.bank_code}'
+        headers = {
+            'Authorization': f'Bearer {os.getenv("PAYSTACK_TEST_KEY")}'
+        }
+        
+        resolve_response = requests.get(resolve_url, headers=headers)
+        resolve_data = resolve_response.json()
+
+        if resolve_data.get("status"):
+            self.account_name = resolve_data['data']['account_name']
+        else:
+            raise ValidationError("Failed to resolve account details. Please check the account number and bank code.")
+        
+        if not self.is_validated:
+            # Step 2: Verify creator name with BVN and bank account using Paystack
+            creator_first_name = self.creator.first_name
+            creator_last_name = self.creator.last_name
+            
+            verification_url = f'https://api.paystack.co/customer/{self.creator.customer_code}/identification'
+            verification_data = {
+                "country": "NG",
+                "type": "bank_account",
+                "account_number": self.account_number,
+                "bvn": self.bvn,
+                "bank_code": self.bank_code,
+                "first_name": creator_first_name,
+                "last_name": creator_last_name
+            }
+            
+            verification_response = requests.post(verification_url, headers=headers, json=verification_data)
+            verification_result = verification_response.json()
+
+            if not verification_result.get("status"):
+                if verification_result.get("message") != "Customer already validated using the same credentials":
+                    raise ValidationError("Failed to verify account details. The name on the bank account does not match the creator's name.")
+            
+            self.is_validated = True
+
+        super().save(*args, **kwargs)
         """
         Override the save method to perform additional validations and resolve account details before saving the record.
 
