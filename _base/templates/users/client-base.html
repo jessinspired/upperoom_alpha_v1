@@ -15,10 +15,15 @@
     <nav class="side-nav" x-ref="sidenav" id="side-nav">
         <a href="{% url 'get_home' %}"><h3>UppeRoom</h3></a>
         <div class="side-nav-links-container">
-            <a href="{% url 'get_client' %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+            <a href="{% if user.role == 'CLIENT' %}{% url 'get_client' %}{% elif user.role == 'CREATOR' %}{% url 'get_creator' %}{% endif %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
             <!-- <a href="#">Listings</a> -->
             <a href="{% url 'get_client_subscriptions' %}"><i class="fa-solid fa-list-check"></i>Subscriptions</a>
+
+            {% if user.role == 'CREATOR' %}
+            <a href="{% url 'get_creator_listings' %}"><i class="fa-solid fa-hotel"></i>Listings</a>
+
             <a href="#"><i class="fa-solid fa-credit-card"></i>Payments</a>
+            {% endif %}
         </div>
 
         <form id="logout-form" action="{% url 'logout' %}" method="post">
@@ -39,12 +44,21 @@
                 <span>Key Stats</span>
             </h3>
 
+            {% if user.role == 'CLIENT' %}
             <ul>
                 <li><i class="fa-solid fa-check-double"></i>Active Subscriptions: {% if active_subscriptions %}{{active_subscriptions.count}}{% else %}0{% endif %}</li>
                 <li><i class="fa-solid fa-check-double"></i>Complete Transactions: {% if complete_transactions %}{{complete_transactions.count}}{% else %}0{% endif %}</li>
                 <li><i class="fa-solid fa-ban"></i>Aborted Transactions: {% if incomplete_transactions %}{{incomplete_transactions.count}}{% else %}0{% endif %}</li>
                 <!-- <li><i class="fa-solid fa-naira-sign"></i> Total Paid: {% if total_paid %}{{total_paid}}{% else %}0{% endif %}</li> -->
             </ul>
+            {% elif user.role == 'CREATOR' %}
+            <ul>
+                <li><i class="fa-solid fa-credit-card"></i>Earning: &#8358; {% if user.transferprofile %}{{user.transferprofile.balance}}{% else %}0{% endif %}</li>
+                <li><i class="fa-solid fa-users"></i>Subscribed Clients: 0</li>
+                <li><i class="fa-solid fa-hotel"></i>Lodges: {{user.lodges.count}}</li>
+                <li><i class="fa-solid fa-house-circle-check"></i>Vacancies: 0</li>
+            </ul>
+            {% endif %}
 
         </div>
     </main>

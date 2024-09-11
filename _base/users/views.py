@@ -16,7 +16,7 @@ def get_creator(request):
         'subscribed_listings': subscribed_listings
     }
 
-    return render(request, 'users/creator.html', context)
+    return render(request, 'users/creator/dashboard.html', context)
 
 
 @role_required(['CLIENT'])
@@ -79,3 +79,8 @@ def get_client_subscriptions(request):
         'active_subscriptions': active_subscriptions
     }
     return render(request, 'users/client/subscriptions.html', context)
+
+
+@role_required(['CREATOR'])
+def get_creator_listings(request):
+    return render(request, 'users/creator/listings.html')

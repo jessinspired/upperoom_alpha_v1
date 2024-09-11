@@ -17,5 +17,10 @@ urlpatterns = [
         'client_subscriptions/',
         views.get_client_subscriptions,
         name='get_client_subscriptions'
+    ),
+    path(
+        'creator_listings/',
+        views.get_creator_listings,
+        name='get_creator_listings'
     )
 ]
