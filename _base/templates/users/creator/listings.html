@@ -15,7 +15,7 @@
         {% if user.lodges.all %}
         <ul>
             {% for lodge in user.lodges.all %}
-            <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a></li>
+            <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}} - {{lodge.region}}</a></li>
             {% endfor %}
         </ul>
         {% else %}

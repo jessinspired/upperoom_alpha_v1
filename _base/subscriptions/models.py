@@ -46,7 +46,7 @@ class SubscriptionHandler(BaseModel):
     Handles the subscribed listing for the associated regions
     in the subscription
     """
-    THRESHOLD = 5
+    THRESHOLD = 3
 
     verified_listings_count = models.IntegerField(default=0)
 

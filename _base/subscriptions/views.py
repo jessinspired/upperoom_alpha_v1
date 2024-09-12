@@ -75,7 +75,7 @@ def subscription_algorithm(regions, subscription):
         room_profiles_in_region = RoomProfile.objects.filter(
             lodge__in=lodges_in_region,
             vacancy__gt=0
-        )[:20]
+        )[:SubscriptionHandler.THRESHOLD]
 
         count = 0
         for room_profile in room_profiles_in_region:

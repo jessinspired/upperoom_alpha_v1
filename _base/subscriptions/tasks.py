@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from celery import shared_task
 from django.utils import timezone
-from .models import SubscribedListing
+from .models import SubscribedListing, SubscriptionHandler
 import logging
 
 logger = logging.getLogger('subscriptions')
@@ -32,10 +32,10 @@ def change_status_to_verified(subscribed_listing_id):
             subscription_handler.verified_listings_count += 1
             subscription_handler.queued_listings_count -= 1
 
-            if subscription_handler.verified_listings_count == 20:
+            if subscription_handler.verified_listings_count == SubscriptionHandler.THRESHOLD:
                 subscription_handler.is_expired = True
                 logger.info(
-                    f'subscription_handler with id: {subscription_handler.pk} is now expired!')
+                    f'subscription_handler has reached threshold: {subscription_handler.verified_listings_count} and is now expired!')
 
             subscription_handler.save()
             logger.info(
