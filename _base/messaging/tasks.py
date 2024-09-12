@@ -369,13 +369,13 @@ def send_creator_subscription_mail(creator_email_list):
 
         # work on this later
         logger.info(
-            f'client subscription email successfully sent'
+            f'To creator : client subscription email successfully sent'
         )
 
     except Exception as e:
         # improve
         logger.error(
-            f'Could not send client subscription mail with Execption {e}\nCreator mail list {str(creator_email_list)}')
+            f'To creator: Could not send client subscription mail with Execption {e}\nCreator mail list {str(creator_email_list)}')
 
 
 @shared_task
