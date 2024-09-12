@@ -242,6 +242,9 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         # Handle single payment
         creator = creators[0]
         verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
+        if creator.transfer_profile.balance <= 0:
+            logger.error(f"Account balance is insufficient: N{creator.transfer_profile.balance}")
+            raise Exception(f"Account balance is insufficient: N{creator.transfer_profile.balance}")
         try:
             creator_info = CreatorTransferInfo.objects.get(creator=creator)
         except CreatorTransferInfo.DoesNotExist:
@@ -292,6 +295,10 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
     else:
         # Handle bulk payments
         transfers = []
+        for creator in creators:
+            if creator.transfer_profile.balance <= 0:
+                logger.error(f"Account balance is insufficient: N{creator.transfer_profile.balance} for creator with id: {creator.id}")
+                raise Exception(f"Account balance is insufficient: N{creator.transfer_profile.balance} for creator with id: {creator.id}")
         for creator in creators:
             try:
                 creator_info = CreatorTransferInfo.objects.get(creator=creator)
