@@ -227,7 +227,7 @@ def withdraw_balance(request):
     except CreatorTransferInfo.DoesNotExist:
         logger.error(
             "You have to setup a payment profile. Creator has no payment profile")
-        return HttpResponse("<h1>Failed</h1>")
+        return HttpResponse("<h1>Failed - No payment profile found. Please create one.</h1>")
 
     try:
         if not tranfer_info.is_validated:
