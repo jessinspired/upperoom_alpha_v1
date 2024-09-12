@@ -217,12 +217,12 @@ def handle_charge_success(data):
     subscription, subscribed_rooms = subscribe_for_listing(transaction)
 
     if subscribed_rooms.exists():
-        send_initial_subscribed_listings.delay(subscription.pk)
+        send_initial_subscribed_listings(subscription.pk)
 
     logger.info('Subscription for listing added')
 
 
-def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
+def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
     """
     Handles payments for one or more creators by processing the payment pipeline.
 
@@ -241,9 +241,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
     if len(creators) == 1:
         # Handle single payment
         creator = creators[0]
-        verified_subscribed_listings = SubscribedListing.objects.filter(
-            creator=creator, status=SubscribedListing.Status.VERIFIED)
-        if creator.transfer_profile.balance <= 0:
+        if creator.transfer_profile.balance < amount:
             logger.error(
                 f"Account balance is insufficient: N{creator.transfer_profile.balance}")
             raise Exception(
@@ -259,11 +257,6 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
             creator_info) if not creator_info.recipient_code else creator_info.recipient_code
         reference = generate_unique_reference(length=32)
 
-        for listing in verified_subscribed_listings:
-            creator_info.increment_balance()
-
-        amount = creator_info.balance
-
         transfer_response = initiate_single_transfer(
             recipient_code=recipient_code,
             amount=amount * 100,
@@ -277,10 +270,6 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         logger.info(
             f"Creator has been payed an amount of {amount} successfully")
         creator_info.decrement_balance(amount)
-
-        for listing in verified_subscribed_listings:
-            listing.status = SubscribedListing.Status.SETTLED
-            listing.save()
 
         transaction = CreatorTransaction(
             recipient_code=recipient_code,
@@ -316,15 +305,10 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
                 creator_info) if not creator.recipient_code else creator.recipient_code
             reference = generate_unique_reference(length=32)
 
-            verified_subscribed_listings = SubscribedListing.objects.filter(
-                creator=creator, status=SubscribedListing.Status.VERIFIED)
-            for listing in verified_subscribed_listings:
-                creator_info.increment_balance()
-
             amount = creator_info.balance
 
             transfers.append({
-                "amount": amount,  # Assuming `balance` is in kobo
+                "amount": amount * 100,  # Assuming `balance` is in kobo
                 "reference": reference,
                 "reason": "Payment for services",
                 "recipient": recipient_code,
@@ -336,11 +320,8 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
             transactions.extend(transfer_responses)
 
             for tranfer in transfers:
-                creator = Creator.objects.get(id=tranfer['creator_id'])
-                verified_subscribed_listings = SubscribedListing.objects.filter(
-                    creator=creator, status=SubscribedListing.Status.VERIFIED)
-                for listing in verified_subscribed_listings:
-                    listing.status = SubscribedListing.Status.SETTLED
-                    listing.save()
+                creator_info: CreatorTransferInfo = Creator.objects.get(
+                    id=tranfer['creator_id']).transfer_profile
+                creator_info.decrement_balance(tranfer['amount'] / 100)
 
     return transactions
