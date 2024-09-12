@@ -77,6 +77,8 @@ def create_transfer_recipient(creator_transfer_info):
 
     if response_data.get('status'):
         recipient_code = response_data['data']['recipient_code']
+        creator_transfer_info.recipient_code = recipient_code
+        creator_transfer_info.save()
         return recipient_code
     else:
         logger.error("Failed to create transfer recipient: " +
@@ -248,7 +250,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
                 f"No transfer info found for creator {creator.id}")
 
         recipient_code = create_transfer_recipient(
-            creator_info) if not creator.recipient_code else creator.recipient_code
+            creator_info) if not creator_info.recipient_code else creator_info.recipient_code
         reference = generate_unique_reference(length=32)
         
         for listing in verified_subscribed_listings:
