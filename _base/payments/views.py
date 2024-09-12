@@ -236,13 +236,21 @@ def withdraw_balance(request):
     except Exception as e:
         logger.error("Creator payment is not validated!")
         return HttpResponse("<h1>Failed</h1>")
-    try:
-        transaction = creator_payment_pipeline(creator)
-        messages.success(request, f"Payment request of has been submitted.")
-        return redirect('get_creator')
-    except Exception as e:
-        messages.error(request, e)
-        return redirect('get_creator')
+    
+    if request.method == 'POST':
+        form = PaymentRequestForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            try:
+                creator_payment_pipeline(creator, amount)
+                messages.success(request, f"Payment request of N{amount} has been submitted.")
+                return redirect('get_creator')
+            except Exception as e:
+                messages.error(request, e)
+                
+    form = PaymentRequestForm()
+    
+    return render(request, 'payments/withdraw.html', {'form': form})
 
 
 @csrf_exempt
