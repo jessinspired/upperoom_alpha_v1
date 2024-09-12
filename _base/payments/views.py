@@ -10,6 +10,8 @@ from django_htmx.http import trigger_client_event
 from django.contrib import messages
 from django.shortcuts import render, redirect
 import json
+
+from subscriptions.models import SubscribedListing
 from .forms import CreatorTransferInfoForm, PaymentRequestForm
 from auths.decorators import role_required
 from listings.models import Region
@@ -219,8 +221,9 @@ def creator_transfer_info_view(request):
 @role_required(['CREATOR'])
 @require_http_methods(['GET', 'POST'])
 def withdraw_balance(request):
+    creator = request.user
     try:
-        tranfer_info = CreatorTransferInfo.objects.get(creator=request.user)
+        tranfer_info = CreatorTransferInfo.objects.get(creator=creator)
     except CreatorTransferInfo.DoesNotExist:
         logger.error(
             "You have to setup a payment profile. Creator has no payment profile")
@@ -233,22 +236,13 @@ def withdraw_balance(request):
     except Exception as e:
         logger.error("Creator payment is not validated!")
         return HttpResponse("<h1>Failed</h1>")
-
-    if request.method == 'POST':
-        form = PaymentRequestForm(request.POST)
-        if form.is_valid():
-            amount = form.cleaned_data['amount']
-
-            try:
-                transaction = creator_payment_pipeline(request.user, amount)
-                messages.success(request, f"Payment request of N{amount} has been submitted.")
-                return redirect('get_creator')
-            except Exception as e:
-                messages.error(request, e)
-                
-    form = PaymentRequestForm()
-    
-    return render(request, 'payments/withdraw.html', {'form': form})
+    try:
+        transaction = creator_payment_pipeline(creator)
+        messages.success(request, f"Payment request of has been submitted.")
+        return redirect('get_creator')
+    except Exception as e:
+        messages.error(request, e)
+        return redirect('get_creator')
 
 
 @csrf_exempt

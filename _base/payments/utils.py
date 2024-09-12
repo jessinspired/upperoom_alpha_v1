@@ -6,6 +6,7 @@ from typing import List, Union
 from django.http import JsonResponse
 import requests
 
+from subscriptions.models import SubscribedListing
 from messaging.tasks import send_initial_subscribed_listings
 from subscriptions.views import subscribe_for_listing
 from users.models import Creator, User
@@ -135,19 +136,24 @@ def initiate_bulk_transfer(transfers: List[dict]):
 
     response = requests.post(url, headers=headers, json=data)
     response_data = response.json()
+    
+    transactions = []
 
     if response_data.get('status'):
         for transfer in response_data['data']:
-            CreatorTransaction.objects.create(
-                recipient_code=transfer['recipient'],
-                # Assuming creator_id is available
-                creator=Creator.objects.get(id=transfer['creator_id']),
-                # Convert from kobo to naira
-                amount_transfered=transfer['amount'] / 100,
-                reference=transfer['reference'],
-                status=transfer['status'],
-                reason=transfer['reason']
-            )
+            transaction = CreatorTransaction.objects.create(
+                    recipient_code=transfer['recipient'],
+                    # Assuming creator_id is available
+                    creator=Creator.objects.get(id=transfer['creator_id']),
+                    # Convert from kobo to naira
+                    amount_transfered=transfer['amount'] / 100,
+                    reference=transfer['reference'],
+                    status=transfer['status'],
+                    reason=transfer['reason']
+                )
+            transactions.append(transaction)
+            
+        return transactions
     else:
         logger.error("Bulk transfer failed: " + response_data.get('message'))
         raise ValueError("Bulk transfer failed: " +
@@ -214,7 +220,7 @@ def handle_charge_success(data):
     logger.info('Subscription for listing added')
 
 
-def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
+def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
     """
     Handles payments for one or more creators by processing the payment pipeline.
 
@@ -233,6 +239,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
     if len(creators) == 1:
         # Handle single payment
         creator = creators[0]
+        verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
         try:
             creator_info = CreatorTransferInfo.objects.get(creator=creator)
         except CreatorTransferInfo.DoesNotExist:
@@ -243,13 +250,15 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
         recipient_code = create_transfer_recipient(
             creator_info) if not creator.recipient_code else creator.recipient_code
         reference = generate_unique_reference(length=32)
-        if creator.transfer_profile.balance < amount:
-            logger.error(f"Insufficient funds for creator: {creator.id}")
-            raise Exception("Insufficient funds")
-
+        
+        for listing in verified_subscribed_listings:
+            creator_info.increment_balance()
+            
+        amount = creator_info.balance
+        
         transfer_response = initiate_single_transfer(
             recipient_code=recipient_code,
-            amount=amount,
+            amount=amount * 100, 
             reference=reference,
             reason="Payment for services"
         )
@@ -259,7 +268,12 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
         # check the status of the tranfer_response and update balance accordingly
         logger.info(
             f"Creator has been payed an amount of {amount} successfully")
-        creator.transfer_profile.decrement_balance(amount)
+        creator_info.decrement_balance(amount)
+        
+        
+        for listing in verified_subscribed_listings:
+            listing.status = SubscribedListing.Status.SETTLED
+            listing.save()
 
         transaction = CreatorTransaction(
             recipient_code=recipient_code,
@@ -288,9 +302,15 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
             recipient_code = create_transfer_recipient(
                 creator_info) if not creator.recipient_code else creator.recipient_code
             reference = generate_unique_reference(length=32)
-
+            
+            verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
+            for listing in verified_subscribed_listings:
+                creator_info.increment_balance()
+            
+            amount = creator_info.balance
+            
             transfers.append({
-                "amount": creator_info.balance,  # Assuming `balance` is in kobo
+                "amount": amount,  # Assuming `balance` is in kobo
                 "reference": reference,
                 "reason": "Payment for services",
                 "recipient": recipient_code,
@@ -298,6 +318,14 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
             })
 
         if transfers:
-            initiate_bulk_transfer(transfers)
+            transfer_responses = initiate_bulk_transfer(transfers)
+            transactions.extend(transfer_responses)
+            
+            for tranfer in transfers:
+                creator = Creator.objects.get(id=tranfer['creator_id'])
+                verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
+                for listing in verified_subscribed_listings:
+                    listing.status = SubscribedListing.Status.SETTLED
+                    listing.save() 
 
     return transactions
