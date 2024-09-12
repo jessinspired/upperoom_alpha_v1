@@ -9,6 +9,12 @@ logger = logging.getLogger('subscriptions')
 
 @shared_task
 def change_status_to_verified(subscribed_listing_id):
+    """
+    Changes subscribed listing status to verified if
+    i. Status is set to unverified
+
+    Credits creator account
+    """
     logger.info('In change_status_to_verified -> subscriptions.task')
     try:
         subscribed_listing = SubscribedListing.objects.get(
@@ -18,6 +24,35 @@ def change_status_to_verified(subscribed_listing_id):
             subscribed_listing.status = SubscribedListing.Status.VERIFIED
             subscribed_listing.creator.transfer_profile.increment_balance()
             subscribed_listing.save()
+
+            # Expiration logic
+            # 1. Expire subscription_handler lifecycle (create a method for this)
+            subscription_handler = subscribed_listing.subscription_handler
+
+            subscription_handler.verified_listings_count += 1
+            subscription_handler.queued_listings_count -= 1
+
+            if subscription_handler.verified_listings_count == 20:
+                subscription_handler.is_expired = True
+                logger.info(
+                    f'subscription_handler with id: {subscription_handler.pk} is now expired!')
+
+            subscription_handler.save()
+
+            # 2. Expire subscription logic
+            subscription = subscribed_listing.subscription
+
+            has_non_expired_handlers = subscription.subscription_handlers.filter(
+                is_expired=False).exists()
+
+            if not has_non_expired_handlers:
+                subscription.is_expired = True
+                subscription.save()
+                logger.info(
+                    f'Subscription with id: {subscription.pk} is now expired!')
+
+            # end subscription life cycle
+
             logger.info(
                 f'Status changed to verified for subscribed_listing with id {subscribed_listing_id}')
         else:

@@ -217,7 +217,7 @@ def handle_charge_success(data):
     subscription, subscribed_rooms = subscribe_for_listing(transaction)
 
     if subscribed_rooms.exists():
-        send_initial_subscribed_listings(subscription.pk)
+        send_initial_subscribed_listings.delay(subscription.pk)
 
     logger.info('Subscription for listing added')
 

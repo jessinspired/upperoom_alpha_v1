@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from listings.models import School, Region, RoomProfile, Lodge
 from django.views.decorators.http import require_http_methods
-from .models import Subscription, SubscribedListing
+from .models import Subscription, SubscribedListing, SubscriptionHandler
 from core.views import handle_http_errors
 import logging
 from auths.decorators import role_required
@@ -42,25 +42,62 @@ def subscribe_for_listing(transaction):
     )
 
     regions = transaction.regions.all()
-    lodges = Lodge.objects.filter(region__in=regions)
 
-    subscribed_rooms = subscription_algorithm(lodges)
+    for region in regions:
+        SubscriptionHandler.objects.create(
+            subscription=subscription,
+            region=region
+        )
+    logger.info(f'{regions.count()} subscription handler(s) created')
+
+    # lodges = Lodge.objects.filter(region__in=regions)
+
+    subscribed_rooms = subscription_algorithm(regions, subscription)
 
     subscription.subscribed_rooms.set(subscribed_rooms)
     return subscription, subscribed_rooms
 
 
-def subscription_algorithm(lodges):
+def subscription_algorithm(regions, subscription):
     """
     Algorithm to select rooms, using basic randomization for now.
     This function limits the selection to a maximum of 20 randomly chosen rooms.
     """
-    vacant_rooms = RoomProfile.objects.filter(
-        lodge__in=lodges,
-        vacancy__gt=0
-    ).order_by('?')[:20]
+    from itertools import chain
+    from django.db.models import QuerySet
 
-    return vacant_rooms
+    all_room_profiles = QuerySet()
+
+    for region in regions:
+        lodges_in_region = Lodge.objects.filter(region=region)
+        subscription_handler = SubscriptionHandler.objects.get(
+            region=region,
+            subscription=subscription
+        )
+
+        room_profiles_in_region = RoomProfile.objects.filter(
+            lodge__in=lodges_in_region,
+            vacancy__gt=0
+        )[:20]
+
+        count = 0
+        for room_profile in room_profiles_in_region:
+            subscribed_listing = SubscribedListing.objects.create(
+                subscription=subscription,
+                subscription_handler=subscription_handler,
+                room_profile=room_profile,
+                creator=room_profile.lodge.creator,
+                client=subscription.client
+            )
+
+            count += 1
+
+        subscription_handler.queued_listings_count = count
+
+        all_room_profiles = chain(all_room_profiles, room_profiles_in_region)
+
+    logger.info(f'{len(all_room_profiles)}')
+    return all_room_profiles
 
 
 def get_subscribed_listings(request, pk):

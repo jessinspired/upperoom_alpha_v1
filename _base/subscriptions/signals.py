@@ -60,6 +60,8 @@ def process_vacancy(sender, instance, **kwargs):
 
 @receiver(post_save, sender=SubscribedListing)
 def schedule_status_change(sender, instance, created, **kwargs):
+    """Called only when subscribed listing is created"""
+
     logger.info('Begin subscribed lisiting scheduling')
     if created:
         logger.info(

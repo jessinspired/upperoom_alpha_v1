@@ -127,11 +127,18 @@ def send_initial_subscribed_listings(subscription_pk):
             )
             subscription.number_of_listings_sent = subscription.subscribed_rooms.count()
             subscription.save()
-            subscribed_listings, creator_email_list = create_subscribed_listing(
-                subscription)
 
-            # send_creator_subscription_mail.delay(creator_email_list)
-            send_creator_subscription_mail(creator_email_list)
+            creator_email_set = set()
+            for room_profile in subscription.subscribed_rooms.all():
+                creator_email_set.add(room_profile.lodge.creator.email)
+
+            creator_email_list = list(creator_email_set)
+            send_creator_subscription_mail.delay(creator_email_list)
+
+            # subscribed_listings, creator_email_list = create_subscribed_listing(
+            #     subscription)
+
+            # send_creator_subscription_mail(creator_email_list)
         else:
 
             logger.error(
