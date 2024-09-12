@@ -63,10 +63,7 @@ def subscription_algorithm(regions, subscription):
     Algorithm to select rooms, using basic randomization for now.
     This function limits the selection to a maximum of 20 randomly chosen rooms.
     """
-    from itertools import chain
-    from django.db.models import QuerySet
-
-    all_room_profiles = QuerySet()
+    all_room_profiles = RoomProfile.objects.none()
 
     for region in regions:
         lodges_in_region = Lodge.objects.filter(region=region)
@@ -93,10 +90,11 @@ def subscription_algorithm(regions, subscription):
             count += 1
 
         subscription_handler.queued_listings_count = count
+        subscription_handler.save()
 
-        all_room_profiles = chain(all_room_profiles, room_profiles_in_region)
+        all_room_profiles = all_room_profiles | room_profiles_in_region
 
-    logger.info(f'{len(all_room_profiles)}')
+    logger.info(f'{all_room_profiles.count()}')
     return all_room_profiles
 
 
