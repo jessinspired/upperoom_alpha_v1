@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from django_htmx.http import HttpResponseClientRefresh
 import logging
 from django.contrib import messages
+from payments.models import CreatorTransferInfo
 
 
 logger = logging.getLogger('listings')
@@ -14,28 +15,39 @@ logger = logging.getLogger('listings')
 
 @role_required(['CREATOR'])
 def register_lodge(request):
-    if request.method == 'POST':
-        lodge_form = LodgeRegistrationForm(request.POST, request.FILES)
-        if lodge_form.is_valid():
-            lodge = lodge_form.save(creator=request.user)
+    if request.method != 'POST':
+        return redirect('get_creator_listings')
 
-            logger.info(f'New lodge registered with pk: {lodge.pk}')
+    try:
+        request.user.transfer_profile
+    except CreatorTransferInfo.DoesNotExist as e:
+        messages.error(
+            request, 'Add payment details in "Earnings" section to register a lodge')
+        logger.error(
+            f'Creator transfer info does not exist for creator with email {request.user.email}\nError: {e}')
+        if request.htmx:
+            return HttpResponseClientRefresh()
+        return redirect('get_creator_listings')
 
-            messages.success(request, 'Lodge successfully registered')
-            if request.htmx:
-                # change later to dynamically partials
-                return HttpResponseClientRefresh()
-                # return render(request, 'listings/creator/register-lodge-response.html')
-            return redirect('get_creator_listings')
-        else:
-            for field, errors in lodge_form.errors.items():
-                for error in errors:
-                    messages.error(request, f'{error}')
-            if request.htmx:
-                return HttpResponseClientRefresh()
-            return redirect('get_creator_listings')
+    lodge_form = LodgeRegistrationForm(request.POST, request.FILES)
+    if lodge_form.is_valid():
+        lodge = lodge_form.save(creator=request.user)
 
-    return redirect('get_creator_listings')
+        logger.info(f'New lodge registered with pk: {lodge.pk}')
+
+        messages.success(request, 'Lodge successfully registered')
+        if request.htmx:
+            # change later to dynamically partials
+            return HttpResponseClientRefresh()
+            # return render(request, 'listings/creator/register-lodge-response.html')
+        return redirect('get_creator_listings')
+    else:
+        for field, errors in lodge_form.errors.items():
+            for error in errors:
+                messages.error(request, f'{error}')
+        if request.htmx:
+            return HttpResponseClientRefresh()
+        return redirect('get_creator_listings')
 
 
 @role_required(['CREATOR'])

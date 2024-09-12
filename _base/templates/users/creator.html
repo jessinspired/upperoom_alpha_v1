@@ -19,8 +19,8 @@
         <a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a>
     </div>
 {% endfor %}
-{% if request.user.transferprofile %}
-    balance: N{{ request.user.transferprofile.balance }}
+{% if request.user.transfer_profile %}
+    balance: N{{ request.user.transfer_profile.balance }}
 {% else %}
     balance: N0.00
 {% endif %}

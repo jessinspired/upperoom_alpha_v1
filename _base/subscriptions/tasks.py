@@ -16,6 +16,7 @@ def change_status_to_verified(subscribed_listing_id):
 
         if subscribed_listing.status == SubscribedListing.Status.UNVERIFIED:
             subscribed_listing.status = SubscribedListing.Status.VERIFIED
+            subscribed_listing.creator.transfer_profile.increment_balance()
             subscribed_listing.save()
             logger.info(
                 f'Status changed to verified for subscribed_listing with id {subscribed_listing_id}')

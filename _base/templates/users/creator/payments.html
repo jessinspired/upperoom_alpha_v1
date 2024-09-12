@@ -8,8 +8,8 @@
 <div class="middle-content">
     <h2>Earnings</h2>
 
-    {% if request.user.transferprofile %}
-    balance: N{{ request.user.transferprofile.balance }}
+    {% if request.user.transfer_profile %}
+    balance: N{{ request.user.transfer_profile.balance }}
 {% else %}
     balance: N0.00
 {% endif %}
