@@ -138,23 +138,23 @@ def initiate_bulk_transfer(transfers: List[dict]):
 
     response = requests.post(url, headers=headers, json=data)
     response_data = response.json()
-    
+
     transactions = []
 
     if response_data.get('status'):
         for transfer in response_data['data']:
             transaction = CreatorTransaction.objects.create(
-                    recipient_code=transfer['recipient'],
-                    # Assuming creator_id is available
-                    creator=Creator.objects.get(id=transfer['creator_id']),
-                    # Convert from kobo to naira
-                    amount_transfered=transfer['amount'] / 100,
-                    reference=transfer['reference'],
-                    status=transfer['status'],
-                    reason=transfer['reason']
-                )
+                recipient_code=transfer['recipient'],
+                # Assuming creator_id is available
+                creator=Creator.objects.get(id=transfer['creator_id']),
+                # Convert from kobo to naira
+                amount_transfered=transfer['amount'] / 100,
+                reference=transfer['reference'],
+                status=transfer['status'],
+                reason=transfer['reason']
+            )
             transactions.append(transaction)
-            
+
         return transactions
     else:
         logger.error("Bulk transfer failed: " + response_data.get('message'))
@@ -217,7 +217,7 @@ def handle_charge_success(data):
     subscription, subscribed_rooms = subscribe_for_listing(transaction)
 
     if subscribed_rooms.exists():
-        send_initial_subscribed_listings(subscription.pk)
+        send_initial_subscribed_listings.delay(subscription.pk)
 
     logger.info('Subscription for listing added')
 
@@ -241,10 +241,13 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
     if len(creators) == 1:
         # Handle single payment
         creator = creators[0]
-        verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
+        verified_subscribed_listings = SubscribedListing.objects.filter(
+            creator=creator, status=SubscribedListing.Status.VERIFIED)
         if creator.transfer_profile.balance <= 0:
-            logger.error(f"Account balance is insufficient: N{creator.transfer_profile.balance}")
-            raise Exception(f"Account balance is insufficient: N{creator.transfer_profile.balance}")
+            logger.error(
+                f"Account balance is insufficient: N{creator.transfer_profile.balance}")
+            raise Exception(
+                f"Account balance is insufficient: N{creator.transfer_profile.balance}")
         try:
             creator_info = CreatorTransferInfo.objects.get(creator=creator)
         except CreatorTransferInfo.DoesNotExist:
@@ -255,15 +258,15 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         recipient_code = create_transfer_recipient(
             creator_info) if not creator_info.recipient_code else creator_info.recipient_code
         reference = generate_unique_reference(length=32)
-        
+
         for listing in verified_subscribed_listings:
             creator_info.increment_balance()
-            
+
         amount = creator_info.balance
-        
+
         transfer_response = initiate_single_transfer(
             recipient_code=recipient_code,
-            amount=amount * 100, 
+            amount=amount * 100,
             reference=reference,
             reason="Payment for services"
         )
@@ -274,8 +277,7 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         logger.info(
             f"Creator has been payed an amount of {amount} successfully")
         creator_info.decrement_balance(amount)
-        
-        
+
         for listing in verified_subscribed_listings:
             listing.status = SubscribedListing.Status.SETTLED
             listing.save()
@@ -297,8 +299,10 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         transfers = []
         for creator in creators:
             if creator.transfer_profile.balance <= 0:
-                logger.error(f"Account balance is insufficient: N{creator.transfer_profile.balance} for creator with id: {creator.id}")
-                raise Exception(f"Account balance is insufficient: N{creator.transfer_profile.balance} for creator with id: {creator.id}")
+                logger.error(
+                    f"Account balance is insufficient: N{creator.transfer_profile.balance} for creator with id: {creator.id}")
+                raise Exception(
+                    f"Account balance is insufficient: N{creator.transfer_profile.balance} for creator with id: {creator.id}")
         for creator in creators:
             try:
                 creator_info = CreatorTransferInfo.objects.get(creator=creator)
@@ -311,13 +315,14 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
             recipient_code = create_transfer_recipient(
                 creator_info) if not creator.recipient_code else creator.recipient_code
             reference = generate_unique_reference(length=32)
-            
-            verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
+
+            verified_subscribed_listings = SubscribedListing.objects.filter(
+                creator=creator, status=SubscribedListing.Status.VERIFIED)
             for listing in verified_subscribed_listings:
                 creator_info.increment_balance()
-            
+
             amount = creator_info.balance
-            
+
             transfers.append({
                 "amount": amount,  # Assuming `balance` is in kobo
                 "reference": reference,
@@ -329,12 +334,13 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]]):
         if transfers:
             transfer_responses = initiate_bulk_transfer(transfers)
             transactions.extend(transfer_responses)
-            
+
             for tranfer in transfers:
                 creator = Creator.objects.get(id=tranfer['creator_id'])
-                verified_subscribed_listings = SubscribedListing.objects.filter(creator=creator, status=SubscribedListing.Status.VERIFIED)
+                verified_subscribed_listings = SubscribedListing.objects.filter(
+                    creator=creator, status=SubscribedListing.Status.VERIFIED)
                 for listing in verified_subscribed_listings:
                     listing.status = SubscribedListing.Status.SETTLED
-                    listing.save() 
+                    listing.save()
 
     return transactions

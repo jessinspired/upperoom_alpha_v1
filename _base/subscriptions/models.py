@@ -1,7 +1,7 @@
 from django.db import models
 from core.models import BaseModel
 from payments.models import Transaction
-from listings.models import Lodge, RoomProfile
+from listings.models import Lodge, RoomProfile, Region
 from users.models import Client, Creator
 from django.core.validators import MaxValueValidator
 
@@ -79,3 +79,23 @@ class SubscribedListing(BaseModel):
     )
 
     status_task_id = models.CharField(max_length=255, blank=True, null=True)
+
+
+class SubscriptionHandler(BaseModel):
+    """
+    Handles the subscribed listing for the associated regions
+    in the subscription
+    """
+    verified_listings_count = models.IntegerField()
+
+    subscription = models.ForeignKey(
+        Subscription,
+        on_delete=models.CASCADE,
+        related_name='subscription_handlers'
+    )
+
+    region = models.ForeignKey(
+        Region,
+        on_delete=models.CASCADE,
+        related_name='subscription_handlers'
+    )

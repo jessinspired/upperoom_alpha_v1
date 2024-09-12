@@ -33,6 +33,9 @@ def get_regions(request):
 
 
 def subscribe_for_listing(transaction):
+    """
+    Handle initial subscription when client pays
+    """
     subscription = Subscription.objects.create(
         client=transaction.client,
         transaction=transaction
