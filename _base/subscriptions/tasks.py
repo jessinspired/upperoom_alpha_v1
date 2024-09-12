@@ -38,6 +38,8 @@ def change_status_to_verified(subscribed_listing_id):
                     f'subscription_handler with id: {subscription_handler.pk} is now expired!')
 
             subscription_handler.save()
+            logger.info(
+                f'verified listings: {subscription_handler.verified_listings_count}\nqueued listings: {subscription_handler.queued_listings_count}')
 
             # 2. Expire subscription logic
             subscription = subscribed_listing.subscription
