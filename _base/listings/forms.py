@@ -37,6 +37,7 @@ class LodgeRegistrationForm(forms.ModelForm):
         fields = [
             'name',
             'alias',
+            'address',
             'phone_number',
             'state',
             'school',
