@@ -2,7 +2,7 @@ name: Configure Ansible Environment
 
 on:
   push:
-    branches: [main] # Adjust branch(es) to trigger the workflow
+    branches: [subscription_v2] # Adjust branch(es) to trigger the workflow
 
 jobs:
   configure:
