@@ -29,8 +29,13 @@ def change_status_to_verified(subscribed_listing_id):
             # 1. Expire subscription_handler lifecycle (create a method for this)
             subscription_handler = subscribed_listing.subscription_handler
 
+            logger.info(f'subscription handler: {subscription_handler}')
+
             subscription_handler.verified_listings_count += 1
             subscription_handler.queued_listings_count -= 1
+
+            logger.info(
+                f'verified listings: {subscription_handler.verified_listings_count}\nqueued listings: {subscription_handler.queued_listings_count}')
 
             if subscription_handler.verified_listings_count == SubscriptionHandler.THRESHOLD:
                 subscription_handler.is_expired = True

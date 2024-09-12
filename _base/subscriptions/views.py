@@ -65,6 +65,8 @@ def subscription_algorithm(regions, subscription):
     """
     all_room_profiles = RoomProfile.objects.none()
 
+    logger.info(f'regions: {regions}, regions count {regions.count()}')
+
     for region in regions:
         lodges_in_region = Lodge.objects.filter(region=region)
         subscription_handler = SubscriptionHandler.objects.get(
@@ -94,7 +96,7 @@ def subscription_algorithm(regions, subscription):
 
         all_room_profiles = all_room_profiles | room_profiles_in_region
 
-    logger.info(f'{all_room_profiles.count()}')
+    logger.info(f'Room profiles count: {all_room_profiles.count()}')
     return all_room_profiles
 
 
