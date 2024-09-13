@@ -10,6 +10,8 @@ from messaging.tasks import send_vacancy_update_mail
 from .models import Subscription, SubscribedListing
 from .tasks import change_status_to_verified
 from .views import vacancy_update_algorithm
+from celery import current_app
+
 
 logger = logging.getLogger('subscriptions')
 
@@ -56,7 +58,18 @@ def process_vacancy(sender, instance, **kwargs):
 
             for subscribed_listing in subscribed_listings:
                 subscribed_listing.status = SubscribedListing.Status.REJECTED
+
+                current_app.control.revoke(
+                    subscribed_listing.status_task_id,
+                    terminate=True
+                )
+                subscribed_listing.status_task_id = None
                 subscribed_listing.save()
+                logger.info(
+                    f"Subscribed listing for client {subscribed_listing.subscription.client.email}\n"
+                    f"Status updated: UNVERIFIED -> PROBATION\n"
+                    "task_status_id set to None."
+                )
 
                 subscription_handler = subscribed_listing.subscription_handler
                 if subscription_handler.queued_listings_count > 0:
