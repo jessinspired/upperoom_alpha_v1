@@ -76,9 +76,11 @@ def get_client(request):
 @role_required(['CLIENT'])
 def get_client_subscriptions(request):
     active_subscriptions = request.user.subscriptions.filter(is_expired=False)
+    expired_subscriptions = request.user.subscriptions.filter(is_expired=True)
 
     context = {
-        'active_subscriptions': active_subscriptions
+        'active_subscriptions': active_subscriptions,
+        'expired_subscriptions': expired_subscriptions
     }
     return render(request, 'users/client/subscriptions.html', context)
 

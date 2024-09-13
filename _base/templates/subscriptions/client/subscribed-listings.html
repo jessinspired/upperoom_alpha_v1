@@ -39,6 +39,7 @@
                     <div><b>Room Type:</b> {{ listing.room_profile.room_type }}</div>
                     <div><b>Lodge:</b> {{ listing.room_profile.lodge }}</div>
                     <div><b>School:</b> {{ listing.room_profile.lodge.school.name }}</div>
+                    <div><b>Region:</b> {{ listing.room_profile.lodge.region.name }}</div>
                     <div ><b>Status:</b> <span id="status-modal-{{listing.pk}}">{{ listing.get_status_display }}</span></div>
                 </div>
             </dialog>
