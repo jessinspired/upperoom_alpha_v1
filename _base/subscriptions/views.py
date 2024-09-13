@@ -205,8 +205,8 @@ def vacancy_update_algorithm(room_profile):
     ).annotate(
         total_listings=F('queued_listings_count') +
         F('verified_listings_count')
-    ).filter(
-        total_listings__ne=SubscriptionHandler.THRESHOLD
+    ).exclude(
+        total_listings=SubscriptionHandler.THRESHOLD
     )
     logger.info(f'Subscription handlers filtered')
 
