@@ -386,6 +386,8 @@ def send_vacancy_update_mail(clients_email_list):
         clients_email_list
     """
 
+    url = reverse('get_client_subscriptions')
+
     html_message = f'''
         <html>
         <head>
@@ -457,7 +459,7 @@ def send_vacancy_update_mail(clients_email_list):
                 <div class="content">
                     <p>Hello,</p>
                     <p>You have new vacancy updates for your subscription</p>
-                    <p><a href="#">Click to view in your account</a></p>
+                    <p><a href="{url}">View in your subscriptions</a></p>
                     <p>Thank you,<br>The Upperoom Team</p>
                 </div>
                 <div class="footer">
