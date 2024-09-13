@@ -379,33 +379,12 @@ def send_creator_subscription_mail(creator_email_list):
 
 
 @shared_task
-def send_vacancy_update_mail(pk):
+def send_vacancy_update_mail(clients_email_list):
     """
     Sends vacancy updates to all subscribed clients
     Args:
-        pk: room_profile pk
-            type(str, uuid)
+        clients_email_list
     """
-
-    room_profile = RoomProfile.objects.get(pk=pk)
-    region = room_profile.lodge.region
-
-    subscriptions = Subscription.objects.filter(
-        is_expired=False,
-        transaction__regions=region
-    ).distinct()
-
-    subscriptions_without_room = subscriptions.exclude(
-        subscribed_rooms=room_profile
-    )
-
-    for subscription in subscriptions_without_room:
-        subscription.subscribed_rooms.add(room_profile)
-
-    client_emails_list = []
-    for subscription in subscriptions:
-        if subscription.client.email not in client_emails_list:
-            client_emails_list.append(subscription.client.email)
 
     html_message = f'''
         <html>
@@ -496,30 +475,20 @@ def send_vacancy_update_mail(pk):
         'Vacancy updates!',
         '',
         from_email,
-        client_emails_list,
+        clients_email_list,
         html_message=html_message,
         fail_silently=False,
     )
 
     if response == 0:
         logger.error(
-            f'No Vacancy updates sent to clients: {client_emails_list}'
+            f'No Vacancy updates sent to clients: {clients_email_list}'
         )
         return
 
-    from subscriptions.models import SubscribedListing
-
-    for subscription in subscriptions:
-        SubscribedListing.objects.create(
-            subscription=subscription,
-            room_profile=room_profile,
-            creator=room_profile.lodge.creator,
-            client=subscription.client
-        )
-
     logger.info(
-        f'Vacancy updates sent to clients: {client_emails_list}'
+        f'Vacancy updates sent to clients: {clients_email_list}'
     )
     logger.info(
-        f'Subscription listings created: {client_emails_list}'
+        f'Subscription listings created: {clients_email_list}'
     )

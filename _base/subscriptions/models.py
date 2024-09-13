@@ -5,7 +5,6 @@ from core.models import BaseModel
 from payments.models import Transaction
 from listings.models import Lodge, RoomProfile, Region
 from users.models import Client, Creator
-from django.core.validators import MaxValueValidator
 
 
 class Subscription(BaseModel):
@@ -13,7 +12,6 @@ class Subscription(BaseModel):
 
     number_of_listings_sent = models.PositiveIntegerField(
         default=0,
-        validators=[MaxValueValidator(20)]
     )
 
     client = models.ForeignKey(
@@ -46,7 +44,7 @@ class SubscriptionHandler(BaseModel):
     Handles the subscribed listing for the associated regions
     in the subscription
     """
-    THRESHOLD = 3
+    THRESHOLD = 5
 
     verified_listings_count = models.IntegerField(default=0)
 

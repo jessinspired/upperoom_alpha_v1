@@ -8,6 +8,7 @@ from auths.decorators import role_required
 from django.http import HttpResponse
 from celery import current_app
 from django_htmx.http import retarget
+from django.db.models import F
 
 # from messaging.tasks import send_creator_subscription_mail
 
@@ -127,6 +128,9 @@ def get_subscribed_listings(request, pk):
 
 
 def create_subscribed_listing(subscription):
+    """
+    NOT CURRENTLY IN USE!!!!
+    """
     subscribed_listings = []
     creator_email_set = set()
 
@@ -185,3 +189,44 @@ def handle_occupied_report(request, pk):
         }
         response = render(request, 'elements/response-modal.html', context)
         return retarget(response, '#global-response-modal')
+
+
+def vacancy_update_algorithm(room_profile):
+    """
+    Defines vacany update algorithm
+
+    returns the list of clients to send updates
+    """
+    region = room_profile.lodge.region
+
+    subscription_handlers = SubscriptionHandler.objects.filter(
+        region=region,
+        is_expired=False
+    ).annotate(
+        total_listings=F('queued_listings_count') +
+        F('verified_listings_count')
+    ).filter(
+        total_listings__ne=SubscriptionHandler.THRESHOLD
+    )
+    logger.info(f'Subscription handlers filtered')
+
+    clients_email_set = set()
+    for subscription_handler in subscription_handlers:
+        subscribed_listing = SubscribedListing.objects.create(
+            subscription=subscription_handler.subscription,
+            subscription_handler=subscription_handler,
+            room_profile=room_profile,
+            creator=room_profile.lodge.creator,
+            client=subscription_handler.subscription.client
+        )
+        subscription_handler.queued_listings_count += 1
+        subscription_handler.save()
+
+        clients_email_set.add(subscription_handler.subscription.client.email)
+
+        logger.info(
+            f'queued listings is {subscription_handler.queued_listings_count} for subscription handler with pk {subscription_handler.pk}')
+
+    logger.info(f'Sending vacancy updates to clients: {clients_email_set}')
+
+    return list(clients_email_set)

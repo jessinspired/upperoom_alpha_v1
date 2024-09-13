@@ -9,6 +9,7 @@ import logging
 from messaging.tasks import send_vacancy_update_mail
 from .models import Subscription, SubscribedListing
 from .tasks import change_status_to_verified
+from .views import vacancy_update_algorithm
 
 logger = logging.getLogger('subscriptions')
 
@@ -25,7 +26,10 @@ def process_vacancy(sender, instance, **kwargs):
 
         logger.info(
             f'Room profile with id {instance.pk} created and is vacant')
-        send_vacancy_update_mail(instance.pk)
+
+        clients_email_list = vacancy_update_algorithm(instance)
+        if clients_email_list:
+            send_vacancy_update_mail.delay(clients_email_list)
         return
     try:
         original_instance = RoomProfile.objects.get(pk=instance.pk)
@@ -53,7 +57,9 @@ def process_vacancy(sender, instance, **kwargs):
         logger.info(
             f'Room profile with id {instance.pk} updated and is vacant')
 
-        send_vacancy_update_mail(instance.pk)
+        clients_email_list = vacancy_update_algorithm(instance)
+        if clients_email_list:
+            send_vacancy_update_mail.delay(clients_email_list)
     except RoomProfile.DoesNotExist as e:
         logger.error(f'Room profile update failed with exception: {e}')
 
