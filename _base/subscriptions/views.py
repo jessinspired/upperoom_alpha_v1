@@ -174,7 +174,15 @@ def handle_occupied_report(request, pk):
         listing.status_task_id = None
         listing.save()
         logger.info(
-            f'Subscribed listing status changed from unverified to probation for pk: {pk}\ntask_status_id for subscribed_listing set to None')
+            f"Subscribed listing for client {listing.subscription.client.email}\n"
+            f"Status updated: UNVERIFIED -> PROBATION\n"
+            "status_task_id set to None."
+        )
+
+        subscription_handler = listing.subscription_handler
+        if subscription_handler.queued_listings_count > 0:
+            subscription_handler.queued_listings_count -= 1
+            subscription_handler.save()
 
         context = {
             'listing': listing

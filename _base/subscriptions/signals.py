@@ -67,8 +67,8 @@ def process_vacancy(sender, instance, **kwargs):
                 subscribed_listing.save()
                 logger.info(
                     f"Subscribed listing for client {subscribed_listing.subscription.client.email}\n"
-                    f"Status updated: UNVERIFIED -> PROBATION\n"
-                    "task_status_id set to None."
+                    f"Status updated: UNVERIFIED -> REJECTED\n"
+                    "status_task_id set to None."
                 )
 
                 subscription_handler = subscribed_listing.subscription_handler
@@ -80,12 +80,6 @@ def process_vacancy(sender, instance, **kwargs):
                     f'Subscribed listing with ID {subscribed_listing.pk} rejected. \n'
                     f'Queued listings for subscription handler with ID {subscription_handler.pk} decremented to {subscription_handler.queued_listings_count}.'
                 )
-
-            # SubscribedListing.objects.filter(
-            #     subscription__is_expired=False,
-            #     room_profile=instance
-            # ).update(status=SubscribedListing.Status.REJECTED)
-
             return
 
         logger.info(
