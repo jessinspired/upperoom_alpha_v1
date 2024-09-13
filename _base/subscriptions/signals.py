@@ -16,7 +16,8 @@ logger = logging.getLogger('subscriptions')
 
 @receiver(pre_save, sender=RoomProfile)
 def process_vacancy(sender, instance, **kwargs):
-    logger.info(f'process_vacancy: {instance.pk}')
+    logger.info(
+        f'process_vacancy: {instance.pk}, vacancy: {instance.vacancy}, {instance.is_vacant}')
 
     if not RoomProfile.objects.filter(pk=instance.pk).exists():
         if instance.is_vacant == False:
@@ -45,13 +46,33 @@ def process_vacancy(sender, instance, **kwargs):
             for subscription in subscriptions:
                 subscription.subscribed_rooms.remove(instance)
 
-            SubscribedListing.objects.filter(
-                subscription__is_expired=False,
-                room_profile=instance
-            ).update(status=SubscribedListing.Status.REJECTED)
+            subscribed_listings = SubscribedListing.objects.filter(
+                subscription_handler__is_expired=False,
+                room_profile=instance,
+                status=SubscribedListing.Status.UNVERIFIED
+            )
 
-            logger.info(
-                'room profile removed from subscriptions and substriction lisitng set to rejected')
+            logger.info(f'Subscribed listings {subscribed_listings}')
+
+            for subscribed_listing in subscribed_listings:
+                subscribed_listing.status = SubscribedListing.Status.REJECTED
+                subscribed_listing.save()
+
+                subscription_handler = subscribed_listing.subscription_handler
+                if subscription_handler.queued_listings_count > 0:
+                    subscription_handler.queued_listings_count -= 1
+                    subscription_handler.save()
+
+                logger.info(
+                    f'Subscribed listing with ID {subscribed_listing.pk} rejected. \n'
+                    f'Queued listings for subscription handler with ID {subscription_handler.pk} decremented to {subscription_handler.queued_listings_count}.'
+                )
+
+            # SubscribedListing.objects.filter(
+            #     subscription__is_expired=False,
+            #     room_profile=instance
+            # ).update(status=SubscribedListing.Status.REJECTED)
+
             return
 
         logger.info(
@@ -74,7 +95,7 @@ def schedule_status_change(sender, instance, created, **kwargs):
             f'Calling change status to verified function for subscribed listing {instance.pk}')
         result = change_status_to_verified.apply_async(
             args=[instance.id],
-            countdown=60  # 600s - 10 minutes
+            countdown=300  # 600s - 10 minutes
         )
 
         instance.status_task_id = result.id
