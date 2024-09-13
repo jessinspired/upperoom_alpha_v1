@@ -49,7 +49,7 @@
             <li><b>Verified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"VERIFIED"}}</li>
             <li><b>Probation Listings</b>: {{subscription.subscribed_listings|filter_by_status:"PROBATION"}}</li>
             <li><b>Rejected Listings</b>: {{subscription.subscribed_listings|filter_by_status:"REJECTED"}}</li>
-            <!-- <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a> -->
+            <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
         </ul>
         {% endfor %}
         {% endif %}
