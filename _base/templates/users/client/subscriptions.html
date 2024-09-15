@@ -11,11 +11,14 @@
     <h1>My Subscriptions</h1>
     <h3>Active Subscriptions</h3>
     <div class="subscriptions-container">
-
+        {% if not active_subscriptions %}
+            <b>None</b>
+        {% else %}
         {% for subscription in active_subscriptions %}
         <ul>
             <li><b>Date Created:</b> {{ subscription.created_at}}</li>
             <li><b>Amount:</b> {{subscription.transaction.amount}}</li>
+            <li><b>School:</b> {{subscription.transaction.school.name}}</li>
             <li><b>Regions:</b>
                 {% for region in subscription.transaction.regions.all %}
                     {{region}},&nbsp;
@@ -28,7 +31,7 @@
             <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
         </ul>
         {% endfor %}
-
+        {% endif %}
     </div>
 
     <h3>Expired Subscriptions</h3>

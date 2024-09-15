@@ -17,7 +17,7 @@ logger = logging.getLogger('subscriptions')
 
 @require_http_methods(['GET'])
 def get_regions(request):
-    school_id = request.GET.get('schools')
+    school_id = request.GET.get('school')
     school = School.objects.get(pk=school_id)
 
     regions = school.regions.all()

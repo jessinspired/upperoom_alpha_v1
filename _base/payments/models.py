@@ -7,7 +7,7 @@ from core.models import BaseModel
 from django.core.validators import RegexValidator
 
 from users.models import Client, Creator
-from listings.models import Region
+from listings.models import Region, School
 
 
 BASE_FARE = Decimal('50.00')
@@ -40,6 +40,13 @@ class Transaction(BaseModel):
     regions = models.ManyToManyField(
         Region,
         related_name='transactions'
+    )
+
+    school = models.ForeignKey(
+        School,
+        related_name='transactions',
+        on_delete=models.CASCADE,
+        null=True
     )
 
     is_fully_paid = models.BooleanField(

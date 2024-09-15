@@ -8,6 +8,11 @@ urlpatterns = [
         views.initialize_transaction,
         name='initialize_transaction'
     ),
+    path(
+        'abort_transaction/<reference>/',
+        views.abort_transaction,
+        name='abort_transaction'
+    ),
     path('webhook/', views.webhook_view, name='webhook'),
     path('creator/transfer-info/', views.creator_transfer_info_view,
          name='creator_transfer_info'),

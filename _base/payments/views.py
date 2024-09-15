@@ -21,6 +21,9 @@ from .utils import creator_payment_pipeline, generate_unique_reference, handle_c
 from .models import CreatorTransferInfo, Transaction
 from django.db import transaction as db_transaction
 import logging
+from django.urls import reverse
+from listings.models import School
+
 
 PAYSTACK_BASE_URL = 'https://api.paystack.co/transaction'
 
@@ -29,17 +32,16 @@ logger = logging.getLogger('payments')
 
 def get_order_summary(request):
     if request.method != 'POST':
-        from listings.models import School
-        regions = list(School.objects.get(abbr='UNIPORT').regions.all())
-
-        context = {
-            'regions': regions,
-            'amount': 1500 * len(regions)
-        }
         logger.error(
-            f'Error 405: Expected method is POST, but got {request.method}')
+            f'Error 405: Expected method for order summary is POST, but got {request.method}')
         return redirect('get_home')
     regions_pk_list = request.POST.getlist('regions')
+
+    school_pk = request.POST.get('school')
+
+    if not School.objects.filter(pk=school_pk).exists():
+        logger.error(f'No school exists for pk {school_pk}')
+        return redirect('get_home')
 
     if not regions_pk_list:
         logger.error(
@@ -56,11 +58,10 @@ def get_order_summary(request):
     except:
         return redirect('get_home')
 
-    # regions = list(School.objects.get(abbr='UNIPORT').regions.all())
-
     context = {
         'regions': regions,
-        'amount': 1500 * len(regions)
+        'amount': 1500 * len(regions),
+        'school_pk': school_pk
     }
 
     return render(request, 'payments/order-summary.html', context)
@@ -119,6 +120,8 @@ def initialize_transaction(request):
     for users to put in billing method and details
     """
     regions_pk_list = request.POST.getlist('region')
+    school_pk = request.POST.get('school')
+    logger.info(f'school pk {school_pk}')
 
     try:
         regions = []
@@ -128,27 +131,9 @@ def initialize_transaction(request):
 
         amount = len(regions) * 1500
 
-        url = f"{PAYSTACK_BASE_URL}/initialize"
-        headers = {
-            "Authorization": f"Bearer {os.getenv('PAYSTACK_TEST_KEY')}",
-            "Content-Type": "application/json"
-        }
+        school = School.objects.get(pk=school_pk)
+
         reference = generate_unique_reference(12)
-        data = {
-            "email": request.user.email,
-            # Paystack expects the amount in kobo, so 500000 = ₦5000
-            "amount":  str(amount * 100),
-            'reference': reference
-        }
-
-        response = requests.post(url, headers=headers, json=data)
-        json_response = response.json()
-
-        if response.status_code != 200 or not json_response.get('status'):
-            logger.error(
-                f"Paystack initialization failed: {json_response.get('message')}")
-            return HttpResponse(f'<p id="response-message">{json_response.get("message")}</p>')
-
         with db_transaction.atomic():
             existing_transaction = Transaction.objects.filter(
                 reference=reference, client=request.user).first()
@@ -159,26 +144,43 @@ def initialize_transaction(request):
             transaction = Transaction.objects.create(
                 amount=amount,
                 reference=reference,
-                client=request.user
+                client=request.user,
+                school=school
             )
             transaction.regions.set(regions)
 
         logger.info(
-            f"Transaction initialized successfully for client: {request.user.username}")
-        # http_response = HttpResponse(
-        #     '<dialog id="global-response-modal"></dialog>')
-        http_response = render(request, 'elements/response-modal.html')
-
+            f"Transaction initialized successfully for client: {request.user.username} - school {school.name}")
+        http_response = HttpResponse(
+            '<div id="global-response-message-htmx"></div>')
+        params = {
+            'email': request.user.email,
+            'key': os.getenv('PAYSTACK_TEST_PUBLIC_KEY'),
+            'amount': str(amount * 100),
+            'reference': reference,
+            'redirect_url': reverse('get_client_subscriptions'),
+            'abort_url': reverse('abort_transaction', args=[f'{reference}'])
+        }
         return trigger_client_event(
             http_response,
-            'completeTransaction',
-            {'access_code': json_response.get('data').get('access_code')}
+            'newTransaction',
+            params
         )
     except Exception as e:
         logger.error(
             f"An error occurred during transaction initialization: {e}")
         context = {'messages': ['An error occured, please try again']}
         return render(request, 'elements/response-modal.html', context)
+
+
+@role_required(['CLIENT'], True)
+@require_http_methods(['POST'])
+def abort_transaction(request, reference):
+    transaction = Transaction.objects.get(reference=reference)
+    transaction.delete()
+    logger.info(
+        f'Transaction with reference {reference} successfully deleted!')
+    return HttpResponse('<div id="global-response-message-htmx"></div>')
 
 
 def creator_transfer_info_view(request):
@@ -236,20 +238,21 @@ def withdraw_balance(request):
     except Exception as e:
         logger.error("Creator payment is not validated!")
         return HttpResponse("<h1>Failed</h1>")
-    
+
     if request.method == 'POST':
         form = PaymentRequestForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
             try:
                 creator_payment_pipeline(creator, amount)
-                messages.success(request, f"Payment request of N{amount} has been submitted.")
+                messages.success(
+                    request, f"Payment request of N{amount} has been submitted.")
                 return redirect('get_creator')
             except Exception as e:
                 messages.error(request, e)
-                
+
     form = PaymentRequestForm()
-    
+
     return render(request, 'payments/withdraw.html', {'form': form})
 
 

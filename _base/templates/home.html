@@ -18,7 +18,7 @@
     <form id="order-summary-form" action="{% url 'get_order_summary' %}" method="post">
         {% csrf_token %}
         <select
-        name="schools"
+        name="school"
         id="schools-dropdown"
         hx-get="{% url 'get_regions' %}"
         hx-target="#regions-checkboxes"

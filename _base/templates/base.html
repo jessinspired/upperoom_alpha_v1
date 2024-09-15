@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <!-- common stylesheets -->
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/base.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/base.css' %}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/nav.css' %}">
 
     <!-- common elements -->
@@ -28,11 +28,15 @@
 
     <!-- paystack integration -->
     <script hx-preserve="true" src="{% static 'subscriptions/libraries/paystack.js' %}" defer></script>
-    <script hx-preserve="true" src="{% static 'subscriptions/scripts/completeTransaction.js' %}" defer></script>
+    <script hx-preserve="true" src="{% static 'payments/scripts/newTransaction.js' %}?uuid={{uuid}}" defer></script>
 
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Custom Meta Tags -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
     <title>Upperoom</title>
 </head>
 <body>
@@ -55,9 +59,11 @@
     {% endfor %}
     </div>
 
-    <dialog id="global-response-modal">
+    <dialog id="global-response-modal" x-data="{ isOpen: false }" x-ref="modal" x-init="isOpen = false" :open="isOpen" @click.outside="isOpen = false">
+        <button class="close-global-modal-btn" @click="isOpen = false">X</button>
     </dialog>
 
+    <div id="global-response-message-htmx"></div>
 
 
     <div id="root-container">
