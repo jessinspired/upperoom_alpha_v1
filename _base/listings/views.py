@@ -35,7 +35,8 @@ def register_lodge(request):
 
         logger.info(f'New lodge registered with pk: {lodge.pk}')
 
-        messages.success(request, 'Lodge successfully registered')
+        messages.success(
+            request, 'Lodge successfully registered!\nClick on lodge name to update price and vacancy')
         if request.htmx:
             # change later to dynamically partials
             return HttpResponseClientRefresh()
