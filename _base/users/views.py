@@ -57,6 +57,7 @@ def get_client(request):
         is_fully_paid=True)
 
     active_subscriptions = request.user.subscriptions.filter(is_expired=False)
+    expired_subscriptions = request.user.subscriptions.filter(is_expired=True)
 
     context = {
         'unverified_listings': unverified_listings,
@@ -67,7 +68,8 @@ def get_client(request):
         'subscribed_regions': subscribed_regions,
         'incomplete_transactions': incomplete_transactions,
         'complete_transactions': complete_transactions,
-        'active_subscriptions': active_subscriptions
+        'active_subscriptions': active_subscriptions,
+        'expired_subscriptions': expired_subscriptions
     }
 
     return render(request, 'users/client/dashboard.html', context)
