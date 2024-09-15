@@ -113,3 +113,45 @@ button {
 
 
 /* end messages */
+
+
+/* text colors */
+.slate-gray {
+    color: slategrey;
+}
+
+.slate-gray-bg {
+    background-color: rgba(224, 228, 231, 0.233);
+}
+
+.yellow {
+    color:  #f0d74e;
+}
+
+.yellow-bg {
+    background-color: #fff9b3;
+}
+
+.green {
+    color: #228B22;
+}
+
+.green-bg {
+    background-color: #d8ffcd;
+}
+
+.crimson {
+    color: var(--crimson);
+}
+
+.crimson-bg {
+    background-color: #ffe5e2;
+}
+
+.royal-blue {
+    color: royalblue;
+}
+
+.white {
+    color: var(--primaryWhite);
+}

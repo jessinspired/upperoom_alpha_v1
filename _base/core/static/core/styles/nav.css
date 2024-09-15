@@ -11,19 +11,16 @@
     align-items: center;
 }
 
-.nav-auth-container a {
-    color: var(--primaryGreen)
+nav a {
+    color: var(--primaryBlue);
 }
 
-.green-highlight {
-    border: 3px solid var(--primaryGreen);
+.register-nav-btn {
+    border: 3px solid var(--primaryBlue);
+    background-color: var(--primaryBlue);
+    color: var(--primaryWhite);
     padding: .2rem .5rem;
     border-radius: .3rem;
-}
-
-.green-highlight:hover {
-    background-color: var(--primaryGreen);
-    color: var(--primaryWhite);
 }
 
 .nav-auth-container i {

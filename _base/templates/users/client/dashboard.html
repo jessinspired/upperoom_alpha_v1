@@ -8,37 +8,37 @@
 {% block middle_content %}
 <div class="middle-content">
     <div>
-        <h3><i class="fa-solid fa-house-chimney-user"></i><span>Subscribed Listings</span></h3>
+        <h3><i class="fa-solid fa-gauge"></i><span>Dashboard</span></h3>
         <div class="listings-card-container">
-            <div>
-                <i class="fa-solid fa-hourglass-start"></i>
+            <div class="slate-gray-bg">
+                <i class="fa-solid fa-hourglass-start slate-gray"></i>
                 <b>Unverified</b>
-                <div>{% if unverified_listings %}{{ unverified_listings.count }}{% else %}0{% endif %}</div>
+                <div class="count">{% if unverified_listings %}{{ unverified_listings.count }}{% else %}0{% endif %}</div>
             </div>
 
-            <div>
-                <i class="fa-solid fa-circle-exclamation"></i>
+            <div class="yellow-bg">
+                <i class="fa-solid fa-circle-exclamation yellow"></i>
                 <b>Probation</b>
-                <div>{% if probation_listings %}{{ probation_listings.count}}{% else %}0{% endif %}</div>
+                <div class="count">{% if probation_listings %}{{ probation_listings.count}}{% else %}0{% endif %}</div>
             </div>
 
-            <div>
-                <i class="fa-solid fa-ban"></i>
+            <div class="crimson-bg">
+                <i class="fa-solid fa-ban crimson"></i>
                 <b>Rejected</b>
-                <div>{% if rejected_listings %}{{rejected_listings.count}}{% else %}0{% endif %}</div>
+                <div class="count">{% if rejected_listings %}{{rejected_listings.count}}{% else %}0{% endif %}</div>
             </div>
 
-            <div>
-                <i class="fa-solid fa-certificate"></i>
+            <div class="green-bg">
+                <i class="fa-solid fa-certificate green"></i>
                 <b>Verified</b>
-                <div>{% if verified_listings %}{{verified_listings.count}}{% else %}0{% endif %}</div>
+                <div class="count">{% if verified_listings %}{{verified_listings.count}}{% else %}0{% endif %}</div>
             </div>
 
             {% comment %}
             <div>
                 <i class="fa-solid fa-flag-checkered"></i>
                 <b>Settled</b>
-                <div>{% if settled_listings %}{{settled_listings.count }}{% else %}0{% endif %}</div>
+                <div class="count">{% if settled_listings %}{{settled_listings.count }}{% else %}0{% endif %}</div>
             </div>
             {% endcomment %}
         </div>

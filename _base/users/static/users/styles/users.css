@@ -38,7 +38,7 @@ li {
     width: 10rem;
     z-index: var(--sideNav);
     background-color: var(--primaryWhite);
-    padding: 2rem 1rem 2rem 1rem;
+    padding: 2rem 1rem 6rem 1rem;
     box-shadow: var(--slimBoxShadow);
     /* border-right: 3px solid var(--primaryGreen); */
 }
@@ -76,15 +76,18 @@ li {
 }
 
 .listings-card-container > * {
-    box-shadow: var(--slimBoxShadow);
+    /* box-shadow: var(--slimBoxShadow); */
     padding: 1rem;
     height: 100%;
     width: 10rem;
     display: grid;
     place-content: center;
     text-align: center;
-    background-color: var(--primaryWhite);
     border-radius: var(--smallBorderRadius);
+}
+
+h3 {
+    color: var(--primaryBlue);
 }
 
 
@@ -153,9 +156,10 @@ li {
 
 .logout-btn {
     align-self:flex-end;
-    background-color: var(--slateGray);
+    background-color: var(--primaryBlue);
     color: var(--primaryWhite);
     padding: .3rem 1rem;
+    border: none;
 }
 
 
@@ -191,6 +195,15 @@ li {
     background: #e0e0e0;
     box-shadow:  7px 7px 13px #bebebe,
              -7px -7px 13px var(--primaryWhite);
+}
+
+
+.side-nav-links-container a {
+    color: royalblue;
+}
+
+.listings-card-container i {
+    font-size: 1.2rem;
 }
 
 
