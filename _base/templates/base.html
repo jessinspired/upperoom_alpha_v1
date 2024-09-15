@@ -5,8 +5,8 @@
 <html lang="en">
 <head>
     <!-- common stylesheets -->
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/base.css' %}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/nav.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/base.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/nav.css' %}?uuid={{uuid}}">
 
     <!-- common elements -->
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
@@ -28,7 +28,7 @@
 
     <!-- paystack integration -->
     <script hx-preserve="true" src="{% static 'subscriptions/libraries/paystack.js' %}" defer></script>
-    <script hx-preserve="true" src="{% static 'payments/scripts/newTransaction.js' %}?uuid={{uuid}}" defer></script>
+    <script hx-preserve="true" src="{% static 'payments/scripts/newTransaction.js' %}" defer></script>
 
 
     <meta charset="UTF-8">
@@ -72,8 +72,8 @@
 
             <div class="nav-auth-container">
                 {% if not user.is_authenticated %}
-                <a href="{% url 'init_email_auth' %}">Register</a>
                 <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'init_email_auth' %}" class="green-highlight">Register</a>
                 {% elif user.role == 'CLIENT' %}
                 <a href="{% url 'get_client' %}"><i class="fa-solid fa-user"></i></a>
                 {% elif user.role == 'CREATOR' %}

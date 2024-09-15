@@ -10,13 +10,57 @@
     width: min(60rem, 100%);
     text-align: center;
     justify-self: center;
+    display: grid;
+    row-gap: .6rem;
 }
 
 .hero-heading-container h1 {
+    color: var(--primaryBlue);
     font-size: clamp(1.5rem, 5vw + .5rem, 3.5rem);
     margin: 0;
     line-height: calc(5vw + .5rem);
     padding: 0;
+
+    --x-offset: -0.0625em;
+  --y-offset: 0.0625em;
+  --stroke: 0.025em;
+  --background-color: white;
+  --stroke-color: lightblue;
+
+  text-shadow:
+
+    var(--x-offset)
+    var(--y-offset)
+    0px
+    var(--background-color),
+
+    calc( var(--x-offset) - var(--stroke) )
+    calc( var(--y-offset) + var(--stroke) )
+    0px
+    var(--stroke-color);
+}
+
+.hero-heading-container h3 > span {
+    color: var(--primaryGreen);
+    /* text-shadow: 0 1px 0 #f2f2f2,
+             0 2px 0 #ebebeb,
+             0 3px 0 #e6e6e6,
+             0 4px 0 #e0e0e0,
+             0 5px 0 #d9d9d9,
+             0 6px 1px rgba(0, 0, 0, 0.03),
+             0 0 5px rgba(0, 0, 0, 0.03),
+             0 1px 3px rgba(0, 0, 0, 0.1),
+             0 3px 5px rgba(0, 0, 0, 0.08),
+             0 5px 10px rgba(0, 0, 0, 0.1),
+             0 10px 10px rgba(0, 0, 0, 0.08),
+             0 20px 20px rgba(0, 0, 0, 0.05); */
+
+}
+
+.hero-heading-container svg {
+    transform: scale(.5);
+    height: 25px;
+    width: 100%;
 }
 
 #order-summary-form {
@@ -50,24 +94,34 @@
 /* Style for the select element */
 #schools-dropdown {
     padding: .8rem;
-    background-color: var(--backgroundGray);
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
     font-size: .8rem;
-    color: var(--darkGray);
+    /* color: var(--darkGray); */
     cursor: pointer;
     border: 1.5px solid var(--primaryGreen);
     outline: none;
 }
 
+#schools-dropdown i {
+    color: var(--primaryWhite);
+}
+
 /* Style for individual options */
 #schools-dropdown option {
-    background-color: var(--primaryWhite);
+    background-color: var(--backgroundGray);
     color: var(--darkGray);
     padding: 10px;
 }
 
+#schools-dropdown option:hover {
+    background-color: var(--primaryGreen);
+}
+
 /* Style for the disabled, selected option */
 #schools-dropdown option[disabled] {
-    color: #888;
+    background-color: var(--backgroundGray);
+    /* color: #888; */
 }
 
 /* Hover effect for the dropdown */

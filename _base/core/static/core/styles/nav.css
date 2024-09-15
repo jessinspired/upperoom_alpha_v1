@@ -2,9 +2,40 @@
     display: flex;
     justify-content: space-between;
     z-index: var(--primaryNav);
+    align-items: center;
 }
 
 .nav-auth-container {
     display: flex;
     column-gap: 1rem;
+    align-items: center;
 }
+
+.nav-auth-container a {
+    color: var(--primaryGreen)
+}
+
+.green-highlight {
+    border: 3px solid var(--primaryGreen);
+    padding: .2rem .5rem;
+    border-radius: .3rem;
+}
+
+.green-highlight:hover {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+}
+
+.nav-auth-container i {
+    padding: .5rem;
+    border-radius: var(--circularBorderRadius);
+    box-shadow: var(--grayBoxShadow);
+    background-color: var(--backgroundGray);
+    color: var(--primaryBlue);
+}
+
+.nav-auth-container i:hover {
+    color: var(--primaryGreen);
+}
+
+

@@ -3,6 +3,8 @@
 :root {
     /* color variables */
     --primaryGreen: #4ad66d;
+    --primaryGreen: #68bb59;
+    --secondaryGreen: #427e38;
     --primaryWhite: white;
     --backgroundGray: #f8f9fa;
     --lightGray: #ccc;
@@ -10,10 +12,15 @@
     --crimson: crimson;
     --transparent: transparent;
     --slateGray: darkslategrey;
+    --middleGray: #e0e0e0;
+    --oxfordBlue: #081f33;
+    --primaryBlue: #356687;
 
     /* box shadows */
     --slimBoxShadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     --mediumBoxShadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    --grayBoxShadow:  7px 7px 13px #bebebe,
+             -7px -7px 13px var(--primaryWhite);
 
     /* font sizes */
     --smallFontSize: .8rem;
