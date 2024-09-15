@@ -24,7 +24,7 @@ h1 {
 .creator-payment-form {
     display: grid;
     row-gap: 1rem;
-    width: 30rem;
+    width: min(30rem, 80vw);
     box-shadow: var(--slimBoxShadow);
     padding: 3rem 1rem;
 }
