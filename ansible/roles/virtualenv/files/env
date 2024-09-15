@@ -13,6 +13,8 @@ EMAIL_HOST_PASSWORD = 'mrhg chrt nugf pxcf'
 
 # Paystack Creds
 PAYSTACK_TEST_KEY = 'sk_test_08d4e9cf0f82f2276da5f7477ecb10a4120b5833'
+PAYSTACK_TEST_PUBLIC_KEY = 'pk_test_8e4a76325bdcc5581667f78f9a4adcabcb03cc05'
+
 
 # AWS Creds
 AWS_ACCESS_KEY_ID = 'AKIAT3WOC45XDFGLIEEH'
