@@ -1,21 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creator Transfer Info</title>
-</head>
-<body>
-    <h1>Enter Creator Transfer Information</h1>
-    <form method="post">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{% static 'users/styles/creator-earnings.css' %}?uuid={{uuid}}">
+{% endblock %}
+
+{% block main %}
+<div id="main">
+    <div class="creator-payment-container">
+        <h1>Enter Your Bank Details</h1>
+    <form class="creator-payment-form" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
-    {% if messages %}
-        {% for message in messages %}
-            <div>{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}

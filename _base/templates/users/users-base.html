@@ -57,9 +57,13 @@
             {% elif user.role == 'CREATOR' %}
             <ul>
                 <li><i class="fa-solid fa-credit-card"></i>Earning: &#8358; {% if user.transfer_profile %}{{user.transfer_profile.balance}}{% else %}0{% endif %}</li>
-                <li><i class="fa-solid fa-users"></i>Subscribed Clients: 0</li>
+
                 <li><i class="fa-solid fa-hotel"></i>Lodges: {{user.lodges.count}}</li>
+
+                {% comment %}
+                <li><i class="fa-solid fa-users"></i>Subscribed Clients: 0</li>
                 <li><i class="fa-solid fa-house-circle-check"></i>Vacancies: 0</li>
+                {% endcomment %}
             </ul>
             {% endif %}
 

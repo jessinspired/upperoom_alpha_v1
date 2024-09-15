@@ -1,0 +1,30 @@
+.middle-content {
+    padding: 1rem 0;
+    display: grid;
+    justify-content: center;
+    align-content: flex-start;
+    text-align: center;
+}
+
+h1 {
+    color: var(--primaryBlue);
+    margin-bottom: 1rem;
+}
+
+.creator-payment-container {
+    margin-top: 2rem;
+    display: grid;
+    justify-content: center;
+}
+
+.creator-payment-container h1 {
+    text-align: center;
+}
+
+.creator-payment-form {
+    display: grid;
+    row-gap: 1rem;
+    width: 30rem;
+    box-shadow: var(--slimBoxShadow);
+    padding: 3rem 1rem;
+}

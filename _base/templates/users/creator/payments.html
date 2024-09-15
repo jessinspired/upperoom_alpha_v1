@@ -2,14 +2,16 @@
 {% load static %}
 
 {% block section_stylesheets %}
+<link rel="stylesheet" href="{% static 'users/styles/creator-earnings.css' %}?uuid={{uuid}}">
+
 {% endblock %}
 
 {% block middle_content %}
 <div class="middle-content">
-    <h2>Earnings</h2>
+    <h1>Earnings</h1>
 
     {% if request.user.transfer_profile %}
-    balance: N{{ request.user.transfer_profile.balance }}
+    Balance: ₦{{ request.user.transfer_profile.balance }}
 {% else %}
     balance: N0.00
 {% endif %}
@@ -19,7 +21,6 @@
 
 <a href="{% url 'creator_transfer_info' %}">Save payment Information</a>
 
-<div>Number of Verified Listings: 0</div>
 </div>
 
 {% endblock %}

@@ -100,7 +100,7 @@ class CreatorTransferInfo(BaseModel):
     bvn = models.CharField(
         max_length=11,
         validators=[RegexValidator(regex=r'^\d{11}$', message='Invalid BVN')],
-        help_text="The customer's BVN (Bank Verification Number)"
+        # help_text="The customer's BVN (Bank Verification Number)"
     )
 
     currency = models.CharField(
