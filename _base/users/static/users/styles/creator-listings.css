@@ -11,24 +11,50 @@
     display: grid;
     row-gap: 1rem;
     align-content: flex-start;
+    min-height: 150vh;
 }
 
+.register-lodge-container > h3,
+.register-lodge-container > form {
+    position: sticky;
+}
+
+
 .register-lodge-container > h3 {
-    /* position: sticky; */
-    /* top: 2rem; */
     text-align: center;
+    top: 1rem;
 }
 
 .register-lodge-container > form {
-    /* position: sticky; */
-    /* top: 5rem; */
     box-shadow: var(--mediumBoxShadow);
     padding: 2rem 2rem;
     border-radius: var(--smallBorderRadius);
+    top: 4rem;
 }
 
 .listings-container {
     display: grid;
     row-gap: 1rem;
     align-content: flex-start;
+}
+
+#register-lodge-form {
+    font-size: .8rem;
+    display: grid;
+    row-gap: 1rem;
+}
+
+#register-lodge-form input, textarea {
+    width: 100%;
+}
+
+#id_room_types input {
+    width: max-content;
+}
+
+#id_room_types label {
+    display: flex;
+    align-items: center;
+    column-gap: .5rem;
+    /* justify-content: left; */
 }
