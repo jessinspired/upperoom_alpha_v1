@@ -1,12 +1,22 @@
 .middle-content {
-    padding: 1rem 2rem;
+    /* padding: 1rem 2rem; */
+    padding: 1rem 0;
+    display: grid;
+    align-content: flex-start;
+    row-gap: 2rem;
 }
 
-.subscriptions-container {
+h1 {
+    text-align: center;
+    color: var(--primaryBlue);
+    font-size: 1.9rem;
+
+}
+
+/* .subscriptions-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
-    /* background-color: rebeccapurple; */
 }
 
 .subscriptions-container > * {
@@ -17,4 +27,56 @@
     row-gap: .5rem;
     font-size: var(--smallFontSize);
     background-color: var(--primaryWhite);
+} */
+
+.subscription-heading{
+    padding: 1rem;
 }
+
+
+/*  */
+/* Style the table */
+/* Style the table */
+td, th {
+    padding: 0;
+    width: max-content;
+}
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+.subscription-table {
+    /* width: 100%; */
+    border-collapse: collapse;
+    /* margin: 20px 0; */
+    font-size: .85rem;
+    text-align: left;
+}
+
+/* Style the table headers */
+.subscription-table thead {
+    background-color: #f4f4f4;
+}
+
+/* Style table header and cell borders */
+.subscription-table th, .subscription-table td {
+    padding: 0 2rem;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd; /* Add vertical lines */
+}
+
+.longer-row {
+    min-width: 10rem;
+}
+
+/* Remove the right border from the last column */
+.subscription-table td:last-child, .subscription-table th:last-child {
+    border-right: none;
+}
+
+/* Add hover effect to table rows */
+.subscription-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Responsive design for mobile */

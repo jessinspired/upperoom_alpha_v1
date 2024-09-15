@@ -8,54 +8,136 @@
 {% endblock %}
 
 {% block middle_content %}
-    <h1>My Subscriptions</h1>
-    <h3>Active Subscriptions</h3>
-    <div class="subscriptions-container">
-        {% if not active_subscriptions %}
-            <b>None</b>
-        {% else %}
-        {% for subscription in active_subscriptions %}
-        <ul>
-            <li><b>Date Created:</b> {{ subscription.created_at}}</li>
-            <li><b>Amount:</b> {{subscription.transaction.amount}}</li>
-            <li><b>School:</b> {{subscription.transaction.school.name}}</li>
-            <li><b>Regions:</b>
-                {% for region in subscription.transaction.regions.all %}
-                    {{region}},&nbsp;
+    <h1>Subscriptions</h1>
+
+    <div class="table-wrapper">
+        <h3 class="subscription-heading">Active Subscriptions</h3>
+
+        {% if active_subscriptions %}
+        <table class="subscription-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Actions</th>
+                    <th>Amount (₦)</th>
+                    <th>Regions</th>
+                    <th>Unverified</th>
+                    <th>Verified</th>
+                    <th>Probation</th>
+                    <th>Rejected</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscription in active_subscriptions %}
+                <tr>
+                    <td class="longer-row">{{ subscription.created_at|date:"Y-m-d" }}</td>
+                    <td><a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a></td>
+                    <td>{{ subscription.transaction.amount }}</td>
+                    <td class="longer-row">{{ subscription.transaction.regions.all|join:", " }}</td>
+                    <td>{{ subscription.subscribed_listings|filter_by_status:"UNVERIFIED" }}</td>
+                    <td>{{ subscription.subscribed_listings|filter_by_status:"VERIFIED" }}</td>
+                    <td>{{ subscription.subscribed_listings|filter_by_status:"PROBATION" }}</td>
+                    <td>{{ subscription.subscribed_listings|filter_by_status:"REJECTED" }}</td>
+
+                </tr>
                 {% endfor %}
-            </li>
-            <li><b>Unverified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"UNVERIFIED"}}</li>
-            <li><b>Verified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"VERIFIED"}}</li>
-            <li><b>Probation Listings</b>: {{subscription.subscribed_listings|filter_by_status:"PROBATION"}}</li>
-            <li><b>Rejected Listings</b>: {{subscription.subscribed_listings|filter_by_status:"REJECTED"}}</li>
-            <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
-        </ul>
-        {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <b style="margin-left: 1rem;">None</b>
+        {% endif %}
+    </div>
+    <div class="table-wrapper">
+        <h3 class="subscription-heading">Expired Subscriptions</h3>
+
+        {% if expired_subscriptions %}
+        <table class="subscription-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount (₦)</th>
+                    <th>Regions</th>
+                    <th>Unverified</th>
+                    <th>Verified</th>
+                    <th>Probation</th>
+                    <th>Rejected</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscription in expired_subscriptions %}
+                <tr>
+                    <tr>
+                        <td class="longer-row">{{ subscription.created_at|date:"Y-m-d" }}</td>
+                        <td><a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a></td>
+                        <td>{{ subscription.transaction.amount }}</td>
+                        <td class="longer-row">{{ subscription.transaction.regions.all|join:", " }}</td>
+                        <td>{{ subscription.subscribed_listings|filter_by_status:"UNVERIFIED" }}</td>
+                        <td>{{ subscription.subscribed_listings|filter_by_status:"VERIFIED" }}</td>
+                        <td>{{ subscription.subscribed_listings|filter_by_status:"PROBATION" }}</td>
+                        <td>{{ subscription.subscribed_listings|filter_by_status:"REJECTED" }}</td>
+                    </tr>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <b style="margin-left: 1rem;">None</b>
         {% endif %}
     </div>
 
-    <h3>Expired Subscriptions</h3>
-    <div class="subscriptions-container">
-        {% if not expired_subscriptions %}
-            <b>None</b>
-        {% else %}
-        {% for subscription in expired_subscriptions %}
-        <ul>
-            <li><b>Date Created:</b> {{ subscription.created_at}}</li>
-            <li><b>Amount:</b> {{subscription.transaction.amount}}</li>
-            <li><b>Regions:</b>
-                {% for region in subscription.transaction.regions.all %}
-                    {{region}},&nbsp;
-                {% endfor %}
-            </li>
-            <li><b>Unverified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"UNVERIFIED"}}</li>
-            <li><b>Verified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"VERIFIED"}}</li>
-            <li><b>Probation Listings</b>: {{subscription.subscribed_listings|filter_by_status:"PROBATION"}}</li>
-            <li><b>Rejected Listings</b>: {{subscription.subscribed_listings|filter_by_status:"REJECTED"}}</li>
-            <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
-        </ul>
-        {% endfor %}
-        {% endif %}
+
+
+    {% comment %}
+    <div>
+        <h3>Active Subscriptions</h3>
+        <div class="subscriptions-container">
+            {% if not active_subscriptions %}
+                <b>None</b>
+            {% else %}
+            {% for subscription in active_subscriptions %}
+            <ul>
+                <li><b>Date Created:</b> {{ subscription.created_at}}</li>
+                <li><b>Amount:</b> &#8358; {{subscription.transaction.amount}}</li>
+                <li><b>School:</b> {{subscription.transaction.school.name}}</li>
+                <li><b>Regions:</b>
+                    {{ subscription.transaction.regions.all|join:", " }}
+                </li>
+                <li><b>Unverified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"UNVERIFIED"}}</li>
+                <li><b>Verified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"VERIFIED"}}</li>
+                <li><b>Probation Listings</b>: {{subscription.subscribed_listings|filter_by_status:"PROBATION"}}</li>
+                <li><b>Rejected Listings</b>: {{subscription.subscribed_listings|filter_by_status:"REJECTED"}}</li>
+                <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
+            </ul>
+            {% endfor %}
+            {% endif %}
+        </div>
     </div>
+
+    <div>
+        <h3>Expired Subscriptions</h3>
+        <div class="subscriptions-container">
+            {% if not expired_subscriptions %}
+                <b>None</b>
+            {% else %}
+            {% for subscription in expired_subscriptions %}
+            <ul>
+                <li><b>Date Created:</b> {{ subscription.created_at}}</li>
+                <li><b>Amount:</b> &#8358; {{subscription.transaction.amount}}</li>
+                <li><b>Regions:</b>
+                    {{ subscription.transaction.regions.all|join:", " }}
+                </li>
+                <li><b>Unverified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"UNVERIFIED"}}</li>
+                <li><b>Verified Listings</b>: {{subscription.subscribed_listings|filter_by_status:"VERIFIED"}}</li>
+                <li><b>Probation Listings</b>: {{subscription.subscribed_listings|filter_by_status:"PROBATION"}}</li>
+                <li><b>Rejected Listings</b>: {{subscription.subscribed_listings|filter_by_status:"REJECTED"}}</li>
+                <a href="{% url 'get_subscribed_listings' pk=subscription.pk %}">View All Listings</a>
+            </ul>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endcomment %}
 
 {% endblock %}
