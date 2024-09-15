@@ -42,13 +42,13 @@
 
     <div class="register-lodge-container">
         <h3>Register A New Lodge</h3>
-
         <form
         id="register-lodge-form"
         action="#"
         hx-post="{% url 'register_lodge' %}"
         hx-swap="outerHTML"
         hx-target="#register-lodge-form"
+        x-show="open"
         >
             {% csrf_token %}
             {% for field in lodge_registration_form %}

@@ -1,7 +1,7 @@
 .middle-content {
     display: flex;
     justify-content:space-around;
-    flex-wrap: wrap-reverse;
+    flex-wrap: wrap;
     padding: 1rem;
     column-gap: 4rem;
     row-gap: 2rem;
