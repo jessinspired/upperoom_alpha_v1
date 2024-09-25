@@ -99,6 +99,7 @@ def subscription_algorithm(regions, subscription):
         # implement room types filter
         # added price filter too
         room_types_filter = subscription.transaction.room_types.all()
+        logger.info(f'Room types filter: {room_types_filter}')
 
         if room_types_filter.exists():
             room_profiles_in_region = RoomProfile.objects.filter(
