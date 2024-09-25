@@ -89,6 +89,8 @@ def subscription_algorithm(regions, subscription):
     min_price = subscription.transaction.min_price
     max_price = subscription.transaction.max_price
 
+    logger.info(f'Max price: {max_price}, type: {type(max_price)}')
+
     for region in regions:
         lodges_in_region = Lodge.objects.filter(region=region)
         subscription_handler = SubscriptionHandler.objects.get(
@@ -102,6 +104,7 @@ def subscription_algorithm(regions, subscription):
         logger.info(f'Room types filter: {room_types_filter}')
 
         if room_types_filter.exists():
+            logger.info(f'room type exists')
             room_profiles_in_region = RoomProfile.objects.filter(
                 lodge__in=lodges_in_region,
                 vacancy__gt=0,
