@@ -30,6 +30,8 @@
     <script hx-preserve="true" src="{% static 'subscriptions/libraries/paystack.js' %}" defer></script>
     <script hx-preserve="true" src="{% static 'payments/scripts/newTransaction.js' %}" defer></script>
 
+    {% block page_scripts_in_head %}
+    {% endblock %}
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

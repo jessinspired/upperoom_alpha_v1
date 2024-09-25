@@ -7,7 +7,7 @@ from core.models import BaseModel
 from django.core.validators import RegexValidator
 
 from users.models import Client, Creator
-from listings.models import Region, School
+from listings.models import Region, RoomType, School
 
 
 BASE_FARE = Decimal('50.00')
@@ -42,6 +42,11 @@ class Transaction(BaseModel):
         related_name='transactions'
     )
 
+    room_types = models.ManyToManyField(
+        RoomType,
+        related_name='transactions'
+    )
+
     school = models.ForeignKey(
         School,
         related_name='transactions',
@@ -52,6 +57,20 @@ class Transaction(BaseModel):
     is_fully_paid = models.BooleanField(
         null=False,
         default=False
+    )
+
+    min_price = models.DecimalField(
+        max_digits=10,
+        null=False,
+        decimal_places=2,
+        default=30000
+    )
+
+    max_price = models.DecimalField(
+        max_digits=10,
+        null=False,
+        decimal_places=2,
+        default=1000000
     )
 
 

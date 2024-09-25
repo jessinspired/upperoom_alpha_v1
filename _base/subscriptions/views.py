@@ -21,7 +21,6 @@ def get_regions(request):
     school = School.objects.get(pk=school_id)
 
     regions = school.regions.all()
-    print(regions)
     context = {
         'regions': regions
     }
@@ -61,12 +60,34 @@ def subscribe_for_listing(transaction):
 
 def subscription_algorithm(regions, subscription):
     """
-    Algorithm to select rooms, using basic randomization for now.
-    This function limits the selection to a maximum of 20 randomly chosen rooms.
+    Selects room profiles based on regions, room types, and price filters when a subscription is initiated.
+
+    The algorithm selects rooms by applying filters such as room type and price range,
+    and limits the selection to a maximum threshold (randomized) for each region.
+    It creates a `SubscribedListing` for each room profile that matches the filters.
+
+    Args:
+        regions (QuerySet): A QuerySet of Region objects representing regions the client is interested in.
+        subscription (Subscription): The subscription object, which contains the transaction and
+                                     associated filters such as room types and price range.
+
+    Returns:
+        QuerySet: A combined QuerySet of all room profiles that matched the filters for the provided regions.
+
+    Behavior:
+        - The function iterates over the provided regions and retrieves lodges in each region.
+        - It checks for room type filters and price range specified in the subscription's transaction.
+        - It then selects room profiles that match the criteria, limiting the selection to a random sample
+          up to the threshold (20 rooms by default).
+        - For each matching room profile, a `SubscribedListing` is created.
+        - The function updates the subscription handler with the count of queued listings and
+          returns a QuerySet containing all selected room profiles.
     """
     all_room_profiles = RoomProfile.objects.none()
 
     logger.info(f'regions: {regions}, regions count {regions.count()}')
+    min_price = subscription.transaction.min_price
+    max_price = subscription.transaction.max_price
 
     for region in regions:
         lodges_in_region = Lodge.objects.filter(region=region)
@@ -75,10 +96,25 @@ def subscription_algorithm(regions, subscription):
             subscription=subscription
         )
 
-        room_profiles_in_region = RoomProfile.objects.filter(
-            lodge__in=lodges_in_region,
-            vacancy__gt=0
-        ).order_by('?')[:SubscriptionHandler.THRESHOLD]
+        # implement room types filter
+        # added price filter too
+        room_types_filter = subscription.transaction.room_types.all()
+
+        if room_types_filter.exists():
+            room_profiles_in_region = RoomProfile.objects.filter(
+                lodge__in=lodges_in_region,
+                vacancy__gt=0,
+                room_type__in=room_types_filter,
+                price__gte=min_price,
+                price__lte=max_price
+            ).order_by('?')[:SubscriptionHandler.THRESHOLD]
+        else:
+            room_profiles_in_region = RoomProfile.objects.filter(
+                lodge__in=lodges_in_region,
+                vacancy__gt=0,
+                price__gte=min_price,
+                price__lte=max_price
+            ).order_by('?')[:SubscriptionHandler.THRESHOLD]
 
         count = 0
         for room_profile in room_profiles_in_region:
@@ -201,9 +237,30 @@ def handle_occupied_report(request, pk):
 
 def vacancy_update_algorithm(room_profile):
     """
-    Defines vacany update algorithm
+    Updates vacancy status and determines the list of clients to notify about available room profiles.
 
-    returns the list of clients to send updates
+    This function filters subscription handlers that are linked to the region of the given `room_profile`
+    and that have not yet reached their listing threshold. It then checks whether the room profile's
+    type and price fall within the filters set by each subscription's transaction. If they do, the function
+    creates a `SubscribedListing`, updates the `queued_listings_count`, and collects the clients' emails
+    for notification.
+
+    Args:
+        room_profile (RoomProfile): A `RoomProfile` instance representing the room whose vacancy status
+                                    has been updated and should trigger notifications.
+
+    Returns:
+        list: A list of unique email addresses of clients who should receive updates based on their
+              subscriptions and transaction preferences.
+
+    Behavior:
+        - Filters `SubscriptionHandler` objects linked to the region of the `room_profile`, ensuring
+          that the handlers are not expired and have not reached the listing threshold.
+        - For each filtered handler, checks if the `room_profile` matches the subscribed room types and
+          falls within the price range of the associated transaction.
+        - If the room profile matches the filters, creates a `SubscribedListing`, updates the
+          `queued_listings_count`, and saves the changes.
+        - Gathers and returns the unique email addresses of clients for sending updates.
     """
     region = room_profile.lodge.region
 
@@ -220,7 +277,17 @@ def vacancy_update_algorithm(room_profile):
 
     clients_email_set = set()
     for subscription_handler in subscription_handlers:
-        subscribed_listing = SubscribedListing.objects.create(
+        transaction = subscription_handler.subscription.transaction
+
+        # implement room type filter
+        chosen_room_types = transaction.room_types.all()
+        if chosen_room_types.exists() and room_profile.room_type not in chosen_room_types:
+            continue
+
+        if room_profile.price > transaction.max_price or room_profile.price < transaction.min_price:
+            continue
+
+        SubscribedListing.objects.create(
             subscription=subscription_handler.subscription,
             subscription_handler=subscription_handler,
             room_profile=room_profile,

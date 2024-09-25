@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-from listings.models import School
+from listings.models import RoomType, School
 from django.http import HttpResponse
 
 
@@ -9,8 +9,11 @@ from django.http import HttpResponse
 def get_home(request):
 
     schools = School.objects.all()
+    room_types = RoomType.objects.all()
+
     context = {
-        'schools': schools
+        'schools': schools,
+        'room_types': room_types
     }
 
     return render(
@@ -21,6 +24,10 @@ def get_home(request):
 
 
 def handle_http_errors(request, status):
+    """
+    request: request object
+    status: status code
+    """
 
     # Dictionary to map status codes to custom messages or actions
     error_messages = {

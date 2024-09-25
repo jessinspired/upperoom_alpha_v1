@@ -1,0 +1,18 @@
+{% if landmarks %}
+<select
+name="landmark"
+id="landmarks-dropdown"
+>
+    <option value="" disabled selected>Select landmark</option>
+    {% for landmark in landmarks %}
+        <option value="{{landmark.pk}}">{{landmark.name}}</option>
+    {% endfor %}
+</select>
+{% else %}
+<select
+name="landmark"
+id="landmarks-dropdown"
+>
+    <option value="" disabled selected>No landmarks listed</option>
+</select>
+{% endif %}

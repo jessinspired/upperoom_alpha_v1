@@ -26,6 +26,13 @@ hx-swap="outerHTML"
     {% endfor %}
     </ul>
 
+    {% for room_type in room_types %}
+    <input type="hidden" name="room-type" value="{{room_type.pk}}">
+    {% endfor %}
+
+    <input type="hidden" name="min-price" value="{{min_price}}">
+    <input type="hidden" name="max-price" value="{{max_price}}">
+
     <div class="amount-container"><b>Total: </b><span>&#8358; {{ amount }}</span></div>
 
     <button class="button-one" type="submit">Proceed to payment</button>

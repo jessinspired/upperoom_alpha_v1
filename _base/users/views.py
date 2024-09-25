@@ -2,10 +2,9 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from auths.decorators import role_required
-from listings.models import RoomProfile, Region
+from listings.models import RoomProfile, Region, RoomType, School, State
 from payments.models import Transaction
 from listings.forms import LodgeRegistrationForm, RoomProfileForm
-
 
 # Create your views here.
 
@@ -90,10 +89,21 @@ def get_client_subscriptions(request):
 
 @role_required(['CREATOR'])
 def get_creator_listings(request):
-    lodge_registration_form = LodgeRegistrationForm()
+    # first_state = State.objects.first()
+    # first_school = School.objects.first()
+
+    # context = {
+    #     'first_school': first_school
+    # }
+    # lodge_registration_form = LodgeRegistrationForm()
+
+    # context = {
+    #     'lodge_registration_form': lodge_registration_form
+    # }
 
     context = {
-        'lodge_registration_form': lodge_registration_form
+        'states': State.objects.all(),
+        'room_types': RoomType.objects.all()
     }
 
     return render(request, 'users/creator/listings.html', context)

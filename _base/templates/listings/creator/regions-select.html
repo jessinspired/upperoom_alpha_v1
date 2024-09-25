@@ -1,0 +1,32 @@
+{% if regions %}
+<select
+name="region"
+id="regions-dropdown"
+hx-get="{% url 'get_landmarks_select' %}"
+hx-target="#landmarks-dropdown"
+hx-trigger="change"
+hx-swap="outerHTML"
+required
+>
+    <option value="" disabled selected>Select region</option>
+    {% for region in regions %}
+        <option value="{{region.pk}}">{{region.name}}</option>
+    {% endfor %}
+</select>
+{% else %}
+<select
+name="region"
+id="regions-dropdown"
+required
+>
+    <option value="" disabled selected>No regions listed</option>
+</select>
+{% endif %}
+
+<select
+name="landmark"
+id="landmarks-dropdown"
+hx-swap-oob="true"
+>
+    <option value="" disabled selected>----</option>
+</select>

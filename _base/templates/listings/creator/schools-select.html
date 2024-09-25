@@ -1,0 +1,47 @@
+{% if schools %}
+<select
+name="school"
+id="schools-dropdown"
+hx-get="{% url 'get_regions_select' %}"
+hx-target="#regions-dropdown"
+hx-trigger="change"
+hx-swap="outerHTML"
+required
+>
+    <option value="" disabled selected>Select school</option>
+    {% for school in schools %}
+        <option value="{{school.pk}}">{{school.abbr}}</option>
+    {% endfor %}
+</select>
+{% else %}
+<select
+name="school"
+id="schools-dropdown"
+hx-get=""
+hx-target="#region-checkboxes"
+hx-trigger="change"
+hx-swap="outerHTML"
+required
+>
+    <option value="" disabled selected>No schools listed</option>
+</select>
+{% endif %}
+
+
+<!-- oob swaps -->
+<select
+hx-swap-oob="true"
+name="region"
+id="regions-dropdown"
+required
+>
+    <option value="" disabled selected>----</option>
+</select>
+
+<select
+hx-swap-oob="true"
+name="landmark"
+id="landmarks-dropdown"
+>
+    <option value="" disabled selected>----</option>
+</select>

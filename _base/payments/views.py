@@ -14,7 +14,7 @@ import json
 from subscriptions.models import SubscribedListing
 from .forms import CreatorTransferInfoForm, PaymentRequestForm
 from auths.decorators import role_required
-from listings.models import Region
+from listings.models import Region, RoomType
 import hmac
 import hashlib
 from .utils import creator_payment_pipeline, generate_unique_reference, handle_charge_success, handle_transfer_event
@@ -36,6 +36,7 @@ def get_order_summary(request):
             f'Error 405: Expected method for order summary is POST, but got {request.method}')
         return redirect('get_home')
     regions_pk_list = request.POST.getlist('regions')
+    room_types_pk_list = request.POST.getlist('room-type')
 
     school_pk = request.POST.get('school')
 
@@ -55,13 +56,25 @@ def get_order_summary(request):
         for pk in regions_pk_list:
             region = Region.objects.get(pk=pk)
             regions.append(region)
+
+        room_types = []
+        if room_types_pk_list:
+            for pk in room_types_pk_list:
+                room_type = RoomType.objects.get(pk=pk)
+                room_types.append(room_type)
+
+        min_price = request.POST.get('min-price')
+        max_price = request.POST.get('max-price')
     except:
         return redirect('get_home')
 
     context = {
         'regions': regions,
+        'room_types': room_types,
         'amount': 1500 * len(regions),
-        'school_pk': school_pk
+        'school_pk': school_pk,
+        'max_price': max_price,
+        'min_price': min_price
     }
 
     return render(request, 'payments/order-summary.html', context)
@@ -120,8 +133,12 @@ def initialize_transaction(request):
     for users to put in billing method and details
     """
     regions_pk_list = request.POST.getlist('region')
+    room_types_pk_list = request.POST.getlist('room-type')
     school_pk = request.POST.get('school')
     logger.info(f'school pk {school_pk}')
+
+    min_price = request.POST.get('min-price')
+    max_price = request.POST.get('max-price')
 
     try:
         regions = []
@@ -141,13 +158,27 @@ def initialize_transaction(request):
             if existing_transaction:
                 existing_transaction.delete()
 
+            if min_price and max_price:
+                min_price = Decimal(min_price.replace(',', ''))
+                max_price = Decimal(max_price.replace(',', ''))
+
             transaction = Transaction.objects.create(
                 amount=amount,
                 reference=reference,
+                min_price=min_price,
+                max_price=max_price,
                 client=request.user,
                 school=school
             )
             transaction.regions.set(regions)
+
+            if room_types_pk_list:
+                room_types = []
+                for pk in room_types_pk_list:
+                    room_type = RoomType.objects.get(pk=pk)
+                    room_types.append(room_type)
+
+                transaction.room_types.set(room_types)
 
         logger.info(
             f"Transaction initialized successfully for client: {request.user.username} - school {school.name}")

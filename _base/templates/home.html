@@ -6,6 +6,12 @@
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/elements/nouislider.min.css' %}">
+{% endblock %}
+
+{% block page_scripts_in_head %}
+    <script defer src="{% static 'core/scripts/elements/nouislider.min.js' %}"></script>
+    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}"></script>
 {% endblock %}
 
 {% block main %}
@@ -17,7 +23,13 @@
     </div>
 
 
-    <form id="order-summary-form" action="{% url 'get_order_summary' %}" method="post">
+    <form
+    id="order-summary-form"
+    action="{% url 'get_order_summary' %}"
+    method="post"
+    x-data="{ selectedRoomTypes: [] }"
+    @submit.prevent="if(selectedRoomTypes.length > 0) $event.target.submit(); else alert('Please select at least one room type.')"
+    >
         {% csrf_token %}
         <select
         name="school"
@@ -31,13 +43,73 @@
             {% for school in schools %}
                 <option value="{{school.pk}}">{{school.name}}</option>
             {% endfor %}
-            </select>
+        </select>
 
         <div id="regions-checkboxes">
             <label>
                 <i class="fa-solid fa-location-dot"></i>
                 <span style="color:lightslategray">Regions</span>
             </label>
+        </div>
+
+        <div>
+            {% for room_type in room_types %}
+            <div
+            style="display: flex; align-items: center; column-gap: .5rem">
+                <input style="width: max-content" type="checkbox" name="room-type" id="{{room_type.name}}" value="{{room_type.pk}}" x-model="selectedRoomTypes">
+                <label for="{{room_type.name}}">{{room_type.get_name_display}}</label>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% comment %}
+        <div x-data="{ price: 30000 }">
+            <label for="price">Price: <span x-text="price"></span></label>
+            <input type="range" id="price" name="price" min="30000" max="1000000" step="1000" x-model="price">
+        </div>
+        {% endcomment %}
+
+        <div class="price-slider">
+            <p class="accordion-header" id="headingFive">
+                Select Price Range
+            </p>
+            <div class="slider slider-keypress"></div>
+            <div class="range-fields">
+                <div>
+                    <label for="price">Min: &#x20A6;</label>
+
+                    <input
+                      type="text"
+                      class="price-input input-with-keypress-0"
+                      inputmode="numeric"
+                      pattern="[0-9,.]+"
+                      id="min-price"
+                      name="min-price"
+                      min="0"
+                      max="1000000"
+                      value="30000"
+                      readonly
+                    >
+
+                </div>
+                <div>
+                    <label for="price">Max: &#x20A6;</label>
+
+                    <input
+                    type="text"
+                    class="price-input input-with-keypress-1"
+                    inputmode="numeric"
+                    pattern="[0-9,.]+"
+                    id="max-price"
+                    name="max-price"
+                    min="0"
+                    max="1000000"
+                    value="1000000"
+                    readonly
+                    >
+
+                </div>
+            </div>
         </div>
 
         <button id="proceed-btn" disabled>proceed</button>
