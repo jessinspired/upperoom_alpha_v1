@@ -99,12 +99,16 @@ def subscription_algorithm(regions, subscription):
             region=region,
             room_profiles__vacancy__gt=0
         )
+        logger.info(f'Lodges in region {lodges_in_region}')
 
         if filtered_room_types.exists():
             lodges_in_region = lodges_in_region.filter(
                 room_types__in=filtered_room_types)
+            logger.info(
+                f'filtered lodges based on room types {lodges_in_region}')
 
         lodges_in_region = lodges_in_region.distinct()
+        logger.info(f'After lodges made distinct {lodges_in_region}')
 
         # get subscription handler
         subscription_handler = SubscriptionHandler.objects.get(
@@ -121,6 +125,7 @@ def subscription_algorithm(regions, subscription):
         lodges = lodges_in_region.filter(
             Exists(subquery)
         ).distinct('group')
+        logger.info(f'Unique lodges from groups {lodges}')
 
         # Retrieve room profiles for the selected lodges
         room_profiles_in_region = RoomProfile.objects.filter(
