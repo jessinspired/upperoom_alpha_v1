@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from auths.decorators import role_required
 from .forms import LodgeRegistrationForm, RoomProfileForm
-from listings.models import Landmark, Lodge, Region, RoomType, RoomProfile, School, State
+from listings.models import Landmark, Lodge, LodgeGroup, Region, RoomType, RoomProfile, School, State
 from django.forms import formset_factory
 from django.views.decorators.http import require_http_methods
 from django_htmx.http import HttpResponseClientRefresh
@@ -10,9 +10,62 @@ import logging
 from django.contrib import messages
 from payments.models import CreatorTransferInfo
 from core.views import handle_http_errors
+from thefuzz import fuzz
+from thefuzz import process
+import re
 
 
 logger = logging.getLogger('listings')
+
+
+# @role_required(['CREATOR'])
+def group_lodge_by_name(lodge):
+    if not lodge.name:
+        return None
+
+    if lodge.landmark:
+        lodges_in_region = Lodge.objects.filter(
+            landmark=lodge.landmark).exclude(id=lodge.id)
+    else:
+        lodges_in_region = Lodge.objects.filter(
+            region=lodge.region).exclude(id=lodge.id)
+
+    threshold = 95
+
+    for other_lodge in lodges_in_region:
+        similarity_score = fuzz.ratio(
+            lodge.name.lower(), other_lodge.name.lower())
+        if similarity_score >= threshold:
+            lodge.group = other_lodge.group
+            lodge.save()
+
+            logger.info(f'existing group: {other_lodge.group.name}')
+
+            return {
+                'similar_lodge': other_lodge,
+                'similarity_score': similarity_score,
+                'group': other_lodge.group,
+                'is_new_group': False
+            }
+
+    region_name = re.sub(r'\s+', '_', lodge.region.name.lower())
+    lodge_name = re.sub(r'\s+', '_', lodge.name.lower())
+    group_name = f'{region_name}__{lodge_name}'
+
+    new_group = LodgeGroup.objects.create(
+        name=group_name
+    )
+    lodge.group = new_group
+    lodge.save()
+
+    logger.info(f'new group: {new_group.name}')
+
+    return {
+        'group': new_group,
+        'is_new_group': True,
+        'similar_lodge': None,
+        'similarity_score': None,
+    }
 
 
 @role_required(['CREATOR'])
@@ -70,29 +123,11 @@ def register_lodge(request):
             room_type=room_type
         )
 
+    if lodge.name:
+        group_lodge_by_name(lodge)
+
     redirect_url = reverse('get_lodge_profile', args=[lodge.pk])
     return redirect(redirect_url)
-
-    # lodge_form = LodgeRegistrationForm(request.POST, request.FILES)
-    # if lodge_form.is_valid():
-    #     lodge = lodge_form.save(creator=request.user)
-
-    #     logger.info(f'New lodge registered with pk: {lodge.pk}')
-
-    #     messages.success(
-    #         request, 'Lodge successfully registered!\nClick on lodge name to update price and vacancy')
-    #     if request.htmx:
-    #         # change later to dynamically partials
-    #         return HttpResponseClientRefresh()
-    #         # return render(request, 'listings/creator/register-lodge-response.html')
-    #     return redirect('get_creator_listings')
-    # else:
-    #     for field, errors in lodge_form.errors.items():
-    #         for error in errors:
-    #             messages.error(request, f'{error}')
-    #     if request.htmx:
-    #         return HttpResponseClientRefresh()
-    #     return redirect('get_creator_listings')
 
 
 @role_required(['CREATOR'])

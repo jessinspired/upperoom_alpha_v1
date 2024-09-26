@@ -386,7 +386,8 @@ def send_vacancy_update_mail(clients_email_list):
         clients_email_list
     """
 
-    url = reverse('get_client_subscriptions')
+    relative_url = reverse('get_client_subscriptions')
+    url = f'{HOME_URL}{relative_url}'
 
     html_message = f'''
         <html>

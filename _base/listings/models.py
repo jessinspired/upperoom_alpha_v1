@@ -4,6 +4,7 @@
 # import aiohttp
 # import asyncio
 # from decouple import config
+from ast import mod
 from core.models import BaseModel
 import os
 
@@ -144,11 +145,20 @@ class Landmark(BaseModel):
         return self.name
 
 
+class LodgeGroup(BaseModel):
+    name = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False
+    )
+
+
 class Lodge(BaseModel):
     '''models for lodges
     Args:
         models (BaseModel): Built-in django model
     '''
+
     name = models.CharField(
         max_length=100,
         null=True,
@@ -211,16 +221,19 @@ class Lodge(BaseModel):
         default=None
     )
 
-    # clients_inquired_for_vacancy = models.ManyToManyField(
-    #     Client,
-    #     related_name='lodges_inquired_for_vacancy',
-    # )
+    group = models.ForeignKey(
+        LodgeGroup,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='lodges'
+    )
 
     def __str__(self):
         return self.name
 
 
-class LodgeImage(models.Model):
+class LodgeImage(BaseModel):
     lodge = models.ForeignKey(
         Lodge, related_name='lodge_images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='lodges/')
@@ -260,26 +273,11 @@ class RoomProfile(BaseModel):
 
     is_vacant = models.BooleanField(default=False)
 
-    # used for favourites
-    # clients = models.ManyToManyField(
-    #     Client,
-    #     related_name='listings',
-    # )
-
-    # cover_image = models.ImageField(
-    #     upload_to=get_upload_path_room_cover,
-    #     default=default_room_cover_cdn,
-    #     storage=MediaCloudinaryStorage(),
-    #     null=True,
-    #     blank=True,
-    #     max_length=1000,
-    # )
-
     def __str__(self):
         return f'{self.lodge} - {self.room_type}'
 
 
-class RoomProfileImage(models.Model):
+class RoomProfileImage(BaseModel):
     room_profile = models.ForeignKey(
         Lodge, related_name='room_images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='rooms/')
