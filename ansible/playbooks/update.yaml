@@ -8,7 +8,7 @@
     # - virtualenv
     # - static_files
     # - database
-    # - redis
+    - redis
     - gunicorn
-    # - celery
+    - celery
     - nginx
