@@ -8,7 +8,7 @@ from auths.decorators import role_required
 from django.http import HttpResponse
 from celery import current_app
 from django_htmx.http import retarget
-from django.db.models import F
+from django.db.models import F, OuterRef, Subquery, Exists
 
 # from messaging.tasks import send_creator_subscription_mail
 
@@ -88,41 +88,51 @@ def subscription_algorithm(regions, subscription):
     logger.info(f'regions: {regions}, regions count {regions.count()}')
     min_price = subscription.transaction.min_price
     max_price = subscription.transaction.max_price
+    filtered_room_types = subscription.transaction.room_types.all()
 
     logger.info(f'Max price: {max_price}, type: {type(max_price)}')
+    logger.info(f'Room types filter: {filtered_room_types}')
 
     for region in regions:
-        lodges_in_region = Lodge.objects.filter(region=region)
+        # Get lodges in region with vacant rooms
+        lodges_in_region = Lodge.objects.filter(
+            region=region,
+            room_profiles__vacancy__gt=0
+        )
+
+        if filtered_room_types.exists():
+            lodges_in_region = lodges_in_region.filter(
+                room_types__in=filtered_room_types)
+
+        lodges_in_region = lodges_in_region.distinct()
+
+        # get subscription handler
         subscription_handler = SubscriptionHandler.objects.get(
             region=region,
             subscription=subscription
         )
 
-        # implement room types filter
-        # added price filter too
-        room_types_filter = subscription.transaction.room_types.all()
-        logger.info(f'Room types filter: {room_types_filter}')
+        # Get one lodge per group
+        subquery = Lodge.objects.filter(
+            group=OuterRef('group'),
+            roomprofile__vacancy__gt=0  # Ensure vacancy for the selected lodge
+        ).order_by().values('pk')[:1]
 
-        if room_types_filter.exists():
-            logger.info(f'room type exists')
-            room_profiles_in_region = RoomProfile.objects.filter(
-                lodge__in=lodges_in_region,
-                vacancy__gt=0,
-                room_type__in=room_types_filter,
-                price__gte=min_price,
-                price__lte=max_price
-            ).order_by('?')[:SubscriptionHandler.THRESHOLD]
-        else:
-            room_profiles_in_region = RoomProfile.objects.filter(
-                lodge__in=lodges_in_region,
-                vacancy__gt=0,
-                price__gte=min_price,
-                price__lte=max_price
-            ).order_by('?')[:SubscriptionHandler.THRESHOLD]
+        lodges = lodges_in_region.filter(
+            Exists(subquery)
+        ).distinct('group')
+
+        # Retrieve room profiles for the selected lodges
+        room_profiles_in_region = RoomProfile.objects.filter(
+            lodge__in=lodges,
+            vacancy__gt=0,
+            price__gte=min_price,
+            price__lte=max_price
+        ).order_by('?')[:SubscriptionHandler.THRESHOLD]
 
         count = 0
         for room_profile in room_profiles_in_region:
-            subscribed_listing = SubscribedListing.objects.create(
+            SubscribedListing.objects.create(
                 subscription=subscription,
                 subscription_handler=subscription_handler,
                 room_profile=room_profile,
