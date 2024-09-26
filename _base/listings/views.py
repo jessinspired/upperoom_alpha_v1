@@ -11,7 +11,6 @@ from django.contrib import messages
 from payments.models import CreatorTransferInfo
 from core.views import handle_http_errors
 from thefuzz import fuzz
-from thefuzz import process
 import re
 
 
