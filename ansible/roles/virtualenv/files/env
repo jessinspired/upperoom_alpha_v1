@@ -17,7 +17,11 @@ PAYSTACK_TEST_PUBLIC_KEY = 'pk_test_8e4a76325bdcc5581667f78f9a4adcabcb03cc05'
 
 
 # AWS Creds
-AWS_ACCESS_KEY_ID = 'AKIAT3WOC45XDFGLIEEH'
-AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'upperoom'
 AWS_S3_REGION_NAME = 'us-east-1'
+
+# --
+DB_STAGE = 'prod'
+DB_USER = 'upperoomuser'
+DB_PW = 'upperoom@1234567890'
+DB_NAME = 'upperoomdb'
