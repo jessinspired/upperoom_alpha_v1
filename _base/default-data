@@ -1,0 +1,41 @@
+{
+    "states": [
+        {
+            "name": "Rivers State",
+            "schools": [
+                {
+                    "name": "University of Port Harcourt",
+                    "abbr": "Uniport",
+                    "regions": [
+                        {
+                            "name": "Aluu",
+                            "landmarks": []
+                        },
+                        {
+                            "name": "Choba",
+                            "landmarks": []
+                        },
+                        {
+                            "name": "Alakahia",
+                            "landmarks": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Rivers State University",
+                    "abbr": "RSU",
+                    "regions": [
+                        {
+                            "name": "Eagles Island",
+                            "landmarks": []
+                        },
+                        {
+                            "name": "Back Gate",
+                            "landmarks": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
