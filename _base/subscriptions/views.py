@@ -119,14 +119,16 @@ def subscription_algorithm(regions, subscription):
         )
 
         # Get one lodge per group
-        subquery = Lodge.objects.filter(
+        random_lodge_subquery = Lodge.objects.filter(
             group=OuterRef('group'),
             room_profiles__vacancy__gt=0  # Ensure vacancy for the selected lodge
         ).order_by(Random()).values('pk')[:1]
 
-        lodges = lodges_in_region.filter(
-            Exists(subquery)
-        ).distinct('group')
+        lodges = lodges_in_region.annotate(
+            random_lodge_id=Subquery(random_lodge_subquery)
+        ).filter(
+            Exists(random_lodge_subquery)
+        ).distinct('random_lodge_id')
         logger.info(f'Unique lodges from groups {lodges}')
 
         # Retrieve room profiles for the selected lodges
