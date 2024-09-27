@@ -1,48 +1,54 @@
 {
-    "states": [
+  "states": [
+    {
+      "name": "Rivers",
+      "schools": [
         {
-            "name": "Rivers State",
-            "schools": [
-                {
-                    "name": "University of Port-Harcourt",
-                    "abbr": "Uniport",
-                    "regions": [
-                        {
-                            "name": "Aluu",
-                            "landmarks": []
-                        },
-                        {
-                            "name": "Choba",
-                            "landmarks": []
-                        },
-                        {
-                            "name": "Alakahia",
-                            "landmarks": []
-                        }
-                    ]
-                },
-                {
-                    "name": "Rivers State University",
-                    "abbr": "RSU",
-                    "regions": [
-                        {
-                            "name": "Eagles Island",
-                            "landmarks": []
-                        },
-                        {
-                            "name": "Back Gate",
-                            "landmarks": []
-                        }
-                    ]
-                }
-            ]
+          "name": "University of Port-Harcourt",
+          "abbr": "UNIPORT",
+          "regions": [
+            {
+              "name": "Aluu",
+              "landmarks": []
+            },
+            {
+              "name": "Choba",
+              "landmarks": []
+            },
+            {
+              "name": "Alakahia",
+              "landmarks": [
+                "First Mechanic",
+                "Happy Rollings",
+                "Assemblies",
+                "UPTH",
+                "Eze Hotel"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Rivers State University",
+          "abbr": "RSU",
+          "regions": [
+            {
+              "name": "Eagles Island",
+              "landmarks": []
+            },
+            {
+              "name": "Back Gate",
+              "landmarks": []
+            }
+          ]
         }
-    ],
-    "room_types": [
-        "ONE_ROOM",
-        "SELF_CONTAINED",
-        "ONE_BEDROOM",
-        "TWO_BEDROOMS",
-        "THREE_BEDROOMS"
-    ]
+      ]
+    }
+  ],
+  "room_types": [
+    "ONE_ROOM",
+    "SELF_CONTAINED",
+    "ONE_BEDROOM",
+    "TWO_BEDROOMS",
+    "THREE_BEDROOMS"
+  ]
 }
