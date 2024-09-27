@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views import View
 from auths.decorators import role_required
-from .forms import LodgeRegistrationForm, RoomProfileForm
-from listings.models import Landmark, Lodge, LodgeGroup, Region, RoomType, RoomProfile, School, State
+from .forms import LodgeImageForm, LodgeRegistrationForm, RoomProfileForm, RoomProfileImageForm
+from listings.models import Landmark, Lodge, LodgeGroup, LodgeImage, Region, RoomType, RoomProfile, School, State
 from django.forms import formset_factory
 from django.views.decorators.http import require_http_methods
 from django_htmx.http import HttpResponseClientRefresh
@@ -12,6 +13,7 @@ from payments.models import CreatorTransferInfo
 from core.views import handle_http_errors
 from thefuzz import fuzz
 import re
+from django.shortcuts import get_object_or_404
 
 
 logger = logging.getLogger('listings')
@@ -243,4 +245,80 @@ def get_landmarks_select(request):
     )
 
 
+class RoomImageUploadView(View):
+    def get(self, request):
+        form = RoomProfileImageForm()
+        return render(request, 'listings/upload-room-image.html', {'form': form})
+
+    def post(self, request):
+        form = RoomProfileImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Room image uploaded successfully!')
+            return redirect('upload_room_image')  # Redirect to the same or another page
+        return render(request, 'listings/upload-room-image.html', {'form': form})
+    
+
+class LodgeImageUploadView(View):
+    def get(self, request):
+        lodge_id = request.GET.get('lodge_id')
+        
+        # Fetch existing images for FrontView and BackView
+        front_view = LodgeImage.objects.filter(lodge__id=lodge_id, category=LodgeImage.Category.FRONT_VIEW).first()
+        back_view = LodgeImage.objects.filter(lodge__id=lodge_id, category=LodgeImage.Category.BACK_VIEW).first()
+        
+        # Fetch all images for OtherViews
+        other_views = LodgeImage.objects.filter(lodge__id=lodge_id, category=LodgeImage.Category.OTHER_VIEWS)
+
+        front_form = LodgeImageForm(instance=front_view)
+        back_form = LodgeImageForm(instance=back_view)
+        
+        return render(request, 'listings/upload-lodge-image.html', {
+            'front_form': front_form,
+            'back_form': back_form,
+            'other_views': other_views,
+            'lodge_id': lodge_id
+        })
+
+    def post(self, request):
+        lodge_id = request.POST.get('lodge_id')
+        
+        # Fetch existing images for FrontView and BackView
+        front_view = LodgeImage.objects.filter(lodge__id=lodge_id, category=LodgeImage.Category.FRONT_VIEW).first()
+        back_view = LodgeImage.objects.filter(lodge__id=lodge_id, category=LodgeImage.Category.BACK_VIEW).first()
+        
+        if 'upload_front' in request.POST:
+            if front_view:
+                front_form = LodgeImageForm(request.POST, request.FILES, instance=front_view)
+            else:
+                front_form = LodgeImageForm(request.POST, request.FILES)
+            
+            if front_form.is_valid():
+                front_form.save()
+                messages.success(request, 'Front view image uploaded/updated successfully!')
+            else:
+                messages.error(request, 'Error uploading front view image.')
+
+        if 'upload_back' in request.POST:
+            if back_view:
+                back_form = LodgeImageForm(request.POST, request.FILES, instance=back_view)
+            else:
+                back_form = LodgeImageForm(request.POST, request.FILES)
+            
+            if back_form.is_valid():
+                back_form.save()
+                messages.success(request, 'Back view image uploaded/updated successfully!')
+            else:
+                messages.error(request, 'Error uploading back view image.')
+
+        if 'upload_other' in request.POST:
+            # Handle multiple uploads for OtherViews
+            other_images = request.FILES.getlist('other_images')
+            for image in other_images:
+                lodge_image = LodgeImage(lodge_id=lodge_id, image=image, category=LodgeImage.Category.OTHER_VIEWS)
+                lodge_image.save()
+                messages.success(request, f'Other view image uploaded successfully!')
+
+        return redirect('upload_lodge_image', lodge_id=lodge_id)
+    
 # end lodge registration

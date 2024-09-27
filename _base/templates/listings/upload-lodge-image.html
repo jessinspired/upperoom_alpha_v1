@@ -1,0 +1,47 @@
+<!-- upload_lodge_image.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Lodge Image</title>
+</head>
+<body>
+    <h1>Upload Lodge Images</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Front View Image</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ front_form.as_p }}
+        <input type="hidden" name="lodge_id" value="{{ lodge_id }}">
+        <button type="submit" name="upload_front">Upload/Update Front View</button>
+    </form>
+
+    <h2>Back View Image</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ back_form.as_p }}
+        <input type="hidden" name="lodge_id" value="{{ lodge_id }}">
+        <button type="submit" name="upload_back">Upload/Update Back View</button>
+    </form>
+
+    <h2>Other View Images</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="other_images" multiple>
+        <input type="hidden" name="lodge_id" value="{{ lodge_id }}">
+        <button type="submit" name="upload_other">Upload Other View Images</button>
+    </form>
+
+    <h3>Uploaded Other Views</h3>
+    <ul>
+        {% for image in other_views %}
+            <li><img src="{{ image.image.url }}" alt="Other View" style="width:100px; height:auto;"> - {{ image.description }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

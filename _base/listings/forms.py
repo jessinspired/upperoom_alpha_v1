@@ -7,7 +7,9 @@ from .models import (
     State,
     Region,
     Landmark,
-    School
+    School,
+    LodgeImage,
+    RoomProfileImage
 )
 
 
@@ -123,3 +125,15 @@ class RoomProfileForm(forms.ModelForm):
             room_profile.save()
 
         return room_profile
+
+
+class LodgeImageForm(forms.ModelForm):
+    class Meta:
+        model = LodgeImage
+        fields = ['lodge', 'image', 'category', 'description']
+
+
+class RoomProfileImageForm(forms.ModelForm):
+    class Meta:
+        model = RoomProfileImage
+        fields = ['room_profile', 'image']
