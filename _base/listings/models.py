@@ -146,6 +146,7 @@ class Landmark(BaseModel):
 
 
 class LodgeGroup(BaseModel):
+    """debugging"""
     name = models.CharField(
         max_length=100,
         null=False,
