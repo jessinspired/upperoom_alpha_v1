@@ -30,14 +30,4 @@ urlpatterns = [
         views.get_landmarks_select,
         name='get_landmarks_select'
     ),
-    path(
-        'upload-lodge-image/<str:lodge_id>',
-        views.LodgeImageUploadView.as_view(),
-        name='upload_lodge_image'
-    ),
-    path(
-        'upload-room-image/<str:room_id>',
-        views.RoomProfileImageUploadView.as_view(),
-        name='upload_room_profile_image'
-    ),
 ]
