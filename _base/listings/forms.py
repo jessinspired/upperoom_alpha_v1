@@ -126,3 +126,13 @@ class RoomProfileForm(forms.ModelForm):
 
         return room_profile
 
+
+class LodgeImageForm(forms.ModelForm):
+    class Meta:
+        model = LodgeImage
+        fields = ['lodge', 'image', 'category', 'description']
+
+class RoomProfileImageForm(forms.ModelForm):
+    class Meta:
+        model = RoomProfileImage
+        fields = ['image', 'description']

@@ -14,7 +14,6 @@ click-repl==0.3.0
 Django==5.0.3
 django-htmx==1.19.0
 django-storages==1.14.4
-djangorestframework
 gunicorn==23.0.0
 idna==3.8
 jmespath==1.0.1

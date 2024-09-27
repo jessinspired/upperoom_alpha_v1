@@ -5,16 +5,13 @@
     <title>Upload Room Image</title>
 </head>
 <body>
-    <h1>Upload Room Image</h1>
-    {% if messages %}
-        {% for message in messages %}
-            <div>{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-    <form method="POST" enctype="multipart/form-data">
+    <!-- templates/upload_room_profile_image.html -->
+    <h2>Upload Room Profile Image for Room {{ room_profile.number }}</h2>
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Upload Image</button>
+        <button type="submit">Upload</button>
     </form>
+
 </body>
 </html>
