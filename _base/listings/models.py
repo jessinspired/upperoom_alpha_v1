@@ -226,7 +226,8 @@ class Lodge(BaseModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='lodges'
+        related_name='lodges',
+        default=None
     )
 
     def __str__(self):
@@ -239,10 +240,12 @@ class LodgeImage(BaseModel):
         BACK_VIEW = 'BACK_VIEW', 'Back View'
         OTHER_VIEWS = 'OTHER_VIEWS', 'Other Views'
 
-    lodge = models.ForeignKey(Lodge, related_name='lodge_images', on_delete=models.CASCADE)
+    lodge = models.ForeignKey(
+        Lodge, related_name='lodge_images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='lodges/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    category = models.CharField(max_length=20, choices=Category.choices, default=Category.OTHER_VIEWS)
+    category = models.CharField(
+        max_length=20, choices=Category.choices, default=Category.OTHER_VIEWS)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -251,7 +254,6 @@ class LodgeImage(BaseModel):
     def delete(self, *args, **kwargs):
         self.image.delete(save=False)
         super().delete(*args, **kwargs)
-
 
 
 class RoomProfile(BaseModel):
@@ -298,4 +300,3 @@ class RoomProfileImage(BaseModel):
     def delete(self, *args, **kwargs):
         self.image.delete(save=False)
         super().delete(*args, **kwargs)
-
