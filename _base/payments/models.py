@@ -32,7 +32,7 @@ class Transaction(BaseModel):
         default=None
     )
 
-    paystack_id = models.IntegerField(
+    paystack_id = models.BigIntegerField(
         null=True,
         default=None,
     )
