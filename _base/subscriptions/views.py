@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from celery import current_app
 from django_htmx.http import retarget
 from django.db.models import F, OuterRef, Subquery, Exists
+from django.db.models.functions import Random
+
 
 # from messaging.tasks import send_creator_subscription_mail
 
@@ -120,7 +122,7 @@ def subscription_algorithm(regions, subscription):
         subquery = Lodge.objects.filter(
             group=OuterRef('group'),
             room_profiles__vacancy__gt=0  # Ensure vacancy for the selected lodge
-        ).order_by().values('pk')[:1]
+        ).order_by(Random()).values('pk')[:1]
 
         lodges = lodges_in_region.filter(
             Exists(subquery)
