@@ -124,8 +124,6 @@ def subscription_algorithm(regions, subscription):
             room_profiles__vacancy__gt=0  # Ensure vacancy for the selected lodge
         ).order_by(Random()).values('pk')[:1]
 
-        logger.info(f'subquery: {str(subquery.query)}')
-
         lodges = lodges_in_region.filter(
             Exists(subquery)
         ).distinct('group')
