@@ -5,15 +5,25 @@ import json
 import django
 
 # Set the Django settings module
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "_base.settings")  # Update with your actual project name
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "_base.settings")
 django.setup()
 
-from listings.models import State, School, Region, Landmark
+from listings.models import RoomType, State, School, Region, Landmark
+
+def create_room_types(room_types):
+    for room_type_name in room_types:
+        room_type, created = RoomType.objects.get_or_create(name=room_type_name)
+        if created:
+            print(f'Created room type: {room_type_name}')
 
 def create_dummy_data_from_json(json_file):
     """Create or update States, Schools, Regions, and Landmarks from a JSON file."""
     with open(json_file, 'r') as file:
         data = json.load(file)
+        
+    # Create Room Types from the JSON data
+    if 'room_types' in data:
+        create_room_types(data['room_types'])
 
     for state_data in data['states']:
         state_name = state_data['name']

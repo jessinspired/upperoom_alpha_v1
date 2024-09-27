@@ -4,7 +4,7 @@
             "name": "Rivers State",
             "schools": [
                 {
-                    "name": "University of Port Harcourt",
+                    "name": "University of Port-Harcourt",
                     "abbr": "Uniport",
                     "regions": [
                         {
@@ -37,5 +37,12 @@
                 }
             ]
         }
+    ],
+    "room_types": [
+        "ONE_ROOM",
+        "SELF_CONTAINED",
+        "ONE_BEDROOM",
+        "TWO_BEDROOMS",
+        "THREE_BEDROOMS"
     ]
 }

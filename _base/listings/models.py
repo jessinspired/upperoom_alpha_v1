@@ -286,13 +286,16 @@ class RoomProfile(BaseModel):
 
 class RoomProfileImage(BaseModel):
     room_profile = models.ForeignKey(
-        Lodge, related_name='room_images', on_delete=models.CASCADE)
+        RoomProfile, related_name='room_images', on_delete=models.CASCADE
+    )
     image = models.ImageField(upload_to='rooms/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"RoomId: {self.room_profile.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
+        return f"RoomProfileId: {self.room_profile.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
 
     def delete(self, *args, **kwargs):
         self.image.delete(save=False)
         super().delete(*args, **kwargs)
+
