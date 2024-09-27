@@ -128,7 +128,8 @@ def subscription_algorithm(regions, subscription):
             lodge__in=lodges,
             vacancy__gt=0,
             price__gte=min_price,
-            price__lte=max_price
+            price__lte=max_price,
+            room_type__in=filtered_room_types
         ).order_by('?')[:SubscriptionHandler.THRESHOLD]
 
         count = 0
