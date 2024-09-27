@@ -152,6 +152,25 @@ class LodgeGroup(BaseModel):
         blank=False
     )
 
+    region = models.ForeignKey(
+        Region,
+        on_delete=models.CASCADE,
+        related_name='lodge_groups',
+        default=None
+    )
+
+    landmark = models.ForeignKey(
+        Landmark,
+        on_delete=models.CASCADE,
+        related_name='lodge_groups',
+        default=None
+    )
+
+    room_types = models.ManyToManyField(
+        RoomType,
+        related_name='lodge_groups'
+    )
+
 
 class Lodge(BaseModel):
     '''models for lodges

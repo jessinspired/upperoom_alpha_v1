@@ -10,7 +10,7 @@ import re
 
 from payments.models import CreatorTransferInfo
 from auths.decorators import role_required
-from .forms import  LodgeImageForm, RoomProfileForm, RoomProfileImageForm
+from .forms import LodgeImageForm, RoomProfileForm, RoomProfileImageForm
 from listings.models import Landmark, Lodge, LodgeGroup, LodgeImage, Region, RoomProfileImage, RoomType, RoomProfile, School, State
 from core.views import handle_http_errors
 
@@ -26,9 +26,11 @@ def group_lodge_by_name(lodge):
     if lodge.landmark:
         lodges_in_region = Lodge.objects.filter(
             landmark=lodge.landmark).exclude(id=lodge.id)
+        landmark = lodge.landmark
     else:
         lodges_in_region = Lodge.objects.filter(
             region=lodge.region).exclude(id=lodge.id)
+        landmark = None
 
     threshold = 95
 
@@ -53,8 +55,12 @@ def group_lodge_by_name(lodge):
     group_name = f'{region_name}__{lodge_name}'
 
     new_group = LodgeGroup.objects.create(
-        name=group_name
+        name=group_name,
+        region=lodge.region,
+        landmark=landmark
     )
+    new_group.room_types.set(lodge.room_types.all())
+
     lodge.group = new_group
     lodge.save()
 
@@ -140,7 +146,6 @@ def get_lodge_profile(request, pk):
             instance=profile)
         for profile in lodge.room_profiles.all()
     }
-    
 
     unavailable_room_types = RoomType.objects.exclude(lodges=lodge)
 
@@ -268,7 +273,7 @@ def upload_room_profile_image(request, room_profile_id):
         form = RoomProfileImageForm(request.POST, request.FILES)
         if form.is_valid():
             room_profile_image = form.save(commit=False)
-            room_profile_image.room_profile = room_profile 
+            room_profile_image.room_profile = room_profile
             room_profile_image.save()
             return redirect('get_lodge_profile', pk=room_profile.lodge.id)
     else:

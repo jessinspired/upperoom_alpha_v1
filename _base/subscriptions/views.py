@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from listings.models import School, Region, RoomProfile, Lodge
+from listings.models import LodgeGroup, School, Region, RoomProfile, Lodge
 from django.views.decorators.http import require_http_methods
 from .models import Subscription, SubscribedListing, SubscriptionHandler
 from core.views import handle_http_errors
@@ -96,42 +96,33 @@ def subscription_algorithm(regions, subscription):
     logger.info(f'Room types filter: {filtered_room_types}')
 
     for region in regions:
-        # Get lodges in region with vacant rooms
-        lodges_in_region = Lodge.objects.filter(
-            region=region,
-            room_profiles__vacancy__gt=0
-        )
-        logger.info(f'Lodges in region {lodges_in_region}')
+        # get groups
+        if filtered_room_types:
+            chosen_groups = LodgeGroup.objects.filter(
+                region=region,
+                lodges__room_profiles__vacancy__gt=0,
+                room_types__in=filtered_room_types
+            ).distinct()
+        else:
+            chosen_groups = LodgeGroup.objects.filter(
+                region=region,
+                lodges__room_profiles__vacancy__gt=0
+            ).distinct()
 
-        if filtered_room_types.exists():
-            lodges_in_region = lodges_in_region.filter(
-                room_types__in=filtered_room_types)
-            logger.info(
-                f'filtered lodges based on room types {lodges_in_region}')
-
-        lodges_in_region = lodges_in_region.distinct()
-        logger.info(f'After lodges made distinct {lodges_in_region}')
-
-        # get subscription handler
-        subscription_handler = SubscriptionHandler.objects.get(
-            region=region,
-            subscription=subscription
-        )
-
-        # Get one lodge per group
+        # get lodges
         random_lodge_subquery = Lodge.objects.filter(
-            group=OuterRef('group'),
-            room_profiles__vacancy__gt=0  # Ensure vacancy for the selected lodge
+            group=OuterRef('pk'),
+            room_profiles__vacancy__gt=0
         ).order_by(Random()).values('pk')[:1]
 
-        lodges = lodges_in_region.annotate(
-            random_lodge_id=Subquery(random_lodge_subquery)
-        ).filter(
-            Exists(random_lodge_subquery)
-        ).distinct('random_lodge_id')
-        logger.info(f'Unique lodges from groups {lodges}')
+        groups_with_random_lodges = chosen_groups.annotate(
+            random_lodge=Subquery(random_lodge_subquery)
+        )
 
-        # Retrieve room profiles for the selected lodges
+        lodges = Lodge.objects.filter(
+            pk__in=groups_with_random_lodges.values('random_lodge'))
+
+        # get room profile
         room_profiles_in_region = RoomProfile.objects.filter(
             lodge__in=lodges,
             vacancy__gt=0,
@@ -140,6 +131,11 @@ def subscription_algorithm(regions, subscription):
         ).order_by('?')[:SubscriptionHandler.THRESHOLD]
 
         count = 0
+
+        subscription_handler = SubscriptionHandler.objects.get(
+            region=region,
+            subscription=subscription
+        )
         for room_profile in room_profiles_in_region:
             SubscribedListing.objects.create(
                 subscription=subscription,
