@@ -5,6 +5,7 @@ from .models import (
     Landmark,
     School,
     Lodge,
+    LodgeGroup,
     RoomType,
     RoomProfile,
 
@@ -27,3 +28,11 @@ admin.site.register(School, SchoolAdmin)
 admin.site.register(Lodge, LodgeAdmin)
 admin.site.register(RoomType)
 admin.site.register(RoomProfile, RoomProfileAdmin)
+
+
+@admin.register(LodgeGroup)
+class LodgeGroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'region', 'landmark')
+    search_fields = ('name',)
+    list_filter = ('region', 'landmark')
+    prepopulated_fields = {'name': ('name',)}

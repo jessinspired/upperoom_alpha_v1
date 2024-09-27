@@ -108,6 +108,7 @@ def subscription_algorithm(regions, subscription):
                 region=region,
                 lodges__room_profiles__vacancy__gt=0
             ).distinct()
+        logger.info(f'chosen groups {chosen_groups}')
 
         # get lodges
         random_lodge_subquery = Lodge.objects.filter(
@@ -121,6 +122,8 @@ def subscription_algorithm(regions, subscription):
 
         lodges = Lodge.objects.filter(
             pk__in=groups_with_random_lodges.values('random_lodge'))
+
+        logger.info(f'filtered lodges {lodges}')
 
         # get room profile
         room_profiles_in_region = RoomProfile.objects.filter(

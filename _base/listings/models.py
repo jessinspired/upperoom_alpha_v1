@@ -156,13 +156,14 @@ class LodgeGroup(BaseModel):
         Region,
         on_delete=models.CASCADE,
         related_name='lodge_groups',
-        default=None
+        default=None,
     )
 
     landmark = models.ForeignKey(
         Landmark,
         on_delete=models.CASCADE,
         related_name='lodge_groups',
+        null=True,
         default=None
     )
 
