@@ -248,7 +248,7 @@ def get_landmarks_select(request):
 class RoomImageUploadView(View):
     def get(self, request):
         form = RoomProfileImageForm()
-        return render(request, 'upload_room_image.html', {'form': form})
+        return render(request, 'upload-room-image.html', {'form': form})
 
     def post(self, request):
         form = RoomProfileImageForm(request.POST, request.FILES)
@@ -273,7 +273,7 @@ class LodgeImageUploadView(View):
         front_form = LodgeImageForm(instance=front_view)
         back_form = LodgeImageForm(instance=back_view)
         
-        return render(request, 'upload_lodge_image.html', {
+        return render(request, 'upload-lodge-image.html', {
             'front_form': front_form,
             'back_form': back_form,
             'other_views': other_views,
