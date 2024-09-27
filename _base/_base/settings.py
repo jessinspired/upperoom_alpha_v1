@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
     # third party apps
     'django_htmx',
+    'rest_framework',
 
 
     # built in apps
@@ -79,6 +80,16 @@ MIDDLEWARE = [
     # third party middle ware
     "django_htmx.middleware.HtmxMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
 
 ROOT_URLCONF = '_base.urls'
 

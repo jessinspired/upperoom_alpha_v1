@@ -1,19 +1,23 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views import View
-from auths.decorators import role_required
-from .forms import LodgeImageForm, LodgeRegistrationForm, RoomProfileForm, RoomProfileImageForm
-from listings.models import Landmark, Lodge, LodgeGroup, LodgeImage, Region, RoomProfileImage, RoomType, RoomProfile, School, State
-from django.forms import formset_factory
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.generics import get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django_htmx.http import HttpResponseClientRefresh
-import logging
 from django.contrib import messages
-from payments.models import CreatorTransferInfo
-from core.views import handle_http_errors
+
 from thefuzz import fuzz
+import logging
 import re
-from django.shortcuts import get_object_or_404
+
+from payments.models import CreatorTransferInfo
+from auths.decorators import role_required
+from .forms import  RoomProfileForm
+from listings.models import Landmark, Lodge, LodgeGroup, LodgeImage, Region, RoomProfileImage, RoomType, RoomProfile, School, State
+from core.views import handle_http_errors
+from .serializers import LodgeImageSerializer, RoomProfileImageSerializer
 
 
 logger = logging.getLogger('listings')
@@ -243,3 +247,99 @@ def get_landmarks_select(request):
         'listings/creator/landmarks-select.html',
         context
     )
+
+
+# LodgeImage Views
+class LodgeImageView(APIView):
+
+    def get(self, request, lodge_id, category=None):
+        """Retrieve images for a particular lodge and optional category (FRONT_VIEW, BACK_VIEW, OTHER_VIEWS)"""
+        lodge = get_object_or_404(Lodge, id=lodge_id)
+        if category:
+            images = LodgeImage.objects.filter(lodge=lodge, category=category)
+        else:
+            images = LodgeImage.objects.filter(lodge=lodge)
+
+        serializer = LodgeImageSerializer(images, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, lodge_id):
+        """Upload an image for a lodge, respecting the rule for one front and back view image."""
+        lodge = get_object_or_404(Lodge, id=lodge_id)
+        category = request.data.get('category')
+
+        # Check for category constraints
+        if category in [LodgeImage.Category.FRONT_VIEW, LodgeImage.Category.BACK_VIEW]:
+            if LodgeImage.objects.filter(lodge=lodge, category=category).exists():
+                return Response(
+                    {"detail": f"{category} image already exists for this lodge."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Save the image
+        data = request.data.copy()
+        data['lodge'] = lodge.id
+        serializer = LodgeImageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, lodge_id, image_id):
+        """Update an existing image for a lodge"""
+        lodge = get_object_or_404(Lodge, id=lodge_id)
+        image = get_object_or_404(LodgeImage, id=image_id, lodge=lodge)
+        serializer = LodgeImageSerializer(image, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, lodge_id, image_id):
+        """Delete an image from a lodge"""
+        lodge = get_object_or_404(Lodge, id=lodge_id)
+        image = get_object_or_404(LodgeImage, id=image_id, lodge=lodge)
+        image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# RoomProfileImage Views
+class RoomProfileImageView(APIView):
+
+    def get(self, request, room_profile_id):
+        """Retrieve images for a particular room profile"""
+        room_profile = get_object_or_404(RoomProfile, id=room_profile_id)
+        images = RoomProfileImage.objects.filter(room_profile=room_profile)
+        serializer = RoomProfileImageSerializer(images, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, room_profile_id):
+        """Upload an image for a room profile"""
+        room_profile = get_object_or_404(RoomProfile, id=room_profile_id)
+        data = request.data.copy()
+        data['room_profile'] = room_profile.id
+
+        serializer = RoomProfileImageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, room_profile_id, image_id):
+        """Update an existing image for a room profile"""
+        room_profile = get_object_or_404(RoomProfile, id=room_profile_id)
+        image = get_object_or_404(RoomProfileImage, id=image_id, room_profile=room_profile)
+        serializer = RoomProfileImageSerializer(image, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, room_profile_id, image_id):
+        """Delete an image from a room profile"""
+        room_profile = get_object_or_404(RoomProfile, id=room_profile_id)
+        image = get_object_or_404(RoomProfileImage, id=image_id, room_profile=room_profile)
+        image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
