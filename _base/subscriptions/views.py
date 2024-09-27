@@ -122,7 +122,9 @@ def subscription_algorithm(regions, subscription):
         subquery = Lodge.objects.filter(
             group=OuterRef('group'),
             room_profiles__vacancy__gt=0  # Ensure vacancy for the selected lodge
-        ).order_by('?').values('pk')[:1]
+        ).order_by(Random()).values('pk')[:1]
+
+        logger.info(f'subquery: {subquery}')
 
         lodges = lodges_in_region.filter(
             Exists(subquery)
