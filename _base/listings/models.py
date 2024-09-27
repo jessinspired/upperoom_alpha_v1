@@ -174,6 +174,9 @@ class LodgeGroup(BaseModel):
         related_name='lodge_groups'
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Lodge(BaseModel):
     '''models for lodges
