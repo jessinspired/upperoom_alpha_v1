@@ -62,28 +62,37 @@ def subscribe_for_listing(transaction):
 
 def subscription_algorithm(regions, subscription):
     """
-    Selects room profiles based on regions, room types, and price filters when a subscription is initiated.
+    Selects room profiles for initial subscription based on user defined filters.
 
-    The algorithm selects rooms by applying filters such as room type and price range,
-    and limits the selection to a maximum threshold (randomized) for each region.
-    It creates a `SubscribedListing` for each room profile that matches the filters.
+    The algorithm performs the following steps:
+    1. Iterates through the provided regions and retrieves `LodgeGroup` objects in each region.
+    2. If room type filters are provided in the subscription's transaction, it filters lodges by region,
+       room type, and vacancy. Otherwise, it filters only by region and vacancy.
+    3. For each lodge group, one random lodge is selected that meets the vacancy and room type criteria.
+    4. For the selected lodges, the algorithm retrieves vacant room profiles that fall within the specified
+       price range and match the filtered room types.
+    5. The algorithm creates a `SubscribedListing` for each room profile that matches the filters, associating
+       it with the subscription and the relevant subscription handler.
+    6. It limits the selection of room profiles to a maximum threshold (set in `SubscriptionHandler.THRESHOLD`)
+       for each region.
+    7. Finally, it updates the `queued_listings_count` for each subscription handler and returns a combined
+       QuerySet of all selected room profiles.
 
     Args:
-        regions (QuerySet): A QuerySet of Region objects representing regions the client is interested in.
-        subscription (Subscription): The subscription object, which contains the transaction and
-                                     associated filters such as room types and price range.
+        regions (QuerySet): A QuerySet of `Region` objects representing regions of interest.
+        subscription (Subscription): The subscription object, containing the transaction details including
+                                     room type and price range filters.
 
     Returns:
-        QuerySet: A combined QuerySet of all room profiles that matched the filters for the provided regions.
+        QuerySet: A combined QuerySet of all room profiles that matched the filters across the provided regions.
 
     Behavior:
-        - The function iterates over the provided regions and retrieves lodges in each region.
-        - It checks for room type filters and price range specified in the subscription's transaction.
-        - It then selects room profiles that match the criteria, limiting the selection to a random sample
-          up to the threshold (20 rooms by default).
-        - For each matching room profile, a `SubscribedListing` is created.
-        - The function updates the subscription handler with the count of queued listings and
-          returns a QuerySet containing all selected room profiles.
+        - The function first filters lodges by region, vacancy, and room types, if applicable.
+        - It then selects a random lodge per group that meets the criteria.
+        - For each selected lodge, it filters vacant room profiles within the specified price range.
+        - A `SubscribedListing` is created for each room profile that matches, and the subscription handler
+          is updated with the count of queued listings.
+        - The function returns a combined QuerySet of all room profiles that matched the subscription criteria.
     """
     all_room_profiles = RoomProfile.objects.none()
 
@@ -123,8 +132,8 @@ def subscription_algorithm(regions, subscription):
                 lodges.append(random_lodge)
                 logger.info(f'random lodge: {random_lodge}')
 
-        # get room profile
-        room_profiles_in_region = RoomProfile.objects.filter(
+        # get room profiles
+        chosen_room_profiles = RoomProfile.objects.filter(
             lodge__in=lodges,
             vacancy__gt=0,
             price__gte=min_price,
@@ -138,7 +147,7 @@ def subscription_algorithm(regions, subscription):
             region=region,
             subscription=subscription
         )
-        for room_profile in room_profiles_in_region:
+        for room_profile in chosen_room_profiles:
             SubscribedListing.objects.create(
                 subscription=subscription,
                 subscription_handler=subscription_handler,
@@ -152,7 +161,7 @@ def subscription_algorithm(regions, subscription):
         subscription_handler.queued_listings_count = count
         subscription_handler.save()
 
-        all_room_profiles = all_room_profiles | room_profiles_in_region
+        all_room_profiles = all_room_profiles | chosen_room_profiles
 
     logger.info(f'Room profiles count: {all_room_profiles.count()}')
     return all_room_profiles
