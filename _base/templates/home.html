@@ -33,6 +33,8 @@
     @submit.prevent="if(selectedRoomTypes.length > 0) $event.target.submit(); else alert('Please select at least one room type.')"
     >
         {% csrf_token %}
+        <input type="hidden" class="school-hidden-field" id="school-field" name="school" value="">
+
         <div class="filters-container">
             <div class="search-field-container">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -56,29 +58,29 @@
 
             <div class="filters-card">
                 <div id="regions-checkboxes">
+                    <h4>Regions</h4>
                     <label>
                         <i class="fa-solid fa-location-dot"></i>
                         <span style="color:lightslategray">Select School To See Regions</span>
                     </label>
                 </div>
-                <div>
-                    {% for room_type in room_types %}
-                    <div
-                    style="display: flex; align-items: center; column-gap: .5rem">
-                        <input style="width: max-content" type="checkbox" name="room-type" id="{{room_type.name}}" value="{{room_type.pk}}" x-model="selectedRoomTypes">
-                        <label for="{{room_type.name}}">{{room_type.get_name_display}}</label>
+                <div class="room-types-container">
+                    <h4>Room Type</h4>
+                    <div>
+                        {% for room_type in room_types %}
+                        <div>
+                            <input style="width: max-content" type="checkbox" name="room-type" id="{{room_type.name}}" value="{{room_type.pk}}" x-model="selectedRoomTypes">
+                            <label for="{{room_type.name}}">{{room_type.get_name_display}}</label>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
 
                 <div class="price-slider">
-                    <p class="accordion-header" id="headingFive">
-                        Select Price Range
-                    </p>
-                    <div class="slider slider-keypress"></div>
+                    <h4>Price Range</h4>
                     <div class="range-fields">
                         <div>
-                            <label for="price">Min: &#x20A6;</label>
+                            <label for="price"><b>Min:</b> &#x20A6;</label>
 
                             <input
                               type="text"
@@ -95,7 +97,7 @@
 
                         </div>
                         <div>
-                            <label for="price">Max: &#x20A6;</label>
+                            <label for="price"><b>Max:</b> &#x20A6;</label>
 
                             <input
                             type="text"
@@ -112,6 +114,8 @@
 
                         </div>
                     </div>
+                    <div class="slider slider-keypress"></div>
+
                 </div>
 
                 <button id="proceed-btn" disabled>proceed</button>

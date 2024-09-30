@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", (e) => {
   let searchField = document.querySelector(".school-search-field");
   let filtersCard = document.querySelector(".filters-card");
+  let schoolHiddenField = document.querySelector(".school-hidden-field");
 
   searchField.addEventListener("focus", (e) => {
     filtersCard.classList.add("display");
@@ -27,6 +28,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
       schoolsLink.forEach((link) => {
         link.addEventListener("click", (e) => {
           schoolsDropdown.classList.remove("display");
+          let pk = link.getAttribute("data-school-pk");
+          schoolHiddenField.value = pk;
+          searchField.value = link.innerText;
         });
       });
 

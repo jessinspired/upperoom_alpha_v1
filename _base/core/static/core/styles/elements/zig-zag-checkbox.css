@@ -17,7 +17,7 @@
 
   .checkbox-wrapper {
     position: relative;
-    display: block;
+    /* display: block; */
     overflow: hidden;
 
   }

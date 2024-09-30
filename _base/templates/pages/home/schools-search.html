@@ -6,6 +6,7 @@
         hx-get="{% url 'search_regions' school_pk=school.pk %}"
         hx-swap="outerHTML"
         hx-target="#regions-checkboxes"
+        data-school-pk="{{school.pk}}"
         >
             {{school.name}}
         </a>

@@ -25,7 +25,7 @@
 nav a {
     /* color: var(--primaryBlue); */
     color: var(--black);
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 .register-nav-btn {
@@ -47,4 +47,11 @@ nav a {
 
 .nav-auth-container i:hover {
     color: var(--primaryGreen);
+}
+
+#logo {
+    /* background: url('https://upperoom.s3.amazonaws.com/assets/upperoom_logo.png') no-repeat; */
+    /* background-size: cover; */
+    /* color: var(--primaryGreen); */
+    font-weight: bold;
 }

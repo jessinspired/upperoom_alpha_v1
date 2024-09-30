@@ -70,7 +70,7 @@
 
     <div id="root-container">
         <nav class="nav">
-            <a href="{% url 'get_home' %}"><b>UppeRoom</b></a>
+            <a id="logo" href="{% url 'get_home' %}">UppeRoom</a>
 
             <div class="nav-auth-container">
                 {% if not user.is_authenticated %}
