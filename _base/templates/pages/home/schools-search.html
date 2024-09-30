@@ -1,0 +1,17 @@
+<div id="schools-dropdown" class="schools-dropdown display test">
+    {% for school in schools %}
+        <a
+        class="school-url"
+        href="#"
+        hx-get="{% url 'search_regions' school_pk=school.pk %}"
+        hx-swap="outerHTML"
+        hx-target="#regions-checkboxes"
+        >
+            {{school.name}}
+        </a>
+    {% empty %}
+        <li class="school-url">No schools found.</li>
+    {% endfor %}
+</div>
+
+

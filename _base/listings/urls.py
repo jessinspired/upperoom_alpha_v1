@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views as views
+from .partials import home_views
 
 
 urlpatterns = [
@@ -30,6 +31,26 @@ urlpatterns = [
         views.get_landmarks_select,
         name='get_landmarks_select'
     ),
-    path('lodges/<str:lodge_id>/upload-image/', views.upload_lodge_image, name='upload_lodge_image'),
-    path('rooms/<str:room_profile_id>/upload-image/', views.upload_room_profile_image, name='upload_room_profile_image'),
+    path(
+        'lodges/<str:lodge_id>/upload-image/',
+        views.upload_lodge_image,
+        name='upload_lodge_image'
+    ),
+    path(
+        'rooms/<str:room_profile_id>/upload-image/',
+        views.upload_room_profile_image,
+        name='upload_room_profile_image'
+    ),
+
+    path(
+        'search_schools',
+        home_views.search_schools,
+        name='search_schools'
+    ),
+    path(
+        'search_regions/<uuid:school_pk>/',
+        home_views.search_regions,
+        name='search_regions'
+    ),
+
 ]

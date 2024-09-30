@@ -67,7 +67,7 @@
     /* outline: 2px solid blue; */
     display: grid;
     width: min(40rem, 100%);
-    justify-self: center;
+    /* justify-self: center; */
     row-gap: 1rem;
 }
 
@@ -91,51 +91,43 @@
     letter-spacing: .3rem;
 }
 
-/* Style for the select element */
-#schools-dropdown {
-    padding: .8rem;
-    background-color: var(--primaryGreen);
-    color: var(--primaryWhite);
-    font-size: .8rem;
-    /* color: var(--darkGray); */
-    cursor: pointer;
-    border: 1.5px solid var(--primaryGreen);
-    outline: none;
+
+/* buildathon design */
+.filters-container {
+    position: relative;
+    display: grid;
 }
 
-#schools-dropdown i {
-    color: var(--primaryWhite);
+.schools-dropdown {
+    outline: 2px solid slategray;
+    position: absolute;
+    top: 2rem;
+    justify-self: center;
+    z-index: var(--indexTwo);
+    background-color: var(--primaryWhite);
+    z-index: var(--indexBehind);
+    opacity: 0;
+    display: grid;
 }
 
-/* Style for individual options */
-#schools-dropdown option {
-    background-color: var(--backgroundGray);
-    color: var(--darkGray);
-    padding: 10px;
+.schools-dropdown.display {
+    opacity: 1;
+    z-index: var(--indexTwo);
+    width: 100%;
 }
 
-#schools-dropdown option:hover {
-    background-color: var(--primaryGreen);
+.schools-dropdown a {
+    border-bottom: 1px solid slategrey;
 }
 
-/* Style for the disabled, selected option */
-#schools-dropdown option[disabled] {
-    background-color: var(--backgroundGray);
-    /* color: #888; */
+.filters-card {
+    outline: 2px solid slategray;
+    padding: 1rem .5rem;
+    opacity: 0;
 }
 
-/* Hover effect for the dropdown */
-#schools-dropdown:hover {
-    border-color: var(--primaryGreen);
+.filters-card.display {
+    opacity: 1;
 }
 
-/* Focused state (when the dropdown is clicked) */
-#schools-dropdown:focus {
-    outline: none;
-    border-color: var(--primaryGreen);
-}
 
-.fa-location-dot {
-    color: var(--darkGray);
-    font-size: 1rem;
-}
