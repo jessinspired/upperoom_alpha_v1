@@ -3,24 +3,38 @@
     justify-content: space-between;
     z-index: var(--primaryNav);
     align-items: center;
+
+    padding: 1.5rem 1rem;
+
+    /* box-shadow: var(--grayBoxShadow); */
+    position: sticky;
+    top: 0;
+
+    background-color: rgba(255, 255, 255, 0.842);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
 }
 
 .nav-auth-container {
     display: flex;
     column-gap: 1rem;
     align-items: center;
+    z-index: var(--indexSix);
 }
 
 nav a {
-    color: var(--primaryBlue);
+    /* color: var(--primaryBlue); */
+    color: var(--black);
+    font-weight: bold;
 }
 
 .register-nav-btn {
-    border: 3px solid var(--primaryBlue);
-    background-color: var(--primaryBlue);
+    /* border: 3px solid var(--primaryBlue); */
+    background-color: var(--primaryGreen);
     color: var(--primaryWhite);
     padding: .2rem .5rem;
     border-radius: .3rem;
+    z-index: var(--indexSix);
 }
 
 .nav-auth-container i {
@@ -34,5 +48,3 @@ nav a {
 .nav-auth-container i:hover {
     color: var(--primaryGreen);
 }
-
-

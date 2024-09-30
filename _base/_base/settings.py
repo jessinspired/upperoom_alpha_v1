@@ -101,7 +101,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 # custom context processors
-                'core.context_processors.generate_uuid'
+                'core.context_processors.generate_uuid',
+                'core.context_processors.assets_base_url'
             ],
         },
     },
