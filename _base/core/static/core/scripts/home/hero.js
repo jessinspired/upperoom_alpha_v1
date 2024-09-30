@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
   let searchField = document.querySelector(".school-search-field");
   let filtersCard = document.querySelector(".filters-card");
   let schoolHiddenField = document.querySelector(".school-hidden-field");
+  let headingContainer = document.querySelector(".hero-heading-container");
 
   searchField.addEventListener("focus", (e) => {
     filtersCard.classList.add("display");
@@ -15,6 +16,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
       !e.target.classList.contains("school-url")
     ) {
       filtersCard.classList.remove("display");
+    }
+
+    if (filtersCard.classList.contains("display")) {
+      headingContainer.style.display = "none";
+    } else {
+      headingContainer.style.display = "grid";
     }
   });
 
