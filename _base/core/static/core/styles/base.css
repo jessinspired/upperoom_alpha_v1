@@ -146,7 +146,7 @@ button {
 }
 
 .green {
-    color: #228B22;
+    color: var(--primaryGreen);
 }
 
 .green-bg {

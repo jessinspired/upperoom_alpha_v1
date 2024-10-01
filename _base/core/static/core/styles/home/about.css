@@ -38,7 +38,7 @@
 }
 
 .about .purple-accent {
-    color: violet;
+    color: var(--primaryGreen);
 }
 
 .about .powder-blue-accent {
