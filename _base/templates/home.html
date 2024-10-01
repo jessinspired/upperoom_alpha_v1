@@ -3,7 +3,9 @@
 
 
 {% block page_stylesheets %}
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/about.css' %}?uuid={{uuid}}">
+
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
     <link rel="stylesheet" href="{% static 'core/styles/elements/nouislider.min.css' %}">
@@ -11,10 +13,10 @@
 
 {% block page_scripts_in_head %}
     <script defer src="{% static 'core/scripts/elements/nouislider.min.js' %}"></script>
-    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}?uuid={{uuid}}"></script>
+    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}"></script>
 
 
-    <script defer src="{% static 'core/scripts/home/hero.js' %}?uuid={{uuid}}"></script>
+    <script defer src="{% static 'core/scripts/home/hero.js' %}"></script>
 {% endblock %}
 
 {% block main %}
@@ -142,5 +144,21 @@
     </form>
 
 
+</section>
+
+<section id="about" class="about">
+    <article>
+        <h3 class="green-accent">It's all about</h3>
+
+        <h2>Finding the <span class="purple-accent">student</span><br> <span class="powder-blue-accent">accommodation</span> of your <br>choice, seamlessly.</h2>
+
+        <p>We offer a seamless and stress-free solution for students seeking accommodation. With a focus on ease of use and trustworthiness, we ensure that every listing is legitimate, so students can find their perfect place quickly and confidently.</p>
+    </article>
+
+    <article>
+        <b>We're in over</b>
+        <div class="number-accent">50</div>
+        <b>Tertiary Institutions</b>
+    </article>
 </section>
 {% endblock %}

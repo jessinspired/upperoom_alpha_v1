@@ -3,6 +3,7 @@
 :root {
     /* color variables */
     --primaryGreen: #4ad66d;
+    --lightGreen: rgb(187, 252, 187);
     /* --primaryGreen: #68bb59; */
     --secondaryGreen: #427e38;
     --primaryWhite: white;

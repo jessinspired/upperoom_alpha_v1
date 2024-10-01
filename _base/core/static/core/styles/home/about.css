@@ -1,0 +1,73 @@
+.about {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 5rem;
+    row-gap: 2rem;
+    justify-content: space-evenly;
+    padding: 3rem 1rem;
+}
+
+.about p, .about h2, .about h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.about > :first-child {
+    display: grid;
+    row-gap: 2rem;
+    width: min(35rem, 90vw);
+}
+
+.about > :nth-child(2) {
+    text-transform: capitalize;
+    text-align: center;
+}
+
+.about > :nth-child(2) b {
+    font-size: 1.2rem;
+}
+
+.about .green-accent {
+    background-color: var(--lightGreen);
+    color: var(--primaryGreen);
+    width: max-content;
+    text-transform: uppercase;
+    font-size: 1rem;
+    padding: .1rem .5rem;
+}
+
+.about .purple-accent {
+    color: violet;
+}
+
+.about .powder-blue-accent {
+    background-color: rgb(135, 215, 226);
+    padding: 0 .1rem;
+}
+
+.about .number-accent {
+    font-weight: bold;
+    font-size: clamp(7rem, 20vw + .5rem, 10rem);
+    color: var(--slateGray);
+
+    --x-offset: -0.0625em;
+    --y-offset: 0.0625em;
+    --stroke: 0.025em;
+    --background-color: white;
+    --stroke-color: lightblue;
+
+    text-shadow:
+
+    var(--x-offset)
+    var(--y-offset)
+    0px
+    var(--background-color),
+
+    calc( var(--x-offset) - var(--stroke) )
+    calc( var(--y-offset) + var(--stroke) )
+    0px
+    var(--stroke-color);
+
+
+}
