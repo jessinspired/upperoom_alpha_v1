@@ -3,13 +3,15 @@
 
 
 {% block page_stylesheets %}
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}?uuid={{uuid}}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/about.css' %}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/how-it-works.css' %}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/get-started.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/hero.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/about.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/how-it-works.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/get-started.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/feedback.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/footer.css' %}?uuid={{uuid}}">
 
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/elements/button-one.css' %}">
     <link rel="stylesheet" href="{% static 'core/styles/elements/nouislider.min.css' %}">
 {% endblock %}
 
@@ -208,4 +210,16 @@
         </div>
     </div>
 </section>
+
+<section id="feedback-section" class="feedback-section">
+    <div class="section-heading">
+        <h3>Can't find your school?</h3>
+        <a href="#">Tell us now</a>
+    </div>
+    <div class="section-image"></div>
+</section>
+
+<footer id="footer" class="footer">
+    © 2024 Upperoom Accommodation. All Rights Reserved.
+</footer>
 {% endblock %}
