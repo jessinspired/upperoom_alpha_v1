@@ -13,6 +13,7 @@ from auths.decorators import role_required
 from .forms import LodgeImageForm, RoomProfileForm, RoomProfileImageForm
 from listings.models import Landmark, Lodge, LodgeGroup, LodgeImage, Region, RoomProfileImage, RoomType, RoomProfile, School, State
 from core.views import handle_http_errors
+from payments.utils import convert_price_to_decimal
 
 
 logger = logging.getLogger('listings')
@@ -280,3 +281,103 @@ def upload_room_profile_image(request, room_profile_id):
         form = RoomProfileImageForm()
 
     return render(request, 'listings/upload-room-profile-image.html', {'form': form, 'room_profile': room_profile})
+
+
+def get_vacancy_search_result(request):
+    regions_pk_list = request.GET.getlist('regions')
+    room_types_pk_list = request.GET.getlist('room-type')
+
+    school_pk = request.GET.get('school')
+
+    if not School.objects.filter(pk=school_pk).exists():
+        logger.error(f'No school exists for pk {school_pk}')
+        return redirect('get_home')
+
+    if not regions_pk_list:
+        logger.error(
+            'Bad Request (400): No list of regions to get order summary for')
+
+        messages.error(request, "Select at least one region")
+        return redirect('get_home')
+
+    all_room_profiles = RoomProfile.objects.none()
+
+    try:
+        regions = []
+        for pk in regions_pk_list:
+            region = Region.objects.get(pk=pk)
+            regions.append(region)
+
+        filtered_room_types = []
+        if room_types_pk_list:
+            for pk in room_types_pk_list:
+                room_type = RoomType.objects.get(pk=pk)
+                filtered_room_types.append(room_type)
+
+        min_price = request.GET.get('min-price')
+        max_price = request.GET.get('max-price')
+
+        min_price, max_price = convert_price_to_decimal(min_price, max_price)
+
+    except Exception as e:
+        logger.error(f"Couldn't retrieve search results with error: {e}")
+        return redirect('get_home')
+
+    vacancy_statistics = {}
+    for region in regions:
+        # get groups
+        if filtered_room_types:
+            chosen_groups = LodgeGroup.objects.filter(
+                region=region,
+                lodges__room_profiles__vacancy__gt=0,
+                room_types__in=filtered_room_types
+            ).distinct()
+        else:
+            chosen_groups = LodgeGroup.objects.filter(
+                region=region,
+                lodges__room_profiles__vacancy__gt=0
+            ).distinct()
+        logger.info(f'chosen groups {chosen_groups}')
+
+        if not chosen_groups:
+            vacancy_statistics[region.name] = 0
+            continue
+
+        # get a random lodge from group
+        lodges = []
+        for group in chosen_groups:
+            logger.info(f'current group {group}')
+            random_lodge = group.lodges.filter(
+                room_profiles__vacancy__gt=0,
+                room_types__in=filtered_room_types
+            ).order_by('?').first()
+
+            if random_lodge:
+                lodges.append(random_lodge)
+                logger.info(f'random lodge: {random_lodge}')
+
+        # get room profiles
+        try:
+            chosen_room_profiles = RoomProfile.objects.filter(
+                lodge__in=lodges,
+                vacancy__gt=0,
+                price__gte=min_price,
+                price__lte=max_price,
+                room_type__in=filtered_room_types
+            )
+        except Exception as e:
+            logger.error(f'Cannot get chosen room profile, error: {e}')
+            messages.error(request, f'Cannot get search results')
+            return HttpResponseClientRefresh()
+        vacancy_statistics[region.name] = chosen_room_profiles.count()
+
+        all_room_profiles = all_room_profiles | chosen_room_profiles
+
+    logger.info(f'Room profiles count: {all_room_profiles.count()}')
+
+    context = {
+        'total_vacancy': all_room_profiles.count(),
+        'vacancy_statistics': vacancy_statistics
+    }
+
+    return render(request, 'messages/vacancy-search-result.html', context)

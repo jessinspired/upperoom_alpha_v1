@@ -20,7 +20,18 @@
     </div>
 </div>
 
-<button id="proceed-btn" class="order-summary-btn" hx-swap-oob="true">Proceed</button>
+<!-- <button
+hx-get="{% url 'get_vacancy_search_result' %}"
+id="proceed-btn"
+class="order-summary-btn"
+hx-swap-oob="true"
+hx-target="#vacancy-search-result-modal"
+hx-swap="outerHTML"
+type="button"
+hx-include="input[name='room-type']:checked, #school-field, #min-price, #max-price, input[name='regions']:checked"
+>
+    Proceed
+</button> -->
 {% else %}
 
 <div id="regions-checkboxes" hx-select-oob="true">

@@ -11,7 +11,7 @@
 
 {% block page_scripts_in_head %}
     <script defer src="{% static 'core/scripts/elements/nouislider.min.js' %}"></script>
-    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}"></script>
+    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}?uuid={{uuid}}"></script>
 
 
     <script defer src="{% static 'core/scripts/home/hero.js' %}?uuid={{uuid}}"></script>
@@ -90,7 +90,7 @@
                               name="min-price"
                               min="0"
                               max="1000000"
-                              value="30000"
+                              value="0"
                               readonly
                             >
 
@@ -117,10 +117,27 @@
 
                 </div>
 
-                <button id="proceed-btn" disabled>proceed</button>
+                <button
+                hx-get="{% url 'get_vacancy_search_result' %}"
+                id="proceed-btn"
+                class="order-summary-btn"
+                hx-swap-oob="true"
+                hx-target="#vacancy-search-result-modal"
+                hx-swap="outerHTML"
+                type="button"
+                hx-include="input[name='room-type']:checked, #school-field, #min-price, #max-price, input[name='regions']:checked"
+                >
+                    Proceed
+                </button>
+
+                <!-- <button id="proceed-btn" disabled>proceed</button> -->
             </div>
 
         </div>
+
+        <dialog id="vacancy-search-result-modal">
+        </dialog>
+
     </form>
 
 

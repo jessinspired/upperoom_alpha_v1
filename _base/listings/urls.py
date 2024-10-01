@@ -52,5 +52,9 @@ urlpatterns = [
         home_views.search_regions,
         name='search_regions'
     ),
-
+    path(
+        'vacancy_search_result',
+        views.get_vacancy_search_result,
+        name='get_vacancy_search_result'
+    )
 ]

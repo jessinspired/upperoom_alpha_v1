@@ -5,11 +5,11 @@ const input1 = document.querySelector(".input-with-keypress-1");
 const inputs = [input0, input1];
 
 noUiSlider.create(keypressSlider, {
-  start: [30000, 500000],
+  start: [0, 500000],
   connect: true,
   step: 1000,
   range: {
-    min: [30000],
+    min: [0],
     max: [1000000],
   },
   format: {

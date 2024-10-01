@@ -1,0 +1,13 @@
+<dialog id="vacancy-search-result-modal" x-data x-ref="modal" x-init="$refs.modal.showModal()" @click.outside="$refs.modal.close()">
+    <button type="button" class="close-global-modal-btn" @click="$refs.modal.close()">X</button>
+
+    <p><b>Total Vacancy: </b> {{total_vacancy}}</p>
+
+    {% if vacancy_statistics %}
+        {% for key, value in vacancy_statistics.items %}
+        <p>{{ key }}: {{ value }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <button>Proceed</button>
+</dialog>

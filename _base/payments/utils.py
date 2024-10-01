@@ -1,7 +1,9 @@
+from typing import Optional, Tuple
 import os
 import random
 import string
 from typing import List, Union
+from decimal import Decimal
 
 from django.http import JsonResponse
 import requests
@@ -325,3 +327,27 @@ def creator_payment_pipeline(creators: Union[Creator, List[Creator]], amount):
                 creator_info.decrement_balance(tranfer['amount'] / 100)
 
     return transactions
+
+
+def convert_price_to_decimal(min_price: Optional[str], max_price: Optional[str]) -> Tuple[Optional[Decimal], Optional[Decimal]]:
+    """
+    Convert `min_price` and `max_price` from string format to `Decimal` after removing commas.
+
+    Args:
+        min_price (Optional[str]): The minimum price as a string, which may contain commas.
+        max_price (Optional[str]): The maximum price as a string, which may contain commas.
+
+    Returns:
+        Tuple[Optional[Decimal], Optional[Decimal]]: The converted `min_price` and `max_price` as `Decimal` objects, or `None` if the input was empty.
+    """
+    if min_price:
+        min_price = Decimal(min_price.replace(',', ''))
+    else:
+        min_price = None
+
+    if max_price:
+        max_price = Decimal(max_price.replace(',', ''))
+    else:
+        max_price = None
+
+    return min_price, max_price

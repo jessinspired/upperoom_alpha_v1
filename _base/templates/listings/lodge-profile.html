@@ -19,11 +19,12 @@
             <form method="post" action="{% url 'update_room_profile' pk=form.instance.pk %}">
                 {% csrf_token %}
                 {{ form }}
-    
+
                 <a href="{% url 'upload_room_profile_image' room_profile_id=form.instance.pk %}"> Upload image </a>
-    
+
                 <!-- Display room images -->
                 <div class="room-images">
+                    {% if form.instance.images %}
                     {% for image in form.instance.room_images.all %}
                     <div>
                         <img src="{{ image.image.url }}" alt="Room Image" style="width: 100px; height: auto;">
@@ -32,8 +33,9 @@
                     {% empty %}
                     <p>No images uploaded for this room profile.</p>
                     {% endfor %}
+                    {% endif %}
                 </div>
-    
+
                 <button type="submit">Update</button>
             </form>
         </div>

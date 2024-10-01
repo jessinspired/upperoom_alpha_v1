@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
   let filtersCard = document.querySelector(".filters-card");
   let schoolHiddenField = document.querySelector(".school-hidden-field");
   let headingContainer = document.querySelector(".hero-heading-container");
+  let orderSummaryForm = document.querySelector("#order-summary-form");
 
   searchField.addEventListener("focus", (e) => {
     filtersCard.classList.add("display");
@@ -37,6 +38,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
           schoolsDropdown.classList.remove("display");
           let pk = link.getAttribute("data-school-pk");
           schoolHiddenField.value = pk;
+          htmx.process(schoolHiddenField);
+          htmx.process(orderSummaryForm);
+          console.log(schoolHiddenField.value);
+
           searchField.value = link.innerText;
         });
       });
