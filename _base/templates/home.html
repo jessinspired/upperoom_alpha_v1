@@ -5,7 +5,8 @@
 {% block page_stylesheets %}
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}?uuid={{uuid}}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/about.css' %}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/how-it-works.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/how-it-works.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/get-started.css' %}">
 
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
@@ -189,5 +190,22 @@
         </ol>
 
     </article>
+</section>
+
+<section id="get-started" class="get-started">
+
+    <div class="register-container">
+        <div class="register-client">
+            <h3>GET STARTED</h3>
+            <h4>Find your dream<br> accommodation</h4>
+
+            <a href="{% url 'init_email_auth' %}">Sign me up!</a>
+        </div>
+        <div class="register-creator">
+            <h4>Make life easier<br> for a student</h4>
+
+            <a href="{% url 'init_email_auth' %}">Become a creator</a>
+        </div>
+    </div>
 </section>
 {% endblock %}

@@ -1,0 +1,61 @@
+.get-started {
+    padding: 7rem 2rem 3rem 2rem;
+}
+
+.register-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    column-gap: 3rem;
+    row-gap: 2rem;
+}
+
+.register-container > * {
+    height: 20rem;
+    width: min(90vw, 25rem);
+    border-radius: var(--smallBorderRadius);
+}
+
+.register-client {
+    background: url('https://upperoom.s3.amazonaws.com/assets/bedroom.png') no-repeat center;
+    background-size: 70% 65%;
+    background-position: right bottom;
+    position: relative;
+    background-color: var(--powderBlue);
+}
+
+.register-client > h3 {
+    position: absolute;
+    top: -3rem;
+}
+
+
+.register-creator {
+    background: url('https://upperoom.s3.amazonaws.com/assets/reading-room.png') no-repeat center;
+    background-size: 70% 65%;
+    background-position: right bottom;
+    position: relative;
+    background-color: var(--backgroundGray);
+}
+
+.register-container h4 {
+    padding: 2rem 1rem;
+}
+
+.register-container a {
+    position: absolute;
+    bottom: 3rem;
+    left: 1rem;
+    font-size: .9rem;
+    padding: .3rem 1rem;
+}
+
+.register-client a {
+    background-color: var(--black);
+    color: var(--primaryWhite);
+}
+
+.register-creator a {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+}
