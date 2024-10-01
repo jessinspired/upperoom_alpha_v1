@@ -3,8 +3,9 @@
 
 
 {% block page_stylesheets %}
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}">
-    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/about.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/hero.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/about.css' %}">
+    <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/home/how-it-works.css' %}?uuid={{uuid}}">
 
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/zig-zag-checkbox.css' %}">
     <link rel="stylesheet" hx-preserve="true" href="{% static 'core/styles/elements/button-one.css' %}">
@@ -17,6 +18,7 @@
 
 
     <script defer src="{% static 'core/scripts/home/hero.js' %}"></script>
+    <script defer src="{% static 'core/scripts/home/howItWorks.js' %}?uuid={{uuid}}"></script>
 {% endblock %}
 
 {% block main %}
@@ -159,6 +161,33 @@
         <b>We're in over</b>
         <div class="number-accent">50</div>
         <b>Tertiary Institutions</b>
+    </article>
+</section>
+
+<section id="how-it-works" class="how-it-works">
+    <h2>How It Works</h2>
+
+    <div class="roles-tab-container">
+        <button data-role="client" class="active">Clients</button>
+        <button data-role="creator">Creators</button>
+    </div>
+
+    <article class="roles-article">
+        <ol data-role="client" class="active">
+            <li><span class="ol-accent">1.</span>Create an account as a client.</li>
+            <li><span class="ol-accent">2.</span>Let us know the school you attend.</li>
+            <li><span class="ol-accent">3.</span>Select the region you want your dream accommodation in.</li>
+            <li><span class="ol-accent">4.</span>Apply all filters so we can know exactly what you want.</li>
+            <li><span class="ol-accent">5.</span>Be the first to know about available accommodations in your chosen region(s) all from the comfort of whereever you are.</li>
+        </ol>
+
+        <ol data-role="creator">
+            <li><span class="ol-accent">1.</span>Create an account as a creator.</li>
+            <li><span class="ol-accent">2.</span>Update your payment information.</li>
+            <li><span class="ol-accent">3.</span>Register your listings and indicate vacancies.</li>
+            <li><span class="ol-accent">4.</span>Keep on earning as clients verify your listings</li>
+        </ol>
+
     </article>
 </section>
 {% endblock %}

@@ -10,6 +10,7 @@
     background: url('https://upperoom.s3.amazonaws.com/assets/hero-image.png') no-repeat center;
     background-size: cover;
     height: calc(95vh - var(--navHeight));
+    max-height: 40rem;
     overflow-x: hidden;
     padding: 4rem 1rem 2rem 1rem;
     overflow-y: hidden;
@@ -121,6 +122,8 @@
     font-size: .8rem;
     height: 60vh;
     min-height: 20rem;
+    max-height: 28rem;
+    border-radius: 0 0 .3rem .3rem;
 }
 
 .filters-card.display {
