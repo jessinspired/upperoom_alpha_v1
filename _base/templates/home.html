@@ -126,6 +126,7 @@
                 hx-swap="outerHTML"
                 type="button"
                 hx-include="input[name='room-type']:checked, #school-field, #min-price, #max-price, input[name='regions']:checked"
+                hx-on::before-request="validateAndProceed(event)"
                 >
                     Proceed
                 </button>

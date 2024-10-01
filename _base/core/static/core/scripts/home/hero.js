@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
   let headingContainer = document.querySelector(".hero-heading-container");
   let orderSummaryForm = document.querySelector("#order-summary-form");
 
+  // search field events
   searchField.addEventListener("focus", (e) => {
     filtersCard.classList.add("display");
   });
@@ -54,4 +55,40 @@ document.addEventListener("DOMContentLoaded", (e) => {
     },
     true
   );
+
+  // validate search filters before getting vacancy result
 });
+
+function validateAndProceed(event) {
+  const roomTypes = document.querySelectorAll(
+    "input[name='room-type']:checked"
+  );
+  const schoolField = document.getElementById("school-field").value;
+  const minPrice = document.getElementById("min-price").value;
+  const maxPrice = document.getElementById("max-price").value;
+  const regions = document.querySelectorAll("input[name='regions']:checked");
+
+  if (!schoolField) {
+    alert("Please select a school.");
+    event.preventDefault();
+    return;
+  }
+
+  if (regions.length === 0) {
+    alert("Please select at least one region.");
+    event.preventDefault();
+    return;
+  }
+
+  if (roomTypes.length === 0) {
+    alert("Please select at least one room type.");
+    event.preventDefault();
+    return;
+  }
+
+  if (!minPrice || !maxPrice) {
+    event.preventDefault();
+    alert("Please provide both minimum and maximum price.");
+    return;
+  }
+}
