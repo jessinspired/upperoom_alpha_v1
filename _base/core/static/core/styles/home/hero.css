@@ -16,6 +16,38 @@
     overflow-y: hidden;
 }
 
+/* messages */
+.vacancy-search-result-modal {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    border: none;
+    width: min(25rem, 80vw);
+    /* display: grid; */
+}
+
+.vacancy-search-result-modal > div {
+    /* display: grid; */
+    row-gap: 1rem;
+}
+
+.vacancy-search-result-modal p,
+.vacancy-search-result-modal li {
+    font-size: .8rem;
+    width: 90%;
+    margin-top: 1rem;
+}
+
+.vacancy-search-result-modal button[type="submit"] {
+    margin-top: 2rem;
+    background-color: var(--transparent);
+    border: 2px solid var(--primaryGreen);
+    color: var(--primaryGreen);
+    font-weight: 600;
+    padding: .5rem 1rem;
+}
+
+/* end messages */
+
 .hero-heading-container {
     width: min(60rem, 100%);
     text-align: center;
@@ -102,10 +134,16 @@
 
 .schools-dropdown a {
     border-bottom: 1px solid var(--primaryWhite);
-    background-color: var(--primaryGreen);
-    color: var(--primaryWhite);
+    background-color: var(--lightGray);
+    color: var(--black);
     font-size: .8rem;
     padding: .5rem;
+    font-weight: 400;
+}
+
+.schools-dropdown a:hover {
+    background-color: var(--slateGray);
+    color: var(--primaryWhite);
 }
 
 .filters-card {

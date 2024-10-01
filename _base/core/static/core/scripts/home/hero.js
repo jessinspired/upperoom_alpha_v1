@@ -43,7 +43,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
           htmx.process(orderSummaryForm);
           console.log(schoolHiddenField.value);
 
-          searchField.value = link.innerText;
+          if (pk) {
+            searchField.value = link.innerText;
+          } else {
+            searchField.value = "";
+            searchField.focus();
+          }
         });
       });
 

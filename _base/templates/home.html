@@ -3,7 +3,7 @@
 
 
 {% block page_stylesheets %}
-    <link rel="stylesheet" href="{% static 'core/styles/home/hero.css' %}">
+    <link rel="stylesheet" href="{% static 'core/styles/home/hero.css' %}?uuid={{uuid}}">
     <link rel="stylesheet" href="{% static 'core/styles/home/about.css' %}">
     <link rel="stylesheet" href="{% static 'core/styles/home/how-it-works.css' %}">
     <link rel="stylesheet" href="{% static 'core/styles/home/get-started.css' %}">
@@ -17,10 +17,10 @@
 
 {% block page_scripts_in_head %}
     <script defer src="{% static 'core/scripts/elements/nouislider.min.js' %}"></script>
-    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}"></script>
+    <script defer src="{% static 'core/scripts/elements/nouiSlider.js' %}?uuid={{uuid}}"></script>
 
 
-    <script defer src="{% static 'core/scripts/home/hero.js' %}"></script>
+    <script defer src="{% static 'core/scripts/home/hero.js' %}?uuid={{uuid}}"></script>
     <script defer src="{% static 'core/scripts/home/howItWorks.js' %}?uuid={{uuid}}"></script>
 {% endblock %}
 
@@ -135,7 +135,7 @@
                 hx-include="input[name='room-type']:checked, #school-field, #min-price, #max-price, input[name='regions']:checked"
                 hx-on::before-request="validateAndProceed(event)"
                 >
-                    Proceed
+                    Search
                 </button>
 
                 <!-- <button id="proceed-btn" disabled>proceed</button> -->

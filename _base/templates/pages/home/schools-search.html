@@ -11,7 +11,10 @@
             {{school.name}}
         </a>
     {% empty %}
-        <li class="school-url">No schools found.</li>
+        <a
+        data-school-pk=""
+        href="#"
+        class="school-url">No schools found.</a>
     {% endfor %}
 </div>
 

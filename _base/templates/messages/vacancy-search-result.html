@@ -1,13 +1,27 @@
-<dialog id="vacancy-search-result-modal" x-data x-ref="modal" x-init="$refs.modal.showModal()" @click.outside="$refs.modal.close()">
-    <button type="button" class="close-global-modal-btn" @click="$refs.modal.close()">X</button>
+<dialog class="vacancy-search-result-modal" id="vacancy-search-result-modal" x-data x-ref="modal" x-init="$refs.modal.showModal()">
+    <button
+    onclick="document.getElementById('vacancy-search-result-modal').close()"
+    id="remove-search-result-modal-btn" type="button" class="close-global-modal-btn">X</button>
 
-    <p><b>Total Vacancy: </b> {{total_vacancy}}</p>
+    {% if total_vacancy != 0 %}
+        <div>
+            <h3>Hello there,</h3>
+            <p>Got great news for you! <i class="fa-solid fa-face-grin green"></i></p>
+            <p>We Found <b>{{total_vacancy}}</b> result(s)</p>
 
-    {% if vacancy_statistics %}
-        {% for key, value in vacancy_statistics.items %}
-        <p>{{ key }}: {{ value }}</p>
-        {% endfor %}
+            <ul>
+                {% for key, value in vacancy_statistics.items %}
+                <li><b>{{ key }}:</b> {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div>
+            <h3>Hi there,</h3>
+            <p>We currently don't have any listings for your specs</p>
+            <p>Not to worry though, subscribe and get to know first</p>
+        </div>
     {% endif %}
 
-    <button>Proceed</button>
+    <button type="submit">Proceed</button>
 </dialog>
