@@ -1,19 +1,17 @@
 .feedback-section {
     display: flex;
-    min-height: 15rem;
+    min-height:20rem;
     flex-wrap: wrap;
 }
 
-.feedback-section > :first-child {
-    background-color: var(--black);
-    width: 70%;
-}
 
 .feedback-section > .section-heading {
+    background-color: var(--black);
+    width: min(70rem, 90vw);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 2rem 5rem;
+    padding: 2rem clamp(2.5rem, 7vw + .3rem, 5rem);
     row-gap: 1rem;
 }
 
@@ -37,11 +35,10 @@
     background-size: cover;
     background-color: rebeccapurple;
     flex-grow: 1;
-    /* background-position: right bottom; */
 }
 
 
-@media screen and (max-width: 415px) {
+/* @media screen and (max-width: 415px) {
     .feedback-section > :first-child {
         width: 100%;
     }
@@ -52,4 +49,4 @@
         background-size: cover;
         background-position: right center;
     }
-}
+} */
