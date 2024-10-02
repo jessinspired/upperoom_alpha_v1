@@ -13,25 +13,25 @@
             <div class="slate-gray-bg">
                 <i class="fa-solid fa-hourglass-start slate-gray"></i>
                 <b>Unverified</b>
-                <div class="count">{% if unverified_listings %}{{ unverified_listings.count }}{% else %}0{% endif %}</div>
+                <div class="count">{{unverified_listings.count}}</div>
             </div>
 
             <div class="yellow-bg">
                 <i class="fa-solid fa-circle-exclamation yellow"></i>
                 <b>Probation</b>
-                <div class="count">{% if probation_listings %}{{ probation_listings.count}}{% else %}0{% endif %}</div>
+                <div class="count">{{ probation_listings.count}}</div>
             </div>
 
             <div class="crimson-bg">
                 <i class="fa-solid fa-ban crimson"></i>
                 <b>Rejected</b>
-                <div class="count">{% if rejected_listings %}{{rejected_listings.count}}{% else %}0{% endif %}</div>
+                <div class="count">{{rejected_listings.count}}</div>
             </div>
 
             <div class="green-bg">
                 <i class="fa-solid fa-certificate green"></i>
                 <b>Verified</b>
-                <div class="count">{% if verified_listings %}{{verified_listings.count}}{% else %}0{% endif %}</div>
+                <div class="count">{{verified_listings.count}}</div>
             </div>
 
             {% comment %}

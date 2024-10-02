@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load core_filters %}
 
 {% block page_stylesheets %}
-    <link rel="stylesheet" href="{% static 'core/styles/elements/arrow-checkbox.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" href="{% static 'core/styles/elements/arrow-checkbox.css' %}">
     <link rel="stylesheet" href="{% static 'users/styles/users.css' %}?uuid={{uuid}}">
 
     {% block section_stylesheets %}
@@ -13,18 +14,21 @@
 <div id="container">
 
     <nav class="side-nav" x-ref="sidenav" id="side-nav">
-        <a href="{% url 'get_home' %}"><h3>UppeRoom</h3></a>
+        <div class="bio-container">
+            <span>{{user|get_initials_in_uppercase}}</span>
+            <span>{{user.first_name|capitalize}}</span>
+        </div>
         <div class="side-nav-links-container">
-            <a href="{% if user.role == 'CLIENT' %}{% url 'get_client' %}{% elif user.role == 'CREATOR' %}{% url 'get_creator' %}{% endif %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+            <a class="{% if is_dashboard %}active{% endif %}" href="{% if user.role == 'CLIENT' %}{% url 'get_client' %}{% elif user.role == 'CREATOR' %}{% url 'get_creator' %}{% endif %}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
             <!-- <a href="#">Listings</a> -->
             {% if user.role == 'CLIENT' %}
             <a href="{% url 'get_client_subscriptions' %}"><i class="fa-solid fa-list-check"></i>Subscriptions</a>
             {% endif %}
 
             {% if user.role == 'CREATOR' %}
-            <a href="{% url 'get_creator_listings' %}"><i class="fa-solid fa-hotel"></i>Lodges</a>
+            <a class="{% if is_listings %}active{% endif %}" href="{% url 'get_creator_listings' %}"><i class="fa-solid fa-house-circle-check"></i>Listings</a>
 
-            <a href="{% url 'get_creator_payments' %}"><i class="fa-solid fa-credit-card"></i>Earnings</a>
+            <a class="{% if is_earnings %}active{% endif %}" href="{% url 'get_creator_payments' %}"><i class="fa-solid fa-credit-card"></i>Earnings</a>
             {% endif %}
         </div>
 
@@ -32,6 +36,8 @@
             {% csrf_token %}
             <button class="logout-btn">logout</button>
         </form>
+
+        <a class="logo-icon" href="/"><b>UppeRoom</b></a>
     </nav>
 
     <main id="main">
@@ -58,7 +64,7 @@
             <ul>
                 <li><i class="fa-solid fa-credit-card"></i>Earning: &#8358; {% if user.transfer_profile %}{{user.transfer_profile.balance}}{% else %}0{% endif %}</li>
 
-                <li><i class="fa-solid fa-hotel"></i>Lodges: {{user.lodges.count}}</li>
+                <li><i class="fa-solid fa-house-circle-check"></i>Lodges: {{user.lodges.count}}</li>
 
                 {% comment %}
                 <li><i class="fa-solid fa-users"></i>Subscribed Clients: 0</li>

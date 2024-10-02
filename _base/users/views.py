@@ -2,19 +2,34 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from auths.decorators import role_required
-from listings.models import RoomProfile, Region, RoomType, School, State
+from listings.models import Region, RoomType, School, State
 from payments.models import Transaction
-from listings.forms import LodgeRegistrationForm, RoomProfileForm
+from subscriptions.models import SubscribedListing
 
 # Create your views here.
 
 
 @role_required(['CREATOR'])
 def get_creator(request):
-    subscribed_listings = request.user.client_subscribed_listings.all()
+
+    unverified_listings = request.user.client_subscribed_listings.filter(
+        status=SubscribedListing.Status.UNVERIFIED)
+
+    verified_listings = request.user.client_subscribed_listings.filter(
+        status=SubscribedListing.Status.VERIFIED)
+
+    probation_listings = request.user.client_subscribed_listings.filter(
+        status=SubscribedListing.Status.PROBATION)
+
+    rejected_listings = request.user.client_subscribed_listings.filter(
+        status=SubscribedListing.Status.REJECTED)
 
     context = {
-        'subscribed_listings': subscribed_listings
+        'is_dashboard': True,
+        'unverified_listings': unverified_listings,
+        'verified_listings': verified_listings,
+        'probation_listings': probation_listings,
+        'rejected_listings': rejected_listings,
     }
 
     return render(request, 'users/creator/dashboard.html', context)
@@ -25,11 +40,6 @@ def get_client(request):
 
     subscriptions = request.user.subscriptions.filter(is_expired=False)
 
-    # subscribed_rooms = RoomProfile.objects.filter(
-    #     subscriptions__in=subscriptions
-    # ).distinct()
-
-    from subscriptions.models import SubscribedListing
     unverified_listings = request.user.subscribed_listings.filter(
         status=SubscribedListing.Status.UNVERIFIED)
 
@@ -89,19 +99,8 @@ def get_client_subscriptions(request):
 
 @role_required(['CREATOR'])
 def get_creator_listings(request):
-    # first_state = State.objects.first()
-    # first_school = School.objects.first()
-
-    # context = {
-    #     'first_school': first_school
-    # }
-    # lodge_registration_form = LodgeRegistrationForm()
-
-    # context = {
-    #     'lodge_registration_form': lodge_registration_form
-    # }
-
     context = {
+        'is_listings': True,
         'states': State.objects.all(),
         'room_types': RoomType.objects.all()
     }
@@ -111,4 +110,7 @@ def get_creator_listings(request):
 
 @role_required(['CREATOR'])
 def get_creator_payments(request):
-    return render(request, 'users/creator/payments.html')
+    context = {
+        'is_earnings': True
+    }
+    return render(request, 'users/creator/payments.html', context)

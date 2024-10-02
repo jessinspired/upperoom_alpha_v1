@@ -8,19 +8,31 @@
 
 {% block middle_content %}
 <div class="middle-content">
-    <h1>Earnings</h1>
+    <button>Today</button>
 
-    {% if request.user.transfer_profile %}
-    Balance: ₦{{ request.user.transfer_profile.balance }}
-{% else %}
-    balance: N0.00
-{% endif %}
-<br>
-<a href="{% url 'pay_creator' %}">Withdraw balance</a>
-<br>
+    <div class="middle-cards-container">
+        <div class="earnings-card">
+            <span><b>Earnings</b></span>
+            <div class="balance-display">
+                {% if request.user.transfer_profile %}
+                    ₦{{ request.user.transfer_profile.balance }}
+                {% else %}
+                    ₦0.00
+                {% endif %}
+            </div>
+        </div>
+        <div class="payment-info-card">
+            <div>
+                <b>Payment Info</b>
+                <a href="{% url 'creator_transfer_info' %}">Save payment Information</a>
+            </div>
 
-<a href="{% url 'creator_transfer_info' %}">Save payment Information</a>
-
+            <div>
+                <b>Withdrawals</b>
+                <a href="{% url 'pay_creator' %}">Cashout</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
