@@ -7,7 +7,7 @@
 
     background-color: peachpuff;
 
-    background: url('https://upperoom.s3.amazonaws.com/assets/hero_image_blurred_with_pink+building.png') no-repeat center;
+    background: url('https://upperoom.s3.amazonaws.com/assets/hero_image_blurred_with_pink+building-compressed.png') no-repeat center;
     background-size: cover;
     height: calc(95vh - var(--navHeight));
     max-height: 40rem;
