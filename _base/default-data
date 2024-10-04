@@ -42,6 +42,340 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Lagos",
+      "schools": [
+        {
+          "name": "University of Lagos",
+          "abbr": "UNILAG",
+          "regions": [
+            {
+              "name": "Akoka",
+              "landmarks": ["UNILAG Main Campus", "Faculty of Sciences", "Moremi Hall"]
+            }
+          ]
+        },
+        {
+          "name": "Lagos State University",
+          "abbr": "LASU",
+          "regions": [
+            {
+              "name": "Ojo",
+              "landmarks": ["Ojo Barracks", "LASU Main Gate"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Oyo",
+      "schools": [
+        {
+          "name": "University of Ibadan",
+          "abbr": "UI",
+          "regions": [
+            {
+              "name": "Agbowo",
+              "landmarks": ["UI Main Campus", "UI Zoo", "Trenchard Hall"]
+            }
+          ]
+        },
+        {
+          "name": "Ladoke Akintola University of Technology",
+          "abbr": "LAUTECH",
+          "regions": [
+            {
+              "name": "Ogbomosho",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enugu",
+      "schools": [
+        {
+          "name": "University of Nigeria, Nsukka",
+          "abbr": "UNN",
+          "regions": [
+            {
+              "name": "Nsukka",
+              "landmarks": ["Nsukka Campus", "Zik's Flats"]
+            }
+          ]
+        },
+        {
+          "name": "Enugu State University of Science and Technology",
+          "abbr": "ESUT",
+          "regions": [
+            {
+              "name": "Agbani",
+              "landmarks": ["ESUT Main Gate", "Agbani Law School"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kano",
+      "schools": [
+        {
+          "name": "Bayero University Kano",
+          "abbr": "BUK",
+          "regions": [
+            {
+              "name": "Kano",
+              "landmarks": ["BUK New Campus", "BUK Old Campus"]
+            }
+          ]
+        },
+        {
+          "name": "Kano State University of Science and Technology",
+          "abbr": "KUST",
+          "regions": [
+            {
+              "name": "Wudil",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kaduna",
+      "schools": [
+        {
+          "name": "Ahmadu Bello University",
+          "abbr": "ABU",
+          "regions": [
+            {
+              "name": "Samaru",
+              "landmarks": ["ABU Zaria Campus", "Samaru Market"]
+            },
+            {
+              "name": "Kongo",
+              "landmarks": ["ABU Kongo Campus"]
+            }
+          ]
+        },
+        {
+          "name": "Kaduna State University",
+          "abbr": "KASU",
+          "regions": [
+            {
+              "name": "Tafawa Balewa Way",
+              "landmarks": ["KASU Main Gate"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Anambra",
+      "schools": [
+        {
+          "name": "Nnamdi Azikiwe University",
+          "abbr": "UNIZIK",
+          "regions": [
+            {
+              "name": "Awka",
+              "landmarks": ["UNIZIK Main Gate", "Ifite Road"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Osun",
+      "schools": [
+        {
+          "name": "Obafemi Awolowo University",
+          "abbr": "OAU",
+          "regions": [
+            {
+              "name": "Ile-Ife",
+              "landmarks": ["OAU Main Campus", "OAU Teaching Hospital"]
+            }
+          ]
+        },
+        {
+          "name": "Osun State University",
+          "abbr": "UNIOSUN",
+          "regions": [
+            {
+              "name": "Osogbo",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ekiti",
+      "schools": [
+        {
+          "name": "Ekiti State University",
+          "abbr": "EKSU",
+          "regions": [
+            {
+              "name": "Ado-Ekiti",
+              "landmarks": ["EKSU Main Campus", "Old Secretariat Road"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Benue",
+      "schools": [
+        {
+          "name": "Benue State University",
+          "abbr": "BSU",
+          "regions": [
+            {
+              "name": "Makurdi",
+              "landmarks": ["BSU Main Gate", "BSU Library"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Niger",
+      "schools": [
+        {
+          "name": "Ibrahim Badamasi Babangida University",
+          "abbr": "IBBU",
+          "regions": [
+            {
+              "name": "Lapai",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Plateau",
+      "schools": [
+        {
+          "name": "University of Jos",
+          "abbr": "UNIJOS",
+          "regions": [
+            {
+              "name": "Jos",
+              "landmarks": ["UNIJOS Main Campus", "Plateau Specialist Hospital"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kogi",
+      "schools": [
+        {
+          "name": "Kogi State University",
+          "abbr": "KSU",
+          "regions": [
+            {
+              "name": "Anyigba",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Abia",
+      "schools": [
+        {
+          "name": "Abia State University",
+          "abbr": "ABSU",
+          "regions": [
+            {
+              "name": "Uturu",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Imo",
+      "schools": [
+        {
+          "name": "Federal University of Technology, Owerri",
+          "abbr": "FUTO",
+          "regions": [
+            {
+              "name": "Owerri",
+              "landmarks": ["FUTO Main Campus", "Ihiagwa Market"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Edo",
+      "schools": [
+        {
+          "name": "University of Benin",
+          "abbr": "UNIBEN",
+          "regions": [
+            {
+              "name": "Ugbowo",
+              "landmarks": ["UNIBEN Main Gate", "Edo State Secretariat"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cross River",
+      "schools": [
+        {
+          "name": "University of Calabar",
+          "abbr": "UNICAL",
+          "regions": [
+            {
+              "name": "Calabar",
+              "landmarks": ["UNICAL Main Campus", "Cross River National Park"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Taraba",
+      "schools": [
+        {
+          "name": "Taraba State University",
+          "abbr": "TSU",
+          "regions": [
+            {
+              "name": "Jalingo",
+              "landmarks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Borno",
+      "schools": [
+        {
+          "name": "University of Maiduguri",
+          "abbr": "UNIMAID",
+          "regions": [
+            {
+              "name": "Maiduguri",
+              "landmarks": ["UNIMAID Main Gate", "Maiduguri Teaching Hospital"]
+            }
+          ]
+        }
+      ]
     }
   ],
   "room_types": [
