@@ -9,7 +9,9 @@
 
 {% block main %}
 <main id="main">
-    <h1>Subscribed Listings</h1>
+    <h1><i class="fa-solid fa-house-circle-check"></i><span>Listings</span></h1>
+
+    <a class="subscriptions-link" href="{% url 'get_client_subscriptions' %}"><i class="fa-solid fa-arrow-left"></i><span>Back to subscriptions</span></a>
 
     <div class="listings-container">
         {% if subscribed_listings %}
@@ -19,7 +21,7 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
 
-                <div class="listing-image"><b>Listing Image Slide</b></div>
+                <div class="listing-image"><i class="fa-regular fa-images"></i></div>
                 <div id="status-slide-{{listing.pk}}" class="listing-status">{{ listing.get_status_display }}</div>
 
                 {% if listing.status == 'UNVERIFIED' %}

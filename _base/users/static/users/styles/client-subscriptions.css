@@ -1,18 +1,3 @@
-.middle-content {
-    /* padding: 1rem 2rem; */
-    padding: 1rem 0;
-    display: grid;
-    align-content: flex-start;
-    row-gap: 2rem;
-}
-
-h1 {
-    text-align: center;
-    color: var(--primaryBlue);
-    font-size: 1.9rem;
-
-}
-
 /* .subscriptions-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -29,8 +14,33 @@ h1 {
     background-color: var(--primaryWhite);
 } */
 
+.middle-content {
+    /* padding: 1rem 2rem; */
+    padding: 1rem 0;
+    display: grid;
+    align-content: flex-start;
+    row-gap: 2rem;
+}
+
+h1 {
+    font-size: 1.2rem;
+    padding-left: 1rem;
+}
+
+h1 > span {
+    margin-left: .5rem;
+}
+
 .subscription-heading{
-    padding: 1rem;
+    font-size: .9rem;
+    padding-left: 1rem;
+    color: var(--slateGray);
+    /* padding: 1rem; */
+}
+
+.table-wrapper i {
+    font-size: .8rem;
+    margin-left: 1rem;
 }
 
 
@@ -44,9 +54,10 @@ td, th {
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
+    /* background-color: var(--primaryWhite); */
 }
 .subscription-table {
-    /* width: 100%; */
+    width: 100%;
     border-collapse: collapse;
     /* margin: 20px 0; */
     font-size: .85rem;
@@ -58,11 +69,16 @@ td, th {
     background-color: #f4f4f4;
 }
 
+.subscription-table tbody {
+    background-color: var(--primaryWhite);
+}
+
 /* Style table header and cell borders */
 .subscription-table th, .subscription-table td {
     padding: 0 2rem;
     border-bottom: 1px solid #ddd;
     border-right: 1px solid #ddd; /* Add vertical lines */
+    /* height: 3rem; */
 }
 
 .longer-row {
@@ -76,7 +92,7 @@ td, th {
 
 /* Add hover effect to table rows */
 .subscription-table tbody tr:hover {
-    background-color: #f1f1f1;
+    /* background-color: #f1f1f1; */
 }
 
 /* Responsive design for mobile */
