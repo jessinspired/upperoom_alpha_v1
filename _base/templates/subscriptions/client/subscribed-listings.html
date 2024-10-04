@@ -13,6 +13,16 @@
 
     <a class="subscriptions-link" href="{% url 'get_client_subscriptions' %}"><i class="fa-solid fa-arrow-left"></i><span>Back to subscriptions</span></a>
 
+    <div class="verification-stats">
+        <h2><i class="fa-solid fa-chart-pie"></i><span>Stats</span></h2>
+        <ul class="region-stats-container">
+            {% for handler in subscription_handlers %}
+                <li><i class="fa-solid fa-location-dot"></i>{{handler.region}}: <span class="handler-ratio">{{handler.verified_listings_count}}/{{handler.THRESHOLD}}</span></li>
+
+            {% endfor %}
+        </ul>
+    </div>
+
     <div class="listings-container">
         {% if subscribed_listings %}
             {% for listing in subscribed_listings %}

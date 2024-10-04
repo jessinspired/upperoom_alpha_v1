@@ -182,8 +182,10 @@ def get_subscribed_listings(request, pk):
         return handle_http_errors(request, 404)
 
     subscribed_listings = subscription.subscribed_listings.all()
+    subscription_handlers = subscription.subscription_handlers.all()
     context = {
-        'subscribed_listings': subscribed_listings
+        'subscribed_listings': subscribed_listings,
+        'subscription_handlers': subscription_handlers
     }
 
     return render(

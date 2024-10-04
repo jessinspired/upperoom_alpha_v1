@@ -1,5 +1,5 @@
 h1 {
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0;
     margin: 0;
 }
@@ -127,4 +127,33 @@ body {
     column-gap: .5rem;
     font-size: .8rem;
     width: max-content;
+}
+
+.verification-stats h2 {
+    font-size: 1rem;
+}
+
+.verification-stats > h2 span {
+    margin-left: .5rem;
+}
+
+.region-stats-container {
+    font-size: .7rem;
+    margin-top: .1rem;
+    display: flex;
+    column-gap: 5rem;
+}
+
+.region-stats-container li {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--slateGray);
+    color: var(--primaryWhite);
+    padding: .2rem .5rem;
+    border-radius: .3rem;
+}
+
+.region-stats-container li i {
+    margin-right: .3rem;
 }
