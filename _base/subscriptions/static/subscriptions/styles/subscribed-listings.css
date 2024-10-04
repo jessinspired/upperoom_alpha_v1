@@ -141,7 +141,8 @@ body {
     font-size: .7rem;
     margin-top: .1rem;
     display: flex;
-    column-gap: 5rem;
+    column-gap: .5rem;
+    row-gap: .5rem;
     flex-wrap: wrap;
 }
 
