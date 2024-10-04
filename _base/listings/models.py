@@ -63,6 +63,20 @@ class State(BaseModel):
 
 
 class School(BaseModel):
+    class Type(models.TextChoices):
+        STATE = 'STATE', 'State'
+        FEDERAL = 'FEDERAL', 'Federal'
+        COLLEGE_OF_EDUCATION = 'COLLEGE_OF_EDUCATION', 'College of Education'
+        POLYTECHNIC = 'POLYTECHNIC', 'Polytechnic'
+        PRIVATE = 'PRIVATE', 'Private'
+        DEFAULT = 'DEFAULT', 'Default'
+
+    type = models.CharField(
+        max_length=50,
+        choices=Type.choices,
+        default=Type.DEFAULT
+    )
+
     name = models.CharField(max_length=150)
     state = models.ForeignKey(
         State,

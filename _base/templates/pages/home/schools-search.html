@@ -11,10 +11,18 @@
             {{school.name}}
         </a>
     {% empty %}
+        {% if not query %}
+        <a
+        data-school-pk=""
+        href="#"
+        style="display: none;"
+        class="school-url">No schools found.</a>
+        {% else %}
         <a
         data-school-pk=""
         href="#"
         class="school-url">No schools found.</a>
+        {% endif %}
     {% endfor %}
 </div>
 
