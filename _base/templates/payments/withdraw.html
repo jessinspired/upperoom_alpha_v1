@@ -3,15 +3,17 @@
 
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{% static 'users/styles/creator-earnings.css' %}?uuid={{uuid}}">
+    <link rel="stylesheet" href="{% static 'listings/styles/lodge-profile.css' %}?uuid={{uuid}}">
+
 {% endblock %}
 
 {% block main %}
 <main id="main">
     <div class="creator-payment-container">
         <h1>Cash Out</h1>
-        <form class="creator-payment-form" method="post">
+        <form class="basic-form" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form }}
             <button type="submit">Submit</button>
         </form>
     </div>

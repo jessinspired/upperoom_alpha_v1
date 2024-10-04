@@ -240,7 +240,7 @@ def creator_transfer_info_view(request):
                     request, 'Transfer information saved successfully.')
                 logger.info(
                     f"Transfer info updated successfully for creator: {request.user.username}")
-                return redirect('creator_transfer_info')
+                return redirect('get_creator_listings')
             except ValidationError as e:
                 messages.error(request, str(e))
                 logger.error(

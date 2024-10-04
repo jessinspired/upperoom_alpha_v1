@@ -89,7 +89,8 @@ def register_lodge(request):
             f'Creator transfer info does not exist for creator with email {request.user.email}\nError: {e}')
         if request.htmx:
             return HttpResponseClientRefresh()
-        return redirect('get_creator_listings')
+
+        return redirect('creator_transfer_info')
 
     name = request.POST.get('name')
     alias = request.POST.get('alias')
