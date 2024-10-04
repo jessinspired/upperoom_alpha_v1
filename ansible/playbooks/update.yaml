@@ -5,10 +5,10 @@
     - "../inventory/production/group_vars/all.yml"
   roles:
     - repository
-    - virtualenv
+    # - virtualenv
     - static_files
-    - database
-    - redis
+    # - database
+    # - redis
     - gunicorn
-    - celery
+    # - celery
     - nginx

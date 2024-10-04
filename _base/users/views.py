@@ -2,7 +2,13 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from auths.decorators import role_required
-from listings.models import Region, RoomType, School, State
+from listings.models import (
+    Region,
+    RoomType,
+    School,
+    State,
+    Lodge
+)
 from payments.models import Transaction
 from subscriptions.models import SubscribedListing
 
@@ -99,11 +105,36 @@ def get_client_subscriptions(request):
 
 @role_required(['CREATOR'])
 def get_creator_listings(request):
+    from django.db import models
+    lodges = Lodge.objects.filter(
+        creator__id=request.user.pk).select_related('school', 'region')
+
+    # Create a dictionary to hold the grouped lodges
+    grouped_lodges = {}
     context = {
         'is_listings': True,
         'states': State.objects.all(),
-        'room_types': RoomType.objects.all()
+        'room_types': RoomType.objects.all(),
+        'grouped_lodges': grouped_lodges,
     }
+
+    if not lodges:
+        return render(request, 'users/creator/listings.html', context)
+
+    for lodge in lodges:
+        school_name = lodge.school.abbr
+        region_name = lodge.region.name
+
+        # Initialize the school entry if not present
+        if school_name not in grouped_lodges:
+            grouped_lodges[school_name] = {}
+
+        # Initialize the region entry if not present
+        if region_name not in grouped_lodges[school_name]:
+            grouped_lodges[school_name][region_name] = []
+
+        # Add the lodge to the corresponding school and region
+        grouped_lodges[school_name][region_name].append(lodge)
 
     return render(request, 'users/creator/listings.html', context)
 

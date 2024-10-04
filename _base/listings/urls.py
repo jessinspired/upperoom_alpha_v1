@@ -31,16 +31,16 @@ urlpatterns = [
         views.get_landmarks_select,
         name='get_landmarks_select'
     ),
-    path(
-        'lodges/<str:lodge_id>/upload-image/',
-        views.upload_lodge_image,
-        name='upload_lodge_image'
-    ),
-    path(
-        'rooms/<str:room_profile_id>/upload-image/',
-        views.upload_room_profile_image,
-        name='upload_room_profile_image'
-    ),
+    # path(
+    #     'lodges/<str:lodge_id>/upload-image/',
+    #     views.upload_lodge_image,
+    #     name='upload_lodge_image'
+    # ),
+    # path(
+    #     'rooms/<str:room_profile_id>/upload-image/',
+    #     views.upload_room_profile_image,
+    #     name='upload_room_profile_image'
+    # ),
 
     path(
         'search_schools',

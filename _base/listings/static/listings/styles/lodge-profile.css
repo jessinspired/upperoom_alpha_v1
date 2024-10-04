@@ -30,8 +30,22 @@ h1, h2, h3 {
     background-color: var(--primaryWhite);
 }
 
-.room-profile-container form {
+.basic-form {
+    border-radius: .3rem;
     display: grid;
     font-size: var(--smallFontSize);
     row-gap: .5rem;
+}
+
+.basic-form input {
+    width: 100%;
+    border: 2px solid var(--lightGray);
+    outline: none;
+}
+
+.basic-form button {
+    background-color: var(--slateGray);
+    color: var(--primaryWhite);
+    border: none;
+    padding: .3rem 1rem;
 }

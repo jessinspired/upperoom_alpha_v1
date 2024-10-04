@@ -9,7 +9,7 @@
 <div id="main">
     <div class="creator-payment-container">
         <h1>Enter Your Bank Details</h1>
-    <form class="creator-payment-form" method="post">
+    <form class="basic-form" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Submit</button>

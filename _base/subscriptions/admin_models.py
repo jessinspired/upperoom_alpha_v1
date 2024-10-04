@@ -38,3 +38,15 @@ class SubscriptionAdmin(admin.ModelAdmin):
     )
 
     inlines = [LodgeInline, RoomProfileInline]
+
+
+class SubscriptionHandlerAdmin(admin.ModelAdmin):
+    """
+    Admin interface for managing SubscriptionHandler model.
+    """
+    list_display = ('subscription', 'region', 'verified_listings_count',
+                    'queued_listings_count', 'is_expired')
+    list_filter = ('is_expired', 'region', 'subscription')
+    # Assuming `name` field exists in related models
+    search_fields = ('region__name', 'subscription__name')
+    ordering = ('region', 'subscription')

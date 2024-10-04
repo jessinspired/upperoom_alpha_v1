@@ -9,8 +9,16 @@ def search_schools(request):
     query = request.GET.get('school-search-field', '')
     if not query:
         schools = School.objects.none()
+        context = {
+            'schools': schools,
+            'query': query
+        }
         http_response = render(
-            request, 'pages/home/schools-search-results.html', {'schools': schools})
+            request,
+            'pages/home/schools-search.html',
+            context
+        )
+
         return trigger_client_event(
             http_response,
             'addSearchFieldEvents',

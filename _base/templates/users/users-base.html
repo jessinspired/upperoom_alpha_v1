@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load core_filters %}
+{% load listings_filters %}
 
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{% static 'core/styles/elements/arrow-checkbox.css' %}">
@@ -65,6 +66,7 @@
                 <li><i class="fa-solid fa-credit-card"></i>Earning: &#8358; {% if user.transfer_profile %}{{user.transfer_profile.balance}}{% else %}0{% endif %}</li>
 
                 <li><i class="fa-solid fa-house-circle-check"></i>Lodges: {{user.lodges.count}}</li>
+                <li><i class="fa-solid fa-door-open"></i>Vacancy: {{user|count_vacancy}}</li>
 
                 {% comment %}
                 <li><i class="fa-solid fa-users"></i>Subscribed Clients: 0</li>
