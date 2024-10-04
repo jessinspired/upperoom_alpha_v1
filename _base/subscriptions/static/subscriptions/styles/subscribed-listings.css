@@ -28,7 +28,7 @@ body {
 
 .listings-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, min(20rem, 90vw));
     column-gap: 2rem;
     row-gap: 2rem;
     justify-content: center;
