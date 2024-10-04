@@ -1,17 +1,83 @@
-.middle-content {
-    display: flex;
-    justify-content:space-around;
-    flex-wrap: wrap;
-    padding: 1rem;
-    column-gap: 4rem;
-    row-gap: 2rem;
+/* resets */
+h3, h4, h2 {
+    padding: 0;
+    margin: 0;
 }
 
+/*  */
+
+
+.middle-content {
+    display: flex;
+    justify-content:space-evenly;
+    /* flex-wrap: wrap; */
+    padding: 1rem 0;
+    column-gap: 1rem;
+    row-gap: 3rem;
+    background-color: var(--primaryWhite);
+    padding-bottom: 3rem;
+}
+
+.middle-content > * {
+    border-radius: var(--smallBorderRadius);
+    padding: 1rem;
+    /* background-color: var(--backgroundGray); */
+}
+
+/* listings container */
+.listings-container {
+    display: grid;
+    row-gap: 1rem;
+    align-content: flex-start;
+    background-color: var(--backgroundGray);
+    width: 30%;
+}
+
+.group-lodges ul {
+    margin-left: 1rem;
+}
+
+.group-lodges {
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.group-lodges h4, .group-lodges h3 {
+    display: flex;
+    column-gap: .3rem;
+    align-items: center;
+}
+
+.region-group-container {
+    display: grid;
+    row-gap: .5rem;
+}
+
+.region-group {
+    margin-left: 1.3rem;
+}
+.group-lodges h3 {
+    font-size: .9em;
+}
+
+.group-lodges h4 {
+    font-size: .9em;
+    font-weight: 500;
+}
+
+.group-lodges li a {
+    font-size: .8em;
+}
+
+
+/* register container */
 .register-lodge-container {
     display: grid;
     row-gap: 1rem;
     align-content: flex-start;
-    min-height: 150vh;
+    /* min-height: 150vh; */
+    background-color: var(--backgroundGray);
+    width: 60%;
 }
 
 .register-lodge-container > h3,
@@ -20,32 +86,83 @@
 }
 
 
-.register-lodge-container > h3 {
-    text-align: center;
-    top: 1rem;
+.middle-content h3 {
+    color: var(--black);
 }
 
-.register-lodge-container > form {
-    box-shadow: var(--mediumBoxShadow);
-    padding: 2rem 2rem;
+
+.register-lodge-form {
+    display: grid;
     border-radius: var(--smallBorderRadius);
     top: 4rem;
-}
-
-.listings-container {
-    display: grid;
-    row-gap: 1rem;
-    align-content: flex-start;
-}
-
-#register-lodge-form {
     font-size: .8rem;
-    display: grid;
     row-gap: 1rem;
 }
 
-#register-lodge-form input, textarea {
+.register-lodge-form input, textarea {
     width: 100%;
+}
+
+.name-data {
+    grid-column: 1 / 3;
+    display: grid;
+    row-gap: .5rem;
+}
+
+.name-data label {
+    font-size: .7rem;
+}
+
+.location-data {
+    display: grid;
+    row-gap: .5rem;
+}
+
+.location-data label {
+    width: 4.5rem;
+    display: inline-block;
+}
+
+
+.room-location-container {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 2rem;
+    row-gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.location-data select {
+    border: 2px solid var(--lightGray);
+}
+
+.location-data select:focus {
+    outline: none;
+    border-color: var(--primaryGreen);
+}
+
+.register-lodge-btn {
+    /* justify-self: center; */
+    grid-column: 1 / 3;
+    padding: .5rem 1rem;
+    color: var(--black);
+    border: 3px solid var(--lightGray);
+}
+
+.register-lodge-btn:hover {
+    background-color: var(--slateGray);
+    color: var(--primaryWhite);
+}
+
+.name-data input {
+    border: 2px solid var(--lightGray);
+    padding: .5rem 1rem;
+    border-radius: .3rem;
+}
+
+.name-data input:focus {
+    outline: none;
+    border-color: var(--primaryGreen);
 }
 
 #id_room_types input {
@@ -57,4 +174,16 @@
     align-items: center;
     column-gap: .5rem;
     /* justify-content: left; */
+}
+
+
+/* media queries */
+@media screen and (max-width: 720px) {
+    .middle-content {
+        flex-direction: column;
+    }
+
+    .middle-content > * {
+        width: 100%;
+    }
 }

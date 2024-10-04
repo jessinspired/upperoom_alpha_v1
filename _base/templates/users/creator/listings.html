@@ -8,18 +8,29 @@
 {% block middle_content %}
 <div class="middle-content">
     <div class="listings-container">
-        <h3>My Lodges</h3>
+        <h3>Lodges</h3>
+        <p>Showing all</p>
 
-        {% if user.lodges.all %}
-        <ul>
-            {% for lodge in user.lodges.all %}
-            <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}} - {{lodge.region}} - {{lodge.landmark}}</a></li>
+        {% if grouped_lodges %}
+            {% for school, regions in grouped_lodges.items %}
+                <div class="group-lodges">
+                    <h3><i class="fa-solid fa-graduation-cap"></i>{{ school }}</h3>
+                    <div class="region-group-container">
+                        {% for region, lodges in regions.items %}
+                        <div class="region-group">
+                            <h4><i class="fa-solid fa-location-dot"></i>{{ region }}</h4>
+                            <ul>
+                                {% for lodge in lodges %}
+                                    <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
         {% else %}
-        <div id="lodges-list">
-            No registered lodges yet
-        </div>
+                <div>No listings yet. Create one now.</div>
         {% endif %}
 
         {% comment %}
@@ -37,103 +48,111 @@
             </ul>
         </div>
         {% endcomment %}
-
     </div>
 
     <div class="register-lodge-container">
-        <h3>Register A New Lodge</h3>
+        <h3>New Lodge Registration</h3>
         <form
         id="register-lodge-form"
+        class="register-lodge-form"
         action="{% url 'register_lodge' %}"
         method="post"
         x-data="{ selectedRoomTypes: [] }"
         @submit.prevent="if(selectedRoomTypes.length > 0) $event.target.submit(); else alert('Please select at least one room type.')"
         >
             {% csrf_token %}
-            <div>
-                <label for="name">Lodge Name</label>
-                <input type="text" name="name" id="name" placeholder="Enter Lodge Name">
-            </div>
-
-            <div>
-                <label for="alias">Alias</label>
-                <input type="text" name="alias" id="alias" placeholder="Enter Alias">
-            </div>
-
-            <div>
-                <label for="phone_number">Phone Number</label>
-                <input required type="text" name="phone_number" id="phone_number" placeholder="Enter Phone Number">
-            </div>
-
-            <div>
-                <label for="address">Address</label>
-                <input required type="" name="address" id="address" placeholder="Enter Address">
-            </div>
-
-            <div>
-                <label for="states-dropdown">State</label>
-                <select
-                name="state"
-                id="states-dropdown"
-                hx-get="{% url 'get_schools' %}"
-                hx-target="#schools-dropdown"
-                hx-trigger="change"
-                hx-swap="outerHTML"
-                required
-                >
-                    <option value="" disabled selected>Select state</option>
-                    {% for state in states %}
-                        <option value="{{state.pk}}">{{state.name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div>
-                <label for="schools-dropdown">School</label>
-                <select
-                name="school"
-                id="schools-dropdown"
-                hx-get="{% url 'get_regions_select' %}"
-                hx-target="#region-checkboxes"
-                hx-trigger="change"
-                hx-swap="outerHTML"
-                required
-                >
-                    <option value="" disabled selected>----</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="regions-dropdown">Region</label>
-                <select
-                name="region"
-                id="regions-dropdown"
-                >
-                    <option value="" disabled selected>----</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="landmarks-dropdown">Landmark</label>
-                <select
-                name="landmark"
-                id="landmarks-dropdown"
-                >
-                    <option value="" disabled selected>----</option>
-                </select>
-            </div>
-
-            <div>
-                {% for room_type in room_types %}
-                <div
-                style="display: flex; align-items: center; column-gap: .5rem">
-                    <input style="width: max-content" type="checkbox" name="room-type" id="{{room_type.name}}" value="{{room_type.pk}}" x-model="selectedRoomTypes">
-                    <label for="{{room_type.name}}">{{room_type.get_name_display}}</label>
+            <div class="name-data">
+                <div>
+                    <label for="name">Lodge Name</label>
+                    <input type="text" name="name" id="name" placeholder="Enter Lodge Name">
                 </div>
-                {% endfor %}
+
+                <div>
+                    <label for="alias">Alias</label>
+                    <input type="text" name="alias" id="alias" placeholder="Enter Alias">
+                </div>
+
+                <div>
+                    <label for="phone_number">Phone Number</label>
+                    <input required type="text" name="phone_number" id="phone_number" placeholder="Enter Phone Number">
+                </div>
+
+                <div>
+                    <label for="address">Address</label>
+                    <input required type="" name="address" id="address" placeholder="Enter Address">
+                </div>
             </div>
 
-            <button type="submit">Register</button>
+            <div class="room-location-container">
+                <div class="location-data">
+                    <div>
+                        <label for="states-dropdown">State</label>
+                        <select
+                        name="state"
+                        id="states-dropdown"
+                        hx-get="{% url 'get_schools' %}"
+                        hx-target="#schools-dropdown"
+                        hx-trigger="change"
+                        hx-swap="outerHTML"
+                        required
+                        >
+                            <option value="" disabled selected>Select state</option>
+                            {% for state in states %}
+                                <option value="{{state.pk}}">{{state.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="schools-dropdown">School</label>
+                        <select
+                        name="school"
+                        id="schools-dropdown"
+                        hx-get="{% url 'get_regions_select' %}"
+                        hx-target="#region-checkboxes"
+                        hx-trigger="change"
+                        hx-swap="outerHTML"
+                        required
+                        >
+                            <option value="" disabled selected>----</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="regions-dropdown">Region</label>
+                        <select
+                        name="region"
+                        id="regions-dropdown"
+                        >
+                            <option value="" disabled selected>----</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="landmarks-dropdown">Landmark</label>
+                        <select
+                        name="landmark"
+                        id="landmarks-dropdown"
+                        >
+                            <option value="" disabled selected>----</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <div class="room-data">
+                    {% for room_type in room_types %}
+                    <div
+                    style="display: flex; align-items: center; column-gap: .5rem">
+                        <input style="width: max-content" type="checkbox" name="room-type" id="{{room_type.name}}" value="{{room_type.pk}}" x-model="selectedRoomTypes">
+                        <label for="{{room_type.name}}">{{room_type.get_name_display}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button class="register-lodge-btn" type="submit">Register</button>
         </form>
     </div>
 
