@@ -260,7 +260,11 @@ def withdraw_balance(request):
     except CreatorTransferInfo.DoesNotExist:
         logger.error(
             "You have to setup a payment profile. Creator has no payment profile")
-        return HttpResponse("<h1>Failed - No payment profile found. Please create one.</h1>")
+
+        messages.error(
+            request, 'You have to setup a payment profile.\nCreator has no payment profile')
+
+        return redirect('get_creator_payments')
 
     try:
         if not tranfer_info.is_validated:
@@ -268,7 +272,7 @@ def withdraw_balance(request):
 
     except Exception as e:
         logger.error("Creator payment is not validated!")
-        return HttpResponse("<h1>Failed</h1>")
+        return redirect('get_creator_payments')
 
     if request.method == 'POST':
         form = PaymentRequestForm(request.POST)
@@ -278,7 +282,7 @@ def withdraw_balance(request):
                 creator_payment_pipeline(creator, amount)
                 messages.success(
                     request, f"Payment request of N{amount} has been submitted.")
-                return redirect('get_creator')
+                return redirect('get_creator_payments')
             except Exception as e:
                 messages.error(request, e)
 
