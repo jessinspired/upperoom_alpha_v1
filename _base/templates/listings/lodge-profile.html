@@ -20,7 +20,9 @@
                 {% csrf_token %}
                 {{ form }}
 
+                {% comment %}
                 <a href="{% url 'upload_room_profile_image' room_profile_id=form.instance.pk %}"> Upload image </a>
+                {% endcomment %}
 
                 <!-- Display room images -->
                 <div class="room-images">

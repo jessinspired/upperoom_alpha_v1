@@ -9,9 +9,10 @@
 <div class="middle-content">
     <div class="listings-container">
         <h3>Lodges</h3>
-        <p>Showing all</p>
 
         {% if grouped_lodges %}
+            <p>Showing all</p>
+
             {% for school, regions in grouped_lodges.items %}
                 <div class="group-lodges">
                     <h3><i class="fa-solid fa-graduation-cap"></i>{{ school }}</h3>
@@ -30,7 +31,7 @@
                 </div>
             {% endfor %}
         {% else %}
-                <div>No listings yet. Create one now.</div>
+                <em>No listings yet. Create one now.</em>
         {% endif %}
 
         {% comment %}

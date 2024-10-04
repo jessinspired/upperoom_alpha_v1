@@ -273,26 +273,26 @@ class Lodge(BaseModel):
         return self.name
 
 
-class LodgeImage(BaseModel):
-    class Category(models.TextChoices):
-        FRONT_VIEW = 'FRONT_VIEW', 'Front View'
-        BACK_VIEW = 'BACK_VIEW', 'Back View'
-        OTHER_VIEWS = 'OTHER_VIEWS', 'Other Views'
+# class LodgeImage(BaseModel):
+#     class Category(models.TextChoices):
+#         FRONT_VIEW = 'FRONT_VIEW', 'Front View'
+#         BACK_VIEW = 'BACK_VIEW', 'Back View'
+#         OTHER_VIEWS = 'OTHER_VIEWS', 'Other Views'
 
-    lodge = models.ForeignKey(
-        Lodge, related_name='lodge_images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='lodges/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    category = models.CharField(
-        max_length=20, choices=Category.choices, default=Category.OTHER_VIEWS)
-    description = models.TextField(null=True, blank=True)
+#     lodge = models.ForeignKey(
+#         Lodge, related_name='lodge_images', on_delete=models.CASCADE)
+#     image = models.ImageField(upload_to='lodges/')
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
+#     category = models.CharField(
+#         max_length=20, choices=Category.choices, default=Category.OTHER_VIEWS)
+#     description = models.TextField(null=True, blank=True)
 
-    def __str__(self):
-        return f"LodgeId: {self.lodge.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
+#     def __str__(self):
+#         return f"LodgeId: {self.lodge.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
 
-    def delete(self, *args, **kwargs):
-        self.image.delete(save=False)
-        super().delete(*args, **kwargs)
+#     def delete(self, *args, **kwargs):
+#         self.image.delete(save=False)
+#         super().delete(*args, **kwargs)
 
 
 class RoomProfile(BaseModel):
@@ -325,17 +325,17 @@ class RoomProfile(BaseModel):
         return f'{self.lodge} - {self.room_type}'
 
 
-class RoomProfileImage(BaseModel):
-    room_profile = models.ForeignKey(
-        RoomProfile, related_name='room_images', on_delete=models.CASCADE
-    )
-    image = models.ImageField(upload_to='rooms/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    description = models.TextField(null=True, blank=True)
+# class RoomProfileImage(BaseModel):
+#     room_profile = models.ForeignKey(
+#         RoomProfile, related_name='room_images', on_delete=models.CASCADE
+#     )
+#     image = models.ImageField(upload_to='rooms/')
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
+#     description = models.TextField(null=True, blank=True)
 
-    def __str__(self):
-        return f"RoomProfileId: {self.room_profile.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
+#     def __str__(self):
+#         return f"RoomProfileId: {self.room_profile.id}, ImageId: {self.image.id}, ImageUrl: {self.image.url}" if self.image else "No Image"
 
-    def delete(self, *args, **kwargs):
-        self.image.delete(save=False)
-        super().delete(*args, **kwargs)
+#     def delete(self, *args, **kwargs):
+#         self.image.delete(save=False)
+#         super().delete(*args, **kwargs)

@@ -10,8 +10,8 @@ import re
 
 from payments.models import CreatorTransferInfo
 from auths.decorators import role_required
-from .forms import LodgeImageForm, RoomProfileForm, RoomProfileImageForm
-from listings.models import Landmark, Lodge, LodgeGroup, LodgeImage, Region, RoomProfileImage, RoomType, RoomProfile, School, State
+from .forms import RoomProfileForm
+from listings.models import Landmark, Lodge, LodgeGroup, Region, RoomType, RoomProfile, School, State
 from core.views import handle_http_errors
 from payments.utils import convert_price_to_decimal
 
@@ -133,6 +133,8 @@ def register_lodge(request):
     if lodge.name:
         group_lodge_by_name(lodge)
 
+    messages.success(
+        request, f'Quickly set up room profiles so clients can get your vacancy updates')
     redirect_url = reverse('get_lodge_profile', args=[lodge.pk])
     return redirect(redirect_url)
 
@@ -168,13 +170,22 @@ def update_room_profile(request, pk):
     room_profile = RoomProfile.objects.get(pk=pk)
 
     if not room_profile:
-        # handle 404 here
-        pass  # add logic here
+        messages.error(request, f'room profile does not exist')
+        logger.error('room profile does not exist')
+        return HttpResponseClientRefresh()
 
     form = RoomProfileForm(request.POST)
     if form.is_valid():
         form.save(room_profile)
+    else:
+        logger.error(f'Update room profile error: {form.errors.items()}')
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f'{error}')
+        return HttpResponseClientRefresh()
 
+    messages.success(
+        request, f'{room_profile.room_type.get_name_display()} successfully updated!')
     return redirect('get_lodge_profile', pk=room_profile.lodge.pk)
 
 
@@ -251,36 +262,36 @@ def get_landmarks_select(request):
     )
 
 
-def upload_lodge_image(request, lodge_id):
-    lodge = get_object_or_404(Lodge, id=lodge_id)
+# def upload_lodge_image(request, lodge_id):
+#     lodge = get_object_or_404(Lodge, id=lodge_id)
 
-    if request.method == 'POST':
-        form = LodgeImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            lodge_image = form.save(commit=False)
-            lodge_image.lodge = lodge
-            lodge_image.save()
-            return redirect('get_lodge_profile', pk=lodge.id)
-    else:
-        form = LodgeImageForm()
+#     if request.method == 'POST':
+#         form = LodgeImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             lodge_image = form.save(commit=False)
+#             lodge_image.lodge = lodge
+#             lodge_image.save()
+#             return redirect('get_lodge_profile', pk=lodge.id)
+#     else:
+#         form = LodgeImageForm()
 
-    return render(request, 'listings/upload-lodge-image.html', {'form': form, 'lodge': lodge})
+#     return render(request, 'listings/upload-lodge-image.html', {'form': form, 'lodge': lodge})
 
 
-def upload_room_profile_image(request, room_profile_id):
-    room_profile = get_object_or_404(RoomProfile, id=room_profile_id)
+# def upload_room_profile_image(request, room_profile_id):
+#     room_profile = get_object_or_404(RoomProfile, id=room_profile_id)
 
-    if request.method == 'POST':
-        form = RoomProfileImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            room_profile_image = form.save(commit=False)
-            room_profile_image.room_profile = room_profile
-            room_profile_image.save()
-            return redirect('get_lodge_profile', pk=room_profile.lodge.id)
-    else:
-        form = RoomProfileImageForm()
+#     if request.method == 'POST':
+#         form = RoomProfileImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             room_profile_image = form.save(commit=False)
+#             room_profile_image.room_profile = room_profile
+#             room_profile_image.save()
+#             return redirect('get_lodge_profile', pk=room_profile.lodge.id)
+#     else:
+#         form = RoomProfileImageForm()
 
-    return render(request, 'listings/upload-room-profile-image.html', {'form': form, 'room_profile': room_profile})
+#     return render(request, 'listings/upload-room-profile-image.html', {'form': form, 'room_profile': room_profile})
 
 
 def get_vacancy_search_result(request):

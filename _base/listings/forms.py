@@ -8,8 +8,8 @@ from .models import (
     Region,
     Landmark,
     School,
-    LodgeImage,
-    RoomProfileImage
+    # LodgeImage,
+    # RoomProfileImage
 )
 
 
@@ -127,12 +127,12 @@ class RoomProfileForm(forms.ModelForm):
         return room_profile
 
 
-class LodgeImageForm(forms.ModelForm):
-    class Meta:
-        model = LodgeImage
-        fields = ['lodge', 'image', 'category', 'description']
+# class LodgeImageForm(forms.ModelForm):
+#     class Meta:
+#         model = LodgeImage
+#         fields = ['lodge', 'image', 'category', 'description']
 
-class RoomProfileImageForm(forms.ModelForm):
-    class Meta:
-        model = RoomProfileImage
-        fields = ['image', 'description']
+# class RoomProfileImageForm(forms.ModelForm):
+#     class Meta:
+#         model = RoomProfileImage
+#         fields = ['image', 'description']
