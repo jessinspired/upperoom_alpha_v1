@@ -25,7 +25,7 @@
                         {% for region, lodges in regions.items %}
                         <div class="region-group">
                             <h4><i class="fa-solid fa-location-dot"></i>{{ region }}</h4>
-                            <ul>
+                            <ul class="lodge-list-container">
                                 {% for lodge in lodges %}
                                     <li class="lodge-list-item">
                                         <a class="lodge-profile-link" href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a>

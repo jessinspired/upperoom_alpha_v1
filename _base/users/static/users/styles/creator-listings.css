@@ -89,10 +89,12 @@ h3, h4, h2 {
     padding: 0 .3rem;
     border-radius: .3rem;
     font-weight: 500;
+    margin-left: auto;
 }
 
-.set-location .fa-location-crosshairs {
-    /* color: var(--primaryGreen); */
+.lodge-list-container {
+    display: grid;
+    row-gap: .5rem;
 }
 
 .view-lodge-in-map-link {
@@ -101,6 +103,7 @@ h3, h4, h2 {
     border: 2px solid var(--lightGray);
     padding: 0 .3rem;
     border-radius: .3rem;
+    margin-left: auto;
 }
 
 
