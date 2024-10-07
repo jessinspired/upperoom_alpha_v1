@@ -7,7 +7,7 @@
     - repository
     - virtualenv
     - static_files
-    # - database
+    - database
     - redis
     - gunicorn
     - celery
