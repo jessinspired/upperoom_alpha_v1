@@ -207,9 +207,19 @@ class Lodge(BaseModel):
     address = models.TextField(null=True, blank=False)
 
     latitude = models.DecimalField(
-        max_digits=9, decimal_places=6, null=True, blank=True)
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        default=None
+    )
     longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, null=True, blank=True)
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        default=None
+    )
 
     # coordinates = gis_models.PointField(null=True, blank=False)
 
