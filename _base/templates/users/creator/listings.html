@@ -5,10 +5,15 @@
 <link rel="stylesheet" href="{% static 'users/styles/creator-listings.css' %}?uuid={{uuid}}">
 {% endblock %}
 
+{% block page_scripts_in_head %}
+<script defer src="{% static 'listings/scripts/setLodgeLocation.js' %}?uuid={{uuid}}"></script>
+{% endblock %}
+
 {% block middle_content %}
 <div class="middle-content">
     <div class="listings-container">
         <h3>Lodges</h3>
+        <p id="location-display"></p>
 
         {% if grouped_lodges %}
             <p>Showing all</p>
@@ -22,7 +27,28 @@
                             <h4><i class="fa-solid fa-location-dot"></i>{{ region }}</h4>
                             <ul>
                                 {% for lodge in lodges %}
-                                    <li><a href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a></li>
+                                    <li class="lodge-list-item">
+                                        <a class="lodge-profile-link" href="{% url 'get_lodge_profile' pk=lodge.pk %}">{{lodge.name}}</a>
+                                        {% if lodge.longitude and lodge.latitude %}
+                                            <a
+                                            class="view-lodge-in-map-link"
+                                            href="https://www.google.com/maps/@?api=1&map_action=map&center={{lodge.latitude}},{{lodge.longitude}}&zoom=15">
+                                            <i class="fa-solid fa-map-location-dot"></i>
+                                            <span>View in map</span>
+                                            </a>
+                                        {% else %}
+                                        <button
+                                        data-lodge-pk="{{lodge.pk}}"
+                                        id="location-handler"
+                                        class="set-location"
+                                        data-url="{% url 'set_lodge_location' lodge_pk=lodge.pk %}"
+                                        hx-on:click="getCoordinates(event)"
+                                        >
+                                            <i class="fa-solid fa-location-crosshairs"></i>
+                                            Set location
+                                        </button>
+                                        {% endif %}
+                                    </li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -159,4 +185,5 @@
 
 </div>
 
+<input type="hidden" name="csrf-hidden" value="{{csrf_token}}">
 {% endblock %}

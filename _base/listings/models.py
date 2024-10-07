@@ -206,6 +206,13 @@ class Lodge(BaseModel):
 
     address = models.TextField(null=True, blank=False)
 
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True)
+
+    # coordinates = gis_models.PointField(null=True, blank=False)
+
     # for creators to identify nameless lodges in dashboard
     alias = models.CharField(
         max_length=500,

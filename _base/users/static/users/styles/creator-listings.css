@@ -65,8 +65,42 @@ h3, h4, h2 {
     font-weight: 500;
 }
 
-.group-lodges li a {
+.lodge-profile-link {
     font-size: .8em;
+    color: var(--royalBlue);
+    font-weight: bold;
+}
+
+.lodge-list-item {
+    display: flex;
+    column-gap: 2rem;
+    align-items: center;
+}
+
+.lodge-list-item button {
+    display: flex;
+    align-items: baseline;
+    column-gap: .3rem;
+    border: none;
+    font-size: .7rem;
+    padding: 0;
+    margin: 0;
+    border: 2px solid var(--lightGray);
+    padding: 0 .3rem;
+    border-radius: .3rem;
+    font-weight: 500;
+}
+
+.set-location .fa-location-crosshairs {
+    /* color: var(--primaryGreen); */
+}
+
+.view-lodge-in-map-link {
+    font-size: .7rem;
+    color: var(--primaryGreen);
+    border: 2px solid var(--lightGray);
+    padding: 0 .3rem;
+    border-radius: .3rem;
 }
 
 

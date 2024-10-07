@@ -1,3 +1,5 @@
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -14,6 +16,7 @@ from .forms import RoomProfileForm
 from listings.models import Landmark, Lodge, LodgeGroup, Region, RoomType, RoomProfile, School, State
 from core.views import handle_http_errors
 from payments.utils import convert_price_to_decimal
+from decimal import Decimal
 
 
 logger = logging.getLogger('listings')
@@ -73,6 +76,32 @@ def group_lodge_by_name(lodge):
         'similar_lodge': None,
         'similarity_score': None,
     }
+
+
+@role_required(['CREATOR'])
+def set_lodge_location(request, lodge_pk):
+    if lodge.creator != request.user:
+        logger.error(f"User cannot set lodge location: Forbidden")
+        messages.error(request, f'Forbidden to set location')
+        return HttpResponseClientRefresh()
+
+    try:
+        lodge = Lodge.objects.get(pk=lodge_pk)
+        longitude = Decimal(request.POST.get('longitude'))
+        latitude = Decimal(request.POST.get('latitude'))
+    except Exception as e:
+        logger.error(
+            f"Failed to set location for lodge with pk: {lodge_pk}, exception: {e}")
+        messages.error(request, f'Lodge does not exist to set location')
+        return HttpResponseClientRefresh()
+
+    lodge.latitude = latitude
+    lodge.longitude = longitude
+    lodge.save()
+
+    messages.success(request, f'Location set')
+    maps_url = f"https://www.google.com/maps/@?api=1&map_action=map&center={latitude},{longitude}&zoom=15"
+    return HttpResponse(f"<a href='{maps_url}'>View in map</a>")
 
 
 @role_required(['CREATOR'])

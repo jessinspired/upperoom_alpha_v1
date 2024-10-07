@@ -48,12 +48,14 @@
 
                 <dialog class="listing-modal" id="modal-{{ listing.pk }}">
                     <button onclick="document.getElementById('modal-{{ listing.pk }}').close()">X</button>
-                    <div>
-                        <div><b>Room Type:</b> {{ listing.room_profile.room_type }}</div>
-                        <div><b>Lodge:</b> {{ listing.room_profile.lodge }}</div>
-                        <div><b>School:</b> {{ listing.room_profile.lodge.school.name }}</div>
-                        <div><b>Region:</b> {{ listing.room_profile.lodge.region.name }}</div>
-                        <div ><b>Status:</b> <span id="status-modal-{{listing.pk}}">{{ listing.get_status_display }}</span></div>
+                    <div class="listing-profile-detail">
+                        <div><i class="fa-solid fa-bed"></i><b>Room Type:</b> {{ listing.room_profile.room_type }}</div>
+                        <div><i class="fa-solid fa-house-circle-check"></i><b>Lodge:</b> {{ listing.room_profile.lodge }}</div>
+                        <div><i class="fa-solid fa-graduation-cap"></i><b>School:</b> {{ listing.room_profile.lodge.school.name }}</div>
+                        <div><i class="fa-solid fa-location-dot"></i><b>Region:</b> {{ listing.room_profile.lodge.region.name }}</div>
+                        <div><i class="fa-solid fa-map-pin"></i><b>Address:</b> {{ listing.room_profile.lodge.address }}</div>
+                        <div><i class="fa-solid fa-square-poll-vertical"></i><b>Status:</b> <span id="status-modal-{{listing.pk}}">{{ listing.get_status_display }}</span></div>
+                        <div><i class="fa-solid fa-map-location-dot"></i><a href="https://www.google.com/maps/@?api=1&map_action=map&center={{listing.room_profile.lodge.latitude}},{{listing.room_profile.lodge.longitude}}&zoom=15">View in Map</a></div>
                     </div>
                 </dialog>
             </div>

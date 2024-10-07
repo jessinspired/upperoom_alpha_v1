@@ -95,6 +95,21 @@ body {
     width: min(30rem, 80vw);
     min-height: 20rem;
     box-shadow: var(--mediumBoxShadow);
+    font-size: .8rem;
+    color: var(--slateGray);
+}
+
+.listing-modal i {
+    color: var(--royalBlue);
+    width: 1.5rem;
+}
+
+.listing-profile-detail a {
+    background-color: var(--primaryGreen);
+    color: var(--primaryWhite);
+    font-size: .7rem;
+    padding: .3rem 1rem;
+    border-radius: .3rem;
 }
 
 .listing-modal button {
