@@ -12,7 +12,7 @@ function getCoordinates(event) {
       let latitude = position.coords.latitude;
       let longitude = position.coords.longitude;
 
-      htmx.ajax("POST", `${event.target.getAttribute("data-url")}`, {
+      htmx.ajax("POST", `$https://upperoom.ng{event.target.getAttribute("data-url")}`, {
         headers: {
           "X-CSRFToken": csrfToken,
         },
